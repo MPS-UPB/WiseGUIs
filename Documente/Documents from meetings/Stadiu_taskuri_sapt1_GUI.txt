@@ -1,0 +1,41 @@
+
+	Buna ,Luiza!
+	
+	Dupa cum stii, avem doua saptamani sa terminam etapa aceasta (GUI) si am stabilit la ultima intalnire sa avem cel putin un "meeting" pe saptamana.
+	Avand in vedere ca am facut un meeting la ultimul laborator in cadrul caruia ne-am impartit taskurile, consider ca nu este nevoie de inca o intalnire in 
+aceasta saptamana. In schimb, te rog sa vorbesti cu developerii si sa ii intrebi in ce stadiu sunt si ce vor sa faca saptamana aceasta. Poti completa in acest
+fisier dupa ce ai vorbit cu ei.
+	Deadline - miercuri, 07.11.2012
+	
+	Multumesc,
+	Jimy Pavel
+
+
+Buna Jimy,
+
+	Cred ca ar fi bine sa specific mai intai care este planificarea task-urilor pana la urmatorul milestone, asa cum a ramas stabilit la ultima sedinta:
+
+1. Roxana Sevan va incepe sa implementeze parserul, pentru ca este un modul de baza si ne va trebui si pentru GUI, chiar daca nu face parte din GUI.
+
+2. Liliana Luchian va face Main Window.
+
+3. Bogdan Popescu va face ferestrele de Preprocesare si de Binarizare.
+
+4. Luiza Pasca va face fereastra de introducere parametri.
+
+	Saptamana aceasta (cred ca in week-end mai degraba) se va incepe implementarea ferestrelor pentru GUI, partea de design, fara logica din spate.
+
+	Deocamdata, Roxana a creat o structura de directoare (proiecte in Java) pe GitHub, care descriu modulele:
+
+- ApiClientPGUI -> contine clasa Main; nu s eva lucra foaret mutl aici; mai mult cand vom integra modulele
+- ApiGUIImplementation -> aici se vor crea clasele pentru GUI
+- ApiProcessingImplementation -> aici se vor crea clasele pentru modulul Processing
+	
+	In urmatoarele doua saptamani se va lucra pe ApiGUIImplementation. Toti cei care au de facut ferestrele vor crea clasele specifice in acest proiect.
+	
+	Probleme:
+
+- generam ferestrele dinamic??? Jimy, te rog sa intrebi neaparat chestia asta pe forum, iarasi, ca sa ne lamurim definitiv.
+
+Sper ca e ok planificarea.
+Luiza Pasca

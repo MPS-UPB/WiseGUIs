@@ -1,4 +1,4 @@
-package mps.GUI.window.implementation;
+package old;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -6,15 +6,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-class ProcessingWindow extends SecondaryWindow{
 
-	public ProcessingWindow( List<String> list) {
-		super("Processing Window", list);
+public class BinarizationWindow extends SecondaryWindow{
+
+	public BinarizationWindow( List<String> list) {
+		super("Binarization Window", list);
 	}
 
 	private static final long serialVersionUID = 1L;
 
 	
+
 
 	@Override
 	public void addALtoAdd() {
@@ -25,12 +27,8 @@ class ProcessingWindow extends SecondaryWindow{
 				if(!listedExecs.isSelectionEmpty()){
 					String selected = listedExecs.getSelectedValue();
 					System.out.println("selected : "+selected);
-					if(!listAdded.contains(selected)){
-						listAdded.addElement(selected);
-						listExecs.removeElement(selected);
-						ProcessingWindow.this.revalidate();
-					}
-					
+					listAdded.addElement(selected);
+					BinarizationWindow.this.revalidate();
 				}
 				
 			}
@@ -46,9 +44,8 @@ class ProcessingWindow extends SecondaryWindow{
 					if(!choosenExecs.isSelectionEmpty()){
 						String selected = choosenExecs.getSelectedValue();
 						System.out.println("selected for remove: "+selected);
-						listExecs.addElement(selected);
 						listAdded.removeElementAt(listAdded.indexOf(selected));
-						ProcessingWindow.this.revalidate();
+						BinarizationWindow.this.revalidate();
 					}
 					
 				}
@@ -58,7 +55,7 @@ class ProcessingWindow extends SecondaryWindow{
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		List<String> data = new ArrayList<String>(Arrays.asList("one", "two", "three", "four"));
-        SecondaryWindow sw = new ProcessingWindow(data); 
+        SecondaryWindow sw = new BinarizationWindow(data); 
         sw.setVisible(true);
         
 	}

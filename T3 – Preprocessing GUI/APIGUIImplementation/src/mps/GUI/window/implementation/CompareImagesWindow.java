@@ -2,7 +2,7 @@ package mps.GUI.window.implementation;
 
 
 import java.awt.*;
-import java.awt.event.*;
+
 import javax.swing.*;
 
 public class CompareImagesWindow extends JFrame{
@@ -99,14 +99,11 @@ public class CompareImagesWindow extends JFrame{
 		buttonsPanel.add(intersectionButton);
 		myPanel.add(buttonsPanel,BorderLayout.SOUTH);
 		
-		setVisible(true);
+		
 		
 	}
 	
 	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-        new CompareImagesWindow("image.jpg", "image.jpg");
-	}
+	
 
 }

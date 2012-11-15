@@ -3,26 +3,24 @@
  * and open the template in the editor.
  */
 package mps.GUI.window.implementation;
-
 import java.awt.event.ActionEvent;
 import javax.swing.*;
-
 import java.util.*;
+import java.awt.event.*;
+
 
 /**
  *
  * @author John
- * @version Last modified by Roxana 11/15/2012
+ * @version Last Modified Roxana 11/15/2012
  */
-public class BinarizationWindow extends JFrame {
-
+public class PreprocessingWindow extends JFrame {
+ 
 	private static final long serialVersionUID = 1L;
-	DefaultListModel<String> jListingModel = new DefaultListModel<String>();
-    DefaultListModel<String> jChoicesModel = new DefaultListModel<String>();
-    MainWindow mainWindow;
-    
+
+	
     private JButton jAddButton;
-    private JList <String>jChoicesPanelList;
+    private JList<String> jChoicesPanelList;
     private JLabel jLabel1;
     private JLabel jLabel2;
     private JLabel jLabel3;
@@ -30,17 +28,19 @@ public class BinarizationWindow extends JFrame {
     private JButton jRemoveButton;
     private JScrollPane jScrollPane1;
     private JScrollPane jScrollPane2;
+	DefaultListModel<String> jListingModel = new DefaultListModel<String>();
+    DefaultListModel<String> jChoicesModel = new DefaultListModel<String>();
+
+
+	 MainWindow mainWindow;
     
     /**
-     * Creates new form BinarizationWindow
+     * Creates new form PreprocessingWindow
      */
-    public BinarizationWindow(List<String>list) {
-        
-    	
-    	initComponents();
-        
-            
-    	for(String s : list){
+    public PreprocessingWindow(List <String> list) {
+        initComponents();
+    
+        for(String s : list){
         	jListingModel.addElement(s);
 		}
 
@@ -53,7 +53,7 @@ public class BinarizationWindow extends JFrame {
 		mainWindow = mainWindow2;
 	}
 
-	private void initComponents() {
+    private void initComponents() {
 
         jScrollPane1 = new JScrollPane();
         jListingPanelList = new JList<String>();
@@ -71,8 +71,8 @@ public class BinarizationWindow extends JFrame {
         jScrollPane2.setViewportView(jChoicesPanelList);
 
         jAddButton.setText("Add");
-        jAddButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jAddButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 jAddButtonActionPerformed(evt);
             }
         });
@@ -88,7 +88,7 @@ public class BinarizationWindow extends JFrame {
 
         jLabel2.setText("Choices Panel");
 
-        jLabel3.setText("Binarization Window");
+        jLabel3.setText("Preprocessing Window");
 
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -145,6 +145,7 @@ public class BinarizationWindow extends JFrame {
 
             String selectedElement = jListingModel.elementAt(selectedIndex);
             
+            jListingModel.removeElement(selectedElement);
             jChoicesModel.addElement(selectedElement);
                 
        }
@@ -154,11 +155,15 @@ public class BinarizationWindow extends JFrame {
         if (evt.getActionCommand().equals("Remove")) {
             int selectedIndex = jChoicesPanelList.getSelectedIndex();
 
-            Object selectedElement = jChoicesModel.elementAt(selectedIndex);
+            String selectedElement = jChoicesModel.elementAt(selectedIndex);
             
-            jChoicesModel.removeElement(selectedElement);     
+            jChoicesModel.removeElement(selectedElement);
+            jListingModel.addElement(selectedElement);
+                
        }
     }
 
-  
+   
+
+   
 }

@@ -4,6 +4,8 @@
  */
 package mps.GUI.window.implementation;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
+
 import javax.swing.*;
 import java.util.*;
 import java.awt.event.*;
@@ -20,16 +22,16 @@ public class PreprocessingWindow extends JFrame {
 
 	
     private JButton jAddButton;
-    private JList<String> jChoicesPanelList;
+    private JList jChoicesPanelList;
     private JLabel jLabel1;
     private JLabel jLabel2;
     private JLabel jLabel3;
-    private JList<String> jListingPanelList;
+    private JList jListingPanelList;
     private JButton jRemoveButton;
     private JScrollPane jScrollPane1;
     private JScrollPane jScrollPane2;
-	DefaultListModel<String> jListingModel = new DefaultListModel<String>();
-    DefaultListModel<String> jChoicesModel = new DefaultListModel<String>();
+	DefaultListModel jListingModel = new DefaultListModel();
+    DefaultListModel jChoicesModel = new DefaultListModel();
 
 
 	 MainWindow mainWindow;
@@ -46,6 +48,7 @@ public class PreprocessingWindow extends JFrame {
 
         jListingPanelList.setModel(jListingModel);
         jChoicesPanelList.setModel(jChoicesModel);
+        setLocationRelativeTo(null);
     }
 
     void setMainWindow(MainWindow mainWindow2) {
@@ -56,9 +59,9 @@ public class PreprocessingWindow extends JFrame {
     private void initComponents() {
 
         jScrollPane1 = new JScrollPane();
-        jListingPanelList = new JList<String>();
+        jListingPanelList = new JList();
         jScrollPane2 = new JScrollPane();
-        jChoicesPanelList = new JList<String>();
+        jChoicesPanelList = new JList();
         jAddButton = new JButton();
         jRemoveButton = new JButton();
         jLabel1 = new JLabel();
@@ -66,6 +69,50 @@ public class PreprocessingWindow extends JFrame {
         jLabel3 = new JLabel();
 
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new WindowListener() {
+			
+			@Override
+			public void windowOpened(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowIconified(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+				mainWindow.setEnabled(true);
+				
+			}
+			
+			@Override
+			public void windowClosing(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowClosed(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowActivated(WindowEvent e) {
+				mainWindow.setEnabled(false);
+				
+			}
+		});
 
         jScrollPane1.setViewportView(jListingPanelList);
         jScrollPane2.setViewportView(jChoicesPanelList);
@@ -77,6 +124,7 @@ public class PreprocessingWindow extends JFrame {
             }
         });
 
+        
         jRemoveButton.setText("Remove");
         jRemoveButton.addActionListener(new java.awt.event.ActionListener() {
 
@@ -143,7 +191,7 @@ public class PreprocessingWindow extends JFrame {
         if (evt.getActionCommand().equals("Add")) {
             int selectedIndex = jListingPanelList.getSelectedIndex();
 
-            String selectedElement = jListingModel.elementAt(selectedIndex);
+            String selectedElement = (String) jListingModel.elementAt(selectedIndex);
             
             jListingModel.removeElement(selectedElement);
             jChoicesModel.addElement(selectedElement);
@@ -155,7 +203,7 @@ public class PreprocessingWindow extends JFrame {
         if (evt.getActionCommand().equals("Remove")) {
             int selectedIndex = jChoicesPanelList.getSelectedIndex();
 
-            String selectedElement = jChoicesModel.elementAt(selectedIndex);
+            String selectedElement = (String) jChoicesModel.elementAt(selectedIndex);
             
             jChoicesModel.removeElement(selectedElement);
             jListingModel.addElement(selectedElement);

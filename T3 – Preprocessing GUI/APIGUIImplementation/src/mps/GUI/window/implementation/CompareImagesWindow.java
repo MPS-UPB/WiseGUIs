@@ -2,6 +2,8 @@ package mps.GUI.window.implementation;
 
 
 import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.*;
 
@@ -12,6 +14,7 @@ public class CompareImagesWindow extends JFrame{
 	Image secondImage;
 	JPanel imagePanel;
 	JPanel buttonsPanel;
+	MainWindow mainWindow;
 	
 	public CompareImagesWindow(String imageFile1, String imageFile2){
        super("Compare images");
@@ -19,6 +22,52 @@ public class CompareImagesWindow extends JFrame{
       
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
+
+		addWindowListener(new WindowListener() {
+			
+			@Override
+			public void windowOpened(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowIconified(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+				mainWindow.setEnabled(true);
+				
+			}
+			
+			@Override
+			public void windowClosing(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowClosed(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowActivated(WindowEvent e) {
+				mainWindow.setEnabled(false);
+				
+			}
+		});
+
 		
 		setSize(400, 400);
 		
@@ -100,6 +149,11 @@ public class CompareImagesWindow extends JFrame{
 		myPanel.add(buttonsPanel,BorderLayout.SOUTH);
 		
 		
+		
+	}
+
+	public void setMainWindow(MainWindow mainWindow2) {
+		mainWindow = mainWindow2;
 		
 	}
 	

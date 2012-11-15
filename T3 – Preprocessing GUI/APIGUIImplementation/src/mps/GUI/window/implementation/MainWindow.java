@@ -2,9 +2,13 @@ package mps.GUI.window.implementation;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 /**
@@ -48,7 +52,9 @@ public class MainWindow extends JFrame {
     	compareWindow = new CompareImagesWindow("image.jpg", "image.jpg");
     	binarizationWindow.setMainWindow(this);
     	preprocessingWindow.setMainWindow(this);
+    	compareWindow.setMainWindow(this);
         initComponents();
+        setLocationRelativeTo(null);
     }
 
    
@@ -74,7 +80,7 @@ public class MainWindow extends JFrame {
         updateButton = new JButton("Update");
         compareButton = new JButton("Compare");
 
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
       //  setFocusableWindowState(false);
         setPreferredSize(new Dimension(620, 550));
         addComponentListener(new ComponentAdapter() {
@@ -97,8 +103,22 @@ public class MainWindow extends JFrame {
 						int returnVal = fileChooser.showOpenDialog(leftPanel);
 						if (returnVal == JFileChooser.APPROVE_OPTION) {
 
+							// Setam calea catre fisier in textBox
 							pathTextField.setText(fileChooser.getSelectedFile()
 									.getAbsolutePath());
+							
+							// Incarcam imaginea in panel
+							int width = imagePanel.getSize().width;
+							int height = imagePanel.getSize().height;
+							
+							ImageIcon myPicture = new ImageIcon(new ImageIcon(pathTextField.getText())
+							.getImage().getScaledInstance(width,height,
+							Image.SCALE_SMOOTH));
+							JLabel picLabel = new JLabel(myPicture);
+							picLabel.setSize(new Dimension(width, height));
+							
+							imagePanel.add(picLabel);
+							MainWindow.this.repaint();
 						}
 					}
 				});
@@ -107,7 +127,19 @@ public class MainWindow extends JFrame {
 
 		});
 
-
+        // facem disable butonul de update daca checkboxul este true
+        updateCheckBox.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if(updateCheckBox.isSelected())
+					updateButton.setEnabled(false);
+				else
+					updateButton.setEnabled(true);
+				
+			}
+		});
+        
         imagePanel.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
         imagePanel.setForeground(new Color(255, 255, 255));
 
@@ -126,12 +158,13 @@ public class MainWindow extends JFrame {
         binarizationButton.setPreferredSize(new Dimension(99, 23));
 
         binarizationButton.addActionListener(new ActionListener() {
-			
+ 			
 			@Override
 			public void actionPerformed(ActionEvent ae) {
 				EventQueue.invokeLater(new Runnable() {
 		            public void run() {
 		                binarizationWindow.setVisible(true);
+		                
 		            }
 		        });
 				

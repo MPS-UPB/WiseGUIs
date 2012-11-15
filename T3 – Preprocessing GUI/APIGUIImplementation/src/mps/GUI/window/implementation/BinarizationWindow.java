@@ -5,6 +5,9 @@
 package mps.GUI.window.implementation;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+
 import javax.swing.*;
 
 import java.util.*;
@@ -17,16 +20,16 @@ import java.util.*;
 public class BinarizationWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	DefaultListModel<String> jListingModel = new DefaultListModel<String>();
-    DefaultListModel<String> jChoicesModel = new DefaultListModel<String>();
+	DefaultListModel jListingModel = new DefaultListModel();
+    DefaultListModel jChoicesModel = new DefaultListModel();
     MainWindow mainWindow;
     
     private JButton jAddButton;
-    private JList <String>jChoicesPanelList;
+    private JList jChoicesPanelList;
     private JLabel jLabel1;
     private JLabel jLabel2;
     private JLabel jLabel3;
-    private JList<String> jListingPanelList;
+    private JList jListingPanelList;
     private JButton jRemoveButton;
     private JScrollPane jScrollPane1;
     private JScrollPane jScrollPane2;
@@ -46,6 +49,7 @@ public class BinarizationWindow extends JFrame {
 
         jListingPanelList.setModel(jListingModel);
         jChoicesPanelList.setModel(jChoicesModel);
+        setLocationRelativeTo(null);
     }
 
     void setMainWindow(MainWindow mainWindow2) {
@@ -56,16 +60,62 @@ public class BinarizationWindow extends JFrame {
 	private void initComponents() {
 
         jScrollPane1 = new JScrollPane();
-        jListingPanelList = new JList<String>();
+        jListingPanelList = new JList();
         jScrollPane2 = new JScrollPane();
-        jChoicesPanelList = new JList<String>();
+        jChoicesPanelList = new JList();
         jAddButton = new JButton();
         jRemoveButton = new JButton();
         jLabel1 = new JLabel();
         jLabel2 = new JLabel();
         jLabel3 = new JLabel();
 
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        addWindowListener(new WindowListener() {
+			
+			@Override
+			public void windowOpened(WindowEvent arg0) {
+				
+				
+			}
+			
+			@Override
+			public void windowIconified(WindowEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowDeiconified(WindowEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowDeactivated(WindowEvent arg0) {
+				mainWindow.setEnabled(true);
+				
+			}
+			
+			@Override
+			public void windowClosing(WindowEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowClosed(WindowEvent arg0) {
+				
+				
+			}
+			
+			@Override
+			public void windowActivated(WindowEvent arg0) {
+				mainWindow.setEnabled(false);
+				
+			}
+		});
+        
+        
 
         jScrollPane1.setViewportView(jListingPanelList);
         jScrollPane2.setViewportView(jChoicesPanelList);
@@ -143,7 +193,7 @@ public class BinarizationWindow extends JFrame {
         if (evt.getActionCommand().equals("Add")) {
             int selectedIndex = jListingPanelList.getSelectedIndex();
 
-            String selectedElement = jListingModel.elementAt(selectedIndex);
+            String selectedElement = (String) jListingModel.elementAt(selectedIndex);
             
             jChoicesModel.addElement(selectedElement);
                 

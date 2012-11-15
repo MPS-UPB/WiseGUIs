@@ -35,6 +35,7 @@ public class PreprocessingWindow extends JFrame {
 
 
 	 MainWindow mainWindow;
+	 ParametersWindow parametersWindow;
     
     /**
      * Creates new form PreprocessingWindow
@@ -189,6 +190,16 @@ public class PreprocessingWindow extends JFrame {
     private void jAddButtonActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
         if (evt.getActionCommand().equals("Add")) {
+        	
+        	parametersWindow = new ParametersWindow();
+        	LinkedHashMap<String,String> test = new LinkedHashMap<String,String>();
+            test.put("Nume fisier", "JTextField");
+            test.put("Unghi", "JSpinner");
+            test.put("Nume param3", "JTextField");
+            test.put("Nume param4", "JComboBox");
+            parametersWindow.generareCampuri(test);          
+        	parametersWindow.setVisible(true);
+        	
             int selectedIndex = jListingPanelList.getSelectedIndex();
 
             String selectedElement = (String) jListingModel.elementAt(selectedIndex);

@@ -23,6 +23,7 @@ public class BinarizationWindow extends JFrame {
 	DefaultListModel jListingModel = new DefaultListModel();
     DefaultListModel jChoicesModel = new DefaultListModel();
     MainWindow mainWindow;
+    ParametersWindow parametersWindow;
     
     private JButton jAddButton;
     private JList jChoicesPanelList;
@@ -124,6 +125,7 @@ public class BinarizationWindow extends JFrame {
         jAddButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jAddButtonActionPerformed(evt);
+                
             }
         });
 
@@ -191,6 +193,15 @@ public class BinarizationWindow extends JFrame {
     private void jAddButtonActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
         if (evt.getActionCommand().equals("Add")) {
+        	
+        	parametersWindow = new ParametersWindow();
+        	LinkedHashMap<String,String> test = new LinkedHashMap<String,String>();
+            test.put("Nume fisier", "JTextField");
+            test.put("Unghi", "JSpinner");
+            test.put("Nume param3", "JTextField");
+            test.put("Nume param4", "JComboBox");
+            parametersWindow.generareCampuri(test);          
+        	parametersWindow.setVisible(true);
             int selectedIndex = jListingPanelList.getSelectedIndex();
 
             String selectedElement = (String) jListingModel.elementAt(selectedIndex);

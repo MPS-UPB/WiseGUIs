@@ -1,3 +1,5 @@
+package mps.GUI.window.implementation;
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -20,6 +22,8 @@ import javax.swing.border.EmptyBorder;
 
 public class ParametersWindow extends javax.swing.JFrame {
 
+	MainWindow mainWindow;
+	
     public ParametersWindow() {
                 
         initComponents();
@@ -32,6 +36,7 @@ public class ParametersWindow extends javax.swing.JFrame {
         
         super(titlu);
         initComponents();
+        
     }
 
     /**
@@ -45,6 +50,7 @@ public class ParametersWindow extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
+        setLocationRelativeTo(null);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -73,57 +79,7 @@ public class ParametersWindow extends javax.swing.JFrame {
     }
     
     
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ParametersWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ParametersWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ParametersWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ParametersWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                
-                ParametersWindow window = new ParametersWindow();    
-                //plaseaza fereastra in centrul ecranului
-                window.setLocationRelativeTo(null);
-                
-                LinkedHashMap<String,String> test = new LinkedHashMap<String,String>();
-                test.put("Nume fisier", "JTextField");
-                test.put("Unghi", "JSpinner");
-                test.put("Nume param3", "JTextField");
-                test.put("Nume param4", "JComboBox");
-                window.generareCampuri(test);                 
-                window.revalidate();
-                window.setVisible(true);              
-               
-              
-           //     window.repaint();
-                
-            }
-        });
-        
-    }
+  
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
 
@@ -194,7 +150,12 @@ public class ParametersWindow extends javax.swing.JFrame {
        }        
        
      
-    }    
+    }
+
+	public void setMainWindow(MainWindow mainWindow2) {
+		mainWindow = mainWindow2;
+		
+	}    
 }
 
 

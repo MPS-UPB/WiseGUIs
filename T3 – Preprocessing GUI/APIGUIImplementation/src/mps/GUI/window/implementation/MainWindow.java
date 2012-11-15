@@ -43,6 +43,7 @@ public class MainWindow extends JFrame {
     private PreprocessingWindow preprocessingWindow;
     private CompareImagesWindow compareWindow;
     
+    
     public MainWindow() {
     	super("Preprocesing GUI - Main Window");
 		List<String> list = new ArrayList<String>(Arrays.asList("one", "two",

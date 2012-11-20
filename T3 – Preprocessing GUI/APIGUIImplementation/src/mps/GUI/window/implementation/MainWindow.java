@@ -50,7 +50,7 @@ public class MainWindow extends JFrame {
 				"three", "four"));
     	binarizationWindow = new BinarizationWindow(list);
     	preprocessingWindow = new PreprocessingWindow(list);
-    	compareWindow = new CompareImagesWindow("image.jpg", "image.jpg");
+    	compareWindow = new CompareImagesWindow("image1.jpg", "image2.jpg");
     	binarizationWindow.setMainWindow(this);
     	preprocessingWindow.setMainWindow(this);
     	compareWindow.setMainWindow(this);

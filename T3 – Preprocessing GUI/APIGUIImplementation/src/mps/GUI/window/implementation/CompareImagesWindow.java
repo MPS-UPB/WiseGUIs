@@ -2,6 +2,8 @@ package mps.GUI.window.implementation;
 
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -15,6 +17,7 @@ public class CompareImagesWindow extends JFrame{
 	JPanel imagePanel;
 	JPanel buttonsPanel;
 	MainWindow mainWindow;
+	
 	
 	public CompareImagesWindow(String imageFile1, String imageFile2){
        super("Compare images");
@@ -92,6 +95,10 @@ public class CompareImagesWindow extends JFrame{
 		.getImage().getScaledInstance(250, 250,
 		 Image.SCALE_SMOOTH));
 		
+		final JLabel labelImg1 = new JLabel(sizedIcon1);
+		final JLabel labelImg2 = new JLabel(sizedIcon2);
+		
+		
 		ImageIcon smallIcon1 = new ImageIcon(new ImageIcon(imageFile1)
 		.getImage().getScaledInstance(70, 70,
 		Image.SCALE_SMOOTH));
@@ -114,24 +121,107 @@ public class CompareImagesWindow extends JFrame{
 		JLabel l1 = new JLabel(smallIcon1);
 		l1.setBorder(BorderFactory.createTitledBorder("Image 1"));
 		imagesPanel.add(l1);
+		l1.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+				if(imagePanel.getComponent(1).equals(labelImg2)){
+					System.out.println("schimb la imag 1");
+					imagePanel.remove(imagePanel.getComponent(1));
+					imagePanel.add(labelImg1, 1);
+					revalidate();
+					repaint();
+					
+				}
+				
+			}
+		});
+		
 		
 		
 		imagesPanel.add(Box.createVerticalStrut(30));
 		JLabel l2 = new JLabel(smallIcon2);
 		l2.setBorder(BorderFactory.createTitledBorder("Image 2"));
-		
-		
 		imagesPanel.add(l2);
+		l2.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+				if(imagePanel.getComponent(1).equals(labelImg1)){
+					System.out.println("schimb la imag 2");
+					imagePanel.remove(imagePanel.getComponent(1));
+					imagePanel.add(labelImg2, 1);
+					revalidate();
+					repaint();
+					
+				}
+				
+			}
+		});
+		
+		
 		
 		imagesPanel.add(Box.createVerticalStrut(30));
 		
 		
 		imagePanel.add(imagesPanel,BorderLayout.WEST);
-		imagePanel.add(new JLabel(sizedIcon1));
+		imagePanel.add(labelImg2);
 		imagePanel.add(Box.createVerticalGlue());
 		
 		
-		imagePanel.add(new JLabel(sizedIcon2));
+	//	imagePanel.add(new JLabel(sizedIcon2));
 		myPanel.add(imagePanel,BorderLayout.NORTH);
 
 		
@@ -156,8 +246,4 @@ public class CompareImagesWindow extends JFrame{
 		mainWindow = mainWindow2;
 		
 	}
-	
-	
-	
-
 }

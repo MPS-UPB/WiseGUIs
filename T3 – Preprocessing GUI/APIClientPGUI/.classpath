@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ApiGUIImplementation"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/ApiPGUI"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ApiProcessingImplementation"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

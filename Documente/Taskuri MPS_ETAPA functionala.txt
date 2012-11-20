@@ -1,0 +1,53 @@
+
+	1. Parser care sa interpreteze XSD-ul 
+		1.1 Construire clasa "Operatie"
+		1.2 Mediator transfer intre ferestre
+	
+	2. La apasarea butoanelor "Binarization" si "Preprocessing"  sa  se completeze lista de parametri in ferestrele
+de binarizare si preprocesare
+
+	3. De adaugat un buton de "Ok" in ferestrele de binarizare si preprocesare , care la apasare
+lista de procese selectata sa fie salvata , iar focusul sa revina pe Main Window + de adaugat un buton
+de back in care focusul revine pe MainWindow, fara alte operatii
+
+	4. De adaugat functionalitate la apasarea butonului Add in ferestrele de binarizare si preprocesare
+in care sa se completeze dinamic parametrii din fereastra de parametrii, in functie de specificatiile din xsd
+
+	5. In fereastra dinamica cu parametri , de adaugat functionalitate butonului "OK",
+in care sa se genereze xml-ul corespunzator , bazat pe xsd, parser si parametrii introdusi
+
+______________________________________ Cele de mai sus depinde de PARSER ________________________________________________
+
+
+	6. In MainWindow, in panelul din dreapta , cuplurile "checkbox"+ poza trebuie generate dinamic, la
+apasarea butonului Update/daca este selectat checkboxul "ImmediateUpdate".
+
+	7. De adaugat functionalitatea pentru butonul de "Update" si pentru checkboxul "Immediate Update"
+			- se preia lista de operatii(procese) care se vor face asupra fotografiei originale
+			- se ruleaza executabilele cu acelasi nume (pe baza xml-urilor generate anterior)
+			- se adauga in dreapta un cuplu "checkbox" + fotografie ca rezultat.
+			Obs: daca checkboxul "Immediate Update" este selectat, toate actiunile de mai sus se executa
+				 in momentul in care MainWindow primeste focusul de la ferestrele de binarizare/preprocesare
+				 
+	8. De adaugat functionalitate butonului de "Compare" in care se verifica daca au fost selectate DOAR 2 poze din panelul din dreapta.
+Daca da, atunci la afisarea ferestrei de comparare trebuie sa apara cele 2 imagini selectate ca icon-uri in stanga si prima poza
+in panelul central.
+
+	9. De eliminat butonul "Slide" din cadrul ferestrei "Compare" + Sa se implementeze efectul de slide la schimbarea fotografiei 
+din icon-urile din stanga +  de adaugat un buton de "Cancel" sau "Back" in fereastra de Compare + functionalitatea lui
+
+	10. De adaugat functionalitate butonului "Diff" in care se face acel nxor (cautam biblioteci pentru asta)
+	
+	11. De adaugat functionalitate butonului "Common" in care se face un and(cred - la fel, cautam biblioteci)
+	
+	12. Pentru testeri =>  testeaza GUI-ul , detectand exceptii ( ca atunci cand apesi Add fara sa fi selectat ceva) si le rezolva
+		12.1 Ferestre dialog/ mesaje pentru avertizari
+	
+
+
+Impartire:	1-5	Luiza si Roxana		(parser, mediator,generare XML, etc)
+		6,7	Liliana			(partea de Update)
+		8-11	Bogdan			(partea pentru fereastra de Comparatie)
+		12	Mihai si Gabriel	(testare GUI , avertizari pentru mesaje introduse gresit)
+
+		

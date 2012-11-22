@@ -11,6 +11,10 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import sun.security.krb5.internal.crypto.CksumType;
+
+import mps.parser.implementation.Parser;
+
 /**
  *
  * @author Liliana
@@ -40,21 +44,24 @@ public class MainWindow extends JFrame {
     private PreprocessingWindow preprocessingWindow;
     private CompareImagesWindow compareWindow;
     //tipurile de executabile
-    ArrayList<Operation> execTypes;
+    List<Operation> execTypes;
 
     public MainWindow() {
 
         super("Preprocesing GUI - Main Window");
 
-        binarizationWindow = new BinarizationWindow(this);
-        preprocessingWindow = new PreprocessingWindow(this);
-        execTypes = new ArrayList<Operation>();
+       
+       // execTypes = new ArrayList<Operation>();
 
         //imaginile trebuie date dinamic - sau cream cate o fereastra de cmparare de fiecare data cand avem de comparat ceva?
         //     compareWindow = new CompareImagesWindow("image1.jpg", "image2.jpg");
 
         initComponents();
+        
+        binarizationWindow = new BinarizationWindow(this);
+        preprocessingWindow = new PreprocessingWindow(this);
         setLocationRelativeTo(null);
+        init();
     }
 
     private void initComponents() {
@@ -78,7 +85,6 @@ public class MainWindow extends JFrame {
         compareButton = new JButton("Compare");
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        //  setFocusableWindowState(false);
         setPreferredSize(new Dimension(620, 550));
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent evt) {
@@ -288,8 +294,14 @@ public class MainWindow extends JFrame {
             public void actionPerformed(ActionEvent arg0) {
                 EventQueue.invokeLater(new Runnable() {
                     public void run() {
-                        compareWindow.setVisible(true);
+                    	if(twoImagesSelected()){
+							compareWindow = new CompareImagesWindow(
+									"image1.jpg", "image2.jpg");
+                    		compareWindow.setVisible(true);
+                    	}
                     }
+
+					
                 });
 
             }
@@ -380,12 +392,14 @@ public class MainWindow extends JFrame {
         //pasare lista executabile de binarizare/preprocesare catre ferestrele aferente
 
         //aici fac deosebirea tipurilor generale de executabile: preprocesare / binarizare
+    	execTypes = Parser.getExecTypes();
+    	
         for (Operation execType : execTypes) {
 
-            if (execType.generalType.equals("support")) {
+            if (execType.getType() == 0) {  //de tip preprocesare
 
                 preprocessingWindow.addListElement(execType);
-            } else if (execType.generalType.equals("binarization")) {
+            } else if (execType.getType() == 1) {
 
                 binarizationWindow.addListElement(execType);
             }
@@ -409,7 +423,10 @@ public class MainWindow extends JFrame {
         
     }
     
-    
+     private boolean twoImagesSelected() {
+			// TODO Auto-generated method stub
+			return compareCheckBox1.isSelected() && compareCheckBox2.isSelected();
+		}
 
     public static void main(String args[]) {
 
@@ -434,7 +451,8 @@ public class MainWindow extends JFrame {
             public void run() {
 
                 MainWindow mainWindow = new MainWindow();
-                mainWindow.init();
+                
+               
             }
         });
     }

@@ -242,4 +242,9 @@ public class CompareImagesWindow extends JFrame{
 		mainWindow = mainWindow2;
 		
 	}
+	
+	public static void main(String ...args){
+		CompareImagesWindow c = new CompareImagesWindow("image1.jpg", "image2.jpg");
+		c.setVisible(true);
+	}
 }

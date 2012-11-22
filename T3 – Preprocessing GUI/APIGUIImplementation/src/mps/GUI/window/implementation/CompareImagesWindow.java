@@ -1,5 +1,7 @@
 package mps.GUI.window.implementation;
-
+/**
+ * @author Roxana
+ */
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -221,12 +223,9 @@ public class CompareImagesWindow extends JFrame{
 		imagePanel.add(Box.createVerticalGlue());
 		
 		
-	//	imagePanel.add(new JLabel(sizedIcon2));
+	
 		myPanel.add(imagePanel,BorderLayout.NORTH);
 
-		
-		
-	
 		buttonsPanel.setLayout(new FlowLayout());
 		buttonsPanel.setBorder(BorderFactory.createMatteBorder(2, 1, 1, 1, Color.GRAY));
 		JButton slideButton = new JButton("Slide");
@@ -237,9 +236,6 @@ public class CompareImagesWindow extends JFrame{
 		buttonsPanel.add(differenceButton);
 		buttonsPanel.add(intersectionButton);
 		myPanel.add(buttonsPanel,BorderLayout.SOUTH);
-		
-		
-		
 	}
 
 	public void setMainWindow(MainWindow mainWindow2) {

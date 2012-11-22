@@ -11,6 +11,7 @@ import javax.swing.*;
 import java.util.*;
 import java.awt.event.*;
 
+
 /**
  *
  * @author John
@@ -20,10 +21,29 @@ public class PreprocessingWindow extends SecondaryWindow {
 
     private static final long serialVersionUID = 1L;
 
+	
+    private JButton jAddButton;
+    private JList jChoicesPanelList;
+    private JLabel jLabel1;
+    private JLabel jLabel2;
+    private JLabel jLabel3;
+    private JList jListingPanelList;
+    private JButton jRemoveButton;
+    private JScrollPane jScrollPane1;
+    private JScrollPane jScrollPane2;
+	DefaultListModel jListingModel = new DefaultListModel();
+    DefaultListModel jChoicesModel = new DefaultListModel();
+
+
+	 MainWindow mainWindow;
+	 ParametersWindow parametersWindow;
+    
     /**
      * Creates new form PreprocessingWindow
      */
     public PreprocessingWindow(MainWindow window) {
+        super("Preprocessing Window");
+        initComponents();
 
         super(window);
         this.setTitle("Preprocessing");
@@ -32,6 +52,8 @@ public class PreprocessingWindow extends SecondaryWindow {
     @Override
     protected void jAddButtonActionPerformed(java.awt.event.ActionEvent evt) {
 
+    private void jAddButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        // TODO add your handling code here:
         if (evt.getActionCommand().equals("Add")) {
 
             parametersWindow = new ParametersWindow(this);

@@ -426,15 +426,9 @@ public class MainWindow extends JFrame {
          * Se parcurge vectorul de operatii;
          * se completeaza lista de parametri ai fiecarei operatii cu numele fisierului de intrare;
          * se lanseaza in executie operatia respectiva (operatie.execute())
+         * metoda execute() din clasa Operation va intoarce numele fisierului de iesire (cu tot cu calea unde se gaseste)
          */
-    }
-
-    private void formComponentResized(ComponentEvent evt) {
-    }
-
-    private void updateCheckBoxActionPerformed(ActionEvent evt) {
-        // TODO add your handling code here:
-    }
+    }   
 
     /**
      * Metoda care primeste un set de operatii de binarizare si le aplica pe
@@ -448,7 +442,15 @@ public class MainWindow extends JFrame {
          * Se parcurge vectorul de operatii;
          * se completeaza lista de parametri ai fiecarei operatii cu numele fisierului de intrare;
          * se lanseaza in executie operatia respectiva (operatie.execute())
+         * metoda execute() din clasa Operation va intoarce numele fisierului de iesire (cu tot cu calea unde se gaseste)
          */
+    }
+    
+     private void formComponentResized(ComponentEvent evt) {
+    }
+
+    private void updateCheckBoxActionPerformed(ActionEvent evt) {
+        // TODO add your handling code here:
     }
 
     /**

@@ -1,0 +1,125 @@
+
+Ce s-a facut pana acum - explicatii & precizari:
+
+
+
+1. Clasa Operation
+
+	- defineste o operatie de rotate, crop, otsu
+	- are ca atribute:
+		- tipul general: binarizare, preprocesare
+		- numele executabilului
+		- numele parametrilor, tipul lor si valorile lor	
+
+2. Transferul de date intre ferestre:
+
+	- in principal intre ferestre se transmit instante ale clasei Operation sau vectori de Operation
+	- exemplu: 
+		daca fereastra1 are ceva de transmis ferestrei2: 
+
+
+	class Fereastra1 {
+
+		Lista<Operation> operatii;
+		Fereastra2 fereastra2;
+		
+
+		transmiteDate() {
+
+
+			fereastra2.preiaDate(operatii);	
+		}
+
+	}
+
+
+3. In ferestrele Preprocessing si Binarization am facut sa se pastreze lista de executabile selectate, de la o deschidere a ferestrei la alta; pentru asta folosesc doi vectori: oldSelection si currentSelection (va rog nu va atingeti de ei decat daca implementarea mea da rateuri grave).
+
+4. Mesaje de avertizare catre utilizator, daca nu se completeaza corect anumite campuri.
+
+	- mesajele sunt cam enervante, in sensul ca, daca deschizi fereastra de parametri si vrei sa scapi repede de ea (dand click pe OK), nu poti pana nu completezi ca lumea campurile (textbox si spinner, combo e ok sa fie lasat gol); deci daca vreti sa testati ceva in Preprocessing sau Binarization si tre' sa dati click pe add, sa aveti grija la asta	
+
+
+   
+
+Roxana, te rog mai completeaza tu aici cu alte explicatii, daca vrei.
+
+
+		
+
+		
+
+Ce task-uri au mai ramas de facut :
+
+
+
+
+
+
+
+Luiza & Roxana:
+
+
+
+
+
+1. Parser si creare Operatii (initializare cu date furnizate de parser)
+2. Generare XML + lansare in executie (sunt 2 metode in clasa Operatie)
+
+
+
+
+Liliana (tot ce tine de MainWindow):
+
+
+
+	
+	3. In MainWindow, in panelul din dreapta , cuplurile "checkbox"+ poza trebuie generate dinamic, la
+apasarea butonului Update/daca este selectat checkboxul "ImmediateUpdate".
+
+	4. De adaugat functionalitatea pentru butonul de "Update" si pentru checkboxul "Immediate Update"
+
+			- se preia lista de operatii(procese) care se vor face asupra fotografiei originale
+			- se ruleaza executabilele cu acelasi nume (pe baza xml-urilor generate anterior)
+				- pentru aceste 2 mini-task-uri exista 2 metode cu niste TODO-uri in ele, in MainWindow
+
+
+			- se adauga in dreapta un cuplu "checkbox" + fotografie ca rezultat.
+			Obs: daca checkboxul "Immediate Update" este selectat, toate actiunile de mai sus se executa
+				 in momentul in care MainWindow primeste focusul de la ferestrele de binarizare/preprocesare
+				 
+	5. De adaugat functionalitate butonului de "Compare" in care se verifica daca au fost selectate DOAR 2 poze din panelul din dreapta (Roxana a facut o metoda pentru asta, dar trebuie modificat codul, ca sa faca pentru cazul general - sa testeze daca sunt selectate ORICARE 2 poze din lista din dreapta).
+Daca da, atunci la afisarea ferestrei de comparare trebuie sa apara cele 2 imagini selectate ca icon-uri in stanga si prima poza in panelul central.
+
+	6. Legat de deschiderea si afisare imaginii in stanga:
+		- fisierele bmp nu se deschid (mie nu-mi afiseaza nimic)
+		- daca aleg o poza si apoi aleg alta, in panel nu se actualizeaza imaginea
+		- (sugestie) primul folder in care ma arunca fereastra de open file sa fie Dektop sau Computer, ceva de genul, ca pana ies din Documents...
+
+
+	7. (Optional) fereastra principala sa fie mai mare si resizable
+
+
+
+Bogdan (tot ce tine de logica din spatele ferestrei de comparare imagini): 
+
+
+
+	8. Sa se implementeze efectul de slide la schimbarea fotografiei din icon-urile din stanga +  de adaugat un buton de "Cancel" sau "Back" in fereastra de Compare + functionalitatea lui
+
+	9. De adaugat functionalitate butonului "Diff" in care se face acel nxor (cautam biblioteci pentru asta)
+	
+	10. De adaugat functionalitate butonului "Common" in care se face un and(cred - la fel, cautam biblioteci)
+
+
+
+
+Mihai & Gabi:
+
+
+
+	
+	11. Testeaza GUI-ul , detectand exceptii ( ca atunci cand apesi Add fara sa fi selectat ceva) si le rezolva
+	12. Adauga comentarii in cod, pe unde mai e cazul + formateaza fiecare sursa, ca sa arate frumos si sa fie conform coding style-ului stabilit
+	13. Sa testeze executabilele de preprocesare date de ei, sa vada daca merg (poate noua ne-a scapat ceva)
+

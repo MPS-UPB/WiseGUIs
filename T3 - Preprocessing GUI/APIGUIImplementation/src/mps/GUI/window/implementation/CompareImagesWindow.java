@@ -21,8 +21,9 @@ public class CompareImagesWindow extends JFrame {
     MainWindow mainWindow;
 
     public CompareImagesWindow(String imageFile1, String imageFile2) {
-        super("Compare images");
 
+
+        super("Compare images");
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -45,8 +46,7 @@ public class CompareImagesWindow extends JFrame {
 
             @Override
             public void windowDeactivated(WindowEvent e) {
-                mainWindow.setEnabled(true);
-
+                //        mainWindow.setEnabled(true);
             }
 
             @Override
@@ -61,8 +61,7 @@ public class CompareImagesWindow extends JFrame {
 
             @Override
             public void windowActivated(WindowEvent e) {
-                mainWindow.setEnabled(false);
-
+                //       mainWindow.setEnabled(false);
             }
         });
 
@@ -211,18 +210,17 @@ public class CompareImagesWindow extends JFrame {
 
         buttonsPanel.setLayout(new FlowLayout());
         buttonsPanel.setBorder(BorderFactory.createMatteBorder(2, 1, 1, 1, Color.GRAY));
-        JButton slideButton = new JButton("Slide");
         JButton differenceButton = new JButton("Diff");
         JButton intersectionButton = new JButton("Common");
 
-        buttonsPanel.add(slideButton);
         buttonsPanel.add(differenceButton);
         buttonsPanel.add(intersectionButton);
         myPanel.add(buttonsPanel, BorderLayout.SOUTH);
     }
-    
-    public static void main(String... args) {
-        CompareImagesWindow c = new CompareImagesWindow("image1.jpg", "image2.jpg");
-        c.setVisible(true);
-    }
+    /*
+     public static void main(String... args) {
+     CompareImagesWindow c = new CompareImagesWindow("image1.jpg", "image2.jpg");
+     c.setVisible(true);
+     }
+     */
 }

@@ -21,6 +21,8 @@ import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
 
 /**
+ * Clasa care descrie partea comuna a ferestrelor de binarizare si de
+ * preprocesare.
  *
  * @author Liz
  */
@@ -38,29 +40,52 @@ public abstract class SecondaryWindow extends JFrame {
     protected JButton jRemoveButton;
     protected JScrollPane jScrollPane1;
     protected JScrollPane jScrollPane2;
+    /**
+     * Fereastra principala care a deschis aceasta fereastra.
+     */
     protected MainWindow mainWindow;
+    /**
+     * Fereastra de parametri pe care o va deschide aceasta fereastra.
+     */
     protected ParametersWindow parametersWindow;
+    /**
+     * Lista de operatii de preprocesare / binarizare primita din fereastra
+     * principala.
+     */
     protected ArrayList<Operation> operations;
-    protected ArrayList<Operation> selectedExecs;
+    /**
+     * Indexul executabilului selectat fie din panel-ul din stanga, fie din cel
+     * din dreapta.
+     */
     protected int selectedIndex;
+    /**
+     * Lista cu executabilele selectate anterior (de la ultimul OK).
+     */
+    ArrayList<Operation> oldSelection;
+    /**
+     * Lista curenta cu executabilele selectate (pana sa se dea iar OK).
+     */
+    ArrayList<Operation> currentSelection;
 
     /**
-     * Creates new form SecondaryWindow
+     * Creates new form SecondaryWindow.
      */
     public SecondaryWindow(MainWindow window) {
 
         this.mainWindow = window;
 
         operations = new ArrayList<Operation>();
-        selectedExecs = new ArrayList<Operation>();
         jListingModel = new DefaultListModel();
         jChoicesModel = new DefaultListModel();
+        oldSelection = new ArrayList<Operation>();
+        currentSelection = new ArrayList<Operation>();
+        //initial nu este selectat nimic
+        selectedIndex = -1;
         initComponents();
         setLocationRelativeTo(null);
     }
 
     protected void initComponents() {
-
 
         jScrollPane1 = new JScrollPane();
         jListingPanelList = new JList(jListingModel);
@@ -72,15 +97,7 @@ public abstract class SecondaryWindow extends JFrame {
         jCancelButton = new JButton();
         jLabel3 = new JLabel("Select ops from left:");
 
-        //aici e cam dubios 
-
-        //NU fac dispose la fereastra cand se inchide, ci fac clear la elementele din lista dreapta
-        //tre' sa verific daca mi se deschide aceeasi fereastra la apasarea butonului preproc / binariz
-
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-
-
-
+//        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         jScrollPane1.setViewportView(jListingPanelList);
         jScrollPane2.setViewportView(jChoicesPanelList);
@@ -163,34 +180,81 @@ public abstract class SecondaryWindow extends JFrame {
         pack();
     }
 
+    /**
+     * Metoda care adauga un nume de excutabil in panelul din stanga.
+     *
+     * @param elem operatia al carui nume va fi adaugat in lista din stanga
+     */
     public void addListElement(Operation elem) {
 
+        //Metoda va fi apelata in metoda init() din MainWindow; 
+        //Adaugarea acestor elemente se va face astfel la pornirea aplicatiei
         jListingModel.addElement(elem.getName());
+        //Se adauga operatia si in lista de operatii de preprocesare / de binarizare
         operations.add(elem);
     }
 
+    /**
+     * Metoda care adauga o operatie cu tot cu valorile parametrilor acesteia in
+     * lista de operatii de executat asupra imaginii. - apelata de fereastra de
+     * parametri, pentru a transmite parametrii operatiei curente
+     */
     public void addExec(Operation op) {
 
-        selectedExecs.add(op);
+        //Operatia se va adauga listei curente de executabile; 
+        //doar la apasarea butonului "OK" va fi transmisa mai departe in fereastra principala, spre a fi lansata in executie
+        currentSelection.add(op);
+
+        //Pentru debugging
+        System.out.println(op.getParamsValues().toString());
+
+        //Executabilul ales din stanga trece in lista din dreapta
+        changeLists();
     }
 
-    protected void swap() {
-        
-        for (int index = 0; index < jChoicesModel.getSize(); index++) {
-            jListingModel.addElement(jChoicesModel.get(index));
-        }
-        jChoicesModel.removeAllElements();
-    }
-
-    protected abstract void okClicked(MouseEvent evt);
-
-    protected abstract void cancelClicked(MouseEvent evt);
-
-    protected abstract void jRemoveButtonActionPerformed(ActionEvent evt);
-
+    /**
+     * Metoda apelata cand se apasa pe butonul "Add".
+     *
+     * @param evt
+     */
     protected abstract void jAddButtonActionPerformed(ActionEvent evt);
 
+    /**
+     * Metoda apelata cand se apasa pe butonul "Remove".
+     *
+     * @param evt
+     */
+    protected abstract void jRemoveButtonActionPerformed(ActionEvent evt);
+
+    /**
+     * Metoda apelata cand se apasa pe butonul "OK".
+     *
+     * @param evt evenimentul mouse clicked
+     */
+    protected abstract void okClicked(MouseEvent evt);
+
+    /**
+     * Metoda apelata cand se apasa pe butonul "Cancel".
+     *
+     * @param evt evenimentul mouse clicked
+     */
+    protected abstract void cancelClicked(MouseEvent evt);
+
+    /**
+     * Metoda care adauga listeneri pe fereastra.
+     */
     protected abstract void addListener();
 
+    /**
+     * Metoda care realizeaza transferul unui nume de executabil din lista din
+     * stanga in lista din dreapta.
+     */
     public abstract void changeLists();
+
+    /**
+     * Metoda in care sunt definite o serie de instructiuni de executat atnci
+     * cand se doreste inchiderea ferestrei, fara salvarea modificarilor asupra
+     * listei de excutabile.
+     */
+    public abstract void close();
 }

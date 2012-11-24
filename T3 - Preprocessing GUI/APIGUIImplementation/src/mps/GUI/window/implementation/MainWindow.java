@@ -40,10 +40,21 @@ public class MainWindow extends JFrame {
     private JPanel rightPanel;
     private JButton updateButton;
     private JCheckBox updateCheckBox;
+    /**
+     * Fereastra de alegere a executabilelor de binarizare.
+     */
     private BinarizationWindow binarizationWindow;
+    /**
+     * Fereastra de alegere a executabilelor de preprocesare.
+     */
     private PreprocessingWindow preprocessingWindow;
+    /**
+     * Fereastra de comparare imagini.
+     */
     private CompareImagesWindow compareWindow;
-    //tipurile de executabile
+    /**
+     * Tipurile de executabile: rotate, crop, otsu etc.
+     */
     List<Operation> execTypes;
 
     public MainWindow() {
@@ -60,6 +71,7 @@ public class MainWindow extends JFrame {
 
         binarizationWindow = new BinarizationWindow(this);
         preprocessingWindow = new PreprocessingWindow(this);
+        //        compareWindow = new CompareWindow(this);
         setLocationRelativeTo(null);
         init();
     }
@@ -124,7 +136,6 @@ public class MainWindow extends JFrame {
                         }
                     }
                 });
-
             }
         });
 
@@ -287,23 +298,19 @@ public class MainWindow extends JFrame {
         });
 
 
-
-
         compareButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                EventQueue.invokeLater(new Runnable() {
-                    public void run() {
-                        if (twoImagesSelected()) {
-                            compareWindow = new CompareImagesWindow(
-                                    "image1.jpg", "image2.jpg");
-                            compareWindow.setVisible(true);
-                        }
-                    }
-                });
 
+                if (twoImagesSelected()) {
+
+                    compareWindow = new CompareImagesWindow("image1.jpg", "image2.jpg");
+                    compareWindow.setVisible(true);
+                }
             }
         });
+
+
         compareButton.setPreferredSize(new Dimension(99, 23));
 
         GroupLayout rightPanelLayout = new GroupLayout(rightPanel);
@@ -372,6 +379,56 @@ public class MainWindow extends JFrame {
         pack();
     }
 
+    /**
+     * Metoda in care se initializeaza alti parametri din fereastra principala
+     * si care incepe desfasurarea proceselor
+     */
+    private void init() {
+
+        /* 
+         * Rulare parser
+         * 
+         * Parserul citeste toate fisierele xsd dintr-un folder specificat (hard coded)
+         * Intoarce un set de Operatii abstracte - execTypes
+         */
+        execTypes = Parser.getExecTypes();
+
+        /*
+         * Pasare lista executabile de binarizare/preprocesare catre ferestrele aferente;
+         * Aici fac deosebirea tipurilor generale de executabile: preprocesare / binarizare
+         */
+        for (Operation execType : execTypes) {
+
+            //tip preprocesare
+            if (execType.getType() == 0) {
+
+                preprocessingWindow.addListElement(execType);
+            } //tip binarizare
+            else if (execType.getType() == 1) {
+
+                binarizationWindow.addListElement(execType);
+            }
+        }
+
+        //Se afiseaza fereastra principala (se da drumul aplicatiei)
+        this.setVisible(true);
+    }
+
+    /**
+     * Metoda care primeste un set de operatii de preprocesare si le aplica pe
+     * imaginea orginara.
+     *
+     * @param preprocOperations operatiile de preprocesare de executat
+     */
+    public void launchPreprocOperations(List<Operation> preprocOperations) {
+        /* TODO
+         * 
+         * Se parcurge vectorul de operatii;
+         * se completeaza lista de parametri ai fiecarei operatii cu numele fisierului de intrare;
+         * se lanseaza in executie operatia respectiva (operatie.execute())
+         */
+    }
+
     private void formComponentResized(ComponentEvent evt) {
     }
 
@@ -379,43 +436,30 @@ public class MainWindow extends JFrame {
         // TODO add your handling code here:
     }
 
-    private void init() {
-
-        //rulare parser
-        //parserul citeste toate fisierele xsd dintr-un folder specificat (hard coded)
-        //intoarce un set de Operatii abstracte - typesOfOperations
-        //in run-ul parserului: med.setExecTypes()
-        //sau direct aici: execTypes = parser.getTypes(); si gata
-
-        //pasare lista executabile de binarizare/preprocesare catre ferestrele aferente
-
-        //aici fac deosebirea tipurilor generale de executabile: preprocesare / binarizare
-        execTypes = Parser.getExecTypes();
-
-        for (Operation execType : execTypes) {
-
-            if (execType.getType() == 0) {  //de tip preprocesare
-
-                preprocessingWindow.addListElement(execType);
-            } else if (execType.getType() == 1) {
-
-                binarizationWindow.addListElement(execType);
-            }
-        }
-
-        this.setVisible(true);
-    }
-
-    public void launchPreprocOperations(List<Operation> preprocOperations) {
-        //TODO
-    }
-
+    /**
+     * Metoda care primeste un set de operatii de binarizare si le aplica pe
+     * imaginea orginara.
+     *
+     * @param binarizOperations operatiile de binarizare de executat
+     */
     public void launchBinarizOperations(List<Operation> binarizOperations) {
-        //TODO
+        /* TODO
+         * 
+         * Se parcurge vectorul de operatii;
+         * se completeaza lista de parametri ai fiecarei operatii cu numele fisierului de intrare;
+         * se lanseaza in executie operatia respectiva (operatie.execute())
+         */
     }
 
+    /**
+     * Metoda care verifica daca au fost selectate 2 imagini binare pentru
+     * comparare.
+     *
+     * @return rezultatul testului
+     */
     private boolean twoImagesSelected() {
-        // TODO Auto-generated method stub
+
+        //TODO: cazul general - oricare 2 imagini selectate
         return compareCheckBox1.isSelected() && compareCheckBox2.isSelected();
     }
 
@@ -442,8 +486,6 @@ public class MainWindow extends JFrame {
             public void run() {
 
                 MainWindow mainWindow = new MainWindow();
-
-
             }
         });
     }

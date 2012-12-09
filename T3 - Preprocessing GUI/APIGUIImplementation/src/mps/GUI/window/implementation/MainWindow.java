@@ -2,9 +2,12 @@ package mps.GUI.window.implementation;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.*;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import mps.parser.implementation.Parser;
@@ -292,10 +295,22 @@ public class MainWindow extends JFrame{
                     }
                 }
                 
-                if (pictureSelected.size() == 2) {
+                // Decomentati ce e mai jos pentru verificare daca doua checkboxuri sunt selectate
+            /*    if (pictureSelected.size() == 2) {
                     compareWindow = new CompareImagesWindow(pictureSelected.get(0), pictureSelected.get(1));
                     compareWindow.setVisible(true);
                 }
+                */
+                
+                // Comentati bucata de mai jos pentru intreaga functionalitate(la sfarsit)
+                 try {
+                        compareWindow = new CompareImagesWindow("image11.png", "image22.png");
+                    } 
+                 catch (Exception ex) {
+                        Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    compareWindow.setVisible(true);
+                
             }
         });
 

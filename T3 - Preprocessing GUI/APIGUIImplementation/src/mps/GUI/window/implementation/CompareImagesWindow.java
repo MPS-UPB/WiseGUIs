@@ -8,23 +8,43 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.awt.image.WritableRaster;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 
 import javax.swing.*;
 
-public class CompareImagesWindow extends JFrame {
+public final class CompareImagesWindow extends JFrame {
 
     private static final long serialVersionUID = 1L;
     Image firstImage;
     Image secondImage;
+    
     JPanel imagePanel;
     JPanel buttonsPanel;
     MainWindow mainWindow;
+    
+    boolean img2Selected = false;
+    boolean img1Selected = false;
 
-    public CompareImagesWindow(String imageFile1, String imageFile2) {
-
+    String imageFile1;
+    String imageFile2;
+    
+    public CompareImagesWindow(String imageFile1, String imageFile2) throws IOException {
 
         super("Compare images");
 
+        this.imageFile1 = imageFile1;
+        this.imageFile2 = imageFile2;
+        
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -65,7 +85,6 @@ public class CompareImagesWindow extends JFrame {
             }
         });
 
-
         setSize(400, 400);
 
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -78,9 +97,6 @@ public class CompareImagesWindow extends JFrame {
         setLocation(x, y);
         setResizable(false);
 
-
-
-
         ImageIcon sizedIcon1 = new ImageIcon(new ImageIcon(imageFile1)
                 .getImage().getScaledInstance(250, 250,
                 Image.SCALE_SMOOTH));
@@ -92,7 +108,6 @@ public class CompareImagesWindow extends JFrame {
         final JLabel labelImg1 = new JLabel(sizedIcon1);
         final JLabel labelImg2 = new JLabel(sizedIcon2);
 
-
         ImageIcon smallIcon1 = new ImageIcon(new ImageIcon(imageFile1)
                 .getImage().getScaledInstance(70, 70,
                 Image.SCALE_SMOOTH));
@@ -101,6 +116,10 @@ public class CompareImagesWindow extends JFrame {
                 .getImage().getScaledInstance(70, 70,
                 Image.SCALE_SMOOTH));
 
+        
+        final Image overlayImage = new ImageIcon(imageFile1).getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH);
+        final Image backgroundImage = new ImageIcon(imageFile2).getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH);
+        
         buttonsPanel = new JPanel();
         imagePanel = new JPanel();
 
@@ -138,21 +157,33 @@ public class CompareImagesWindow extends JFrame {
 
             @Override
             public void mouseClicked(MouseEvent arg0) {
-                // TODO Auto-generated method stub
-
-                if (imagePanel.getComponent(1).equals(labelImg2)) {
-                    System.out.println("schimb la imag 1");
+                //if compare button was pressed, none of the images are selected
+                // same for the other icon
+                if (!img1Selected && !img2Selected)
+                {
+                    img2Selected = true;
+                }
+                
+                if (img2Selected && !img1Selected) {
+                    
                     imagePanel.remove(imagePanel.getComponent(1));
+                    
+                    FadeOut fo = new FadeOut(backgroundImage, overlayImage);
+                    fo.setSize(250, 250);
+                    
+                    labelImg1.add(fo);
+                    fo.start();
+                    
                     imagePanel.add(labelImg1, 1);
+                    
                     revalidate();
                     repaint();
-
+                    
+                    img2Selected = false;
+                    img1Selected = true;
                 }
-
             }
         });
-
-
 
         imagesPanel.add(Box.createVerticalStrut(30));
         JLabel l2 = new JLabel(smallIcon2);
@@ -181,42 +212,123 @@ public class CompareImagesWindow extends JFrame {
 
             @Override
             public void mouseClicked(MouseEvent arg0) {
-                // TODO Auto-generated method stub
-
-                if (imagePanel.getComponent(1).equals(labelImg1)) {
-                    System.out.println("schimb la imag 2");
+                if (!img1Selected && !img2Selected)
+                {
+                    img1Selected = true;
+                }
+                
+                if (img1Selected && !img2Selected) {
+                    
                     imagePanel.remove(imagePanel.getComponent(1));
+                    
+                    FadeOut fo = new FadeOut(overlayImage, backgroundImage);
+                    fo.setSize(250, 250);
+                    fo.start();
+                    
+                    labelImg2.add(fo);
+                    
                     imagePanel.add(labelImg2, 1);
+                    
                     revalidate();
                     repaint();
-
+                    
+                    img1Selected = false;
+                    img2Selected = true;
                 }
 
             }
         });
 
-
-
         imagesPanel.add(Box.createVerticalStrut(30));
-
 
         imagePanel.add(imagesPanel, BorderLayout.WEST);
         imagePanel.add(labelImg2);
         imagePanel.add(Box.createVerticalGlue());
 
-
-
+        img2Selected = true;
+        
         myPanel.add(imagePanel, BorderLayout.NORTH);
 
         buttonsPanel.setLayout(new FlowLayout());
         buttonsPanel.setBorder(BorderFactory.createMatteBorder(2, 1, 1, 1, Color.GRAY));
-        JButton differenceButton = new JButton("Diff");
-        JButton intersectionButton = new JButton("Common");
-
-        buttonsPanel.add(differenceButton);
-        buttonsPanel.add(intersectionButton);
+        
+        JButton compareButton = new JButton("Compare");
+        
+        // to do : add functionalities to bottons
+        
+        compareButton.addMouseListener(diffListener);
+        
+        buttonsPanel.add(compareButton);
+        
         myPanel.add(buttonsPanel, BorderLayout.SOUTH);
     }
+    
+    private MouseListener diffListener = new MouseListener() {
+
+            @Override
+            public void mouseClicked(MouseEvent me) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent me) {
+            try {                
+                    Image img1 = ImageIO.read(new File(imageFile1)).getScaledInstance(250, 250, Image.SCALE_SMOOTH);
+                    Image img2 = ImageIO.read(new File(imageFile2)).getScaledInstance(250, 250, Image.SCALE_SMOOTH);
+                
+                    imagePanel.remove(imagePanel.getComponent(1));
+                    
+                   FadeOut fo = null;
+                    
+                    if (img1Selected)
+                    {
+                        fo = new FadeOut(img1, img2);
+                    } else
+                    {
+                        fo = new FadeOut(img2, img1);
+                    }
+                    
+                    img1Selected = false;
+                    img2Selected = false;
+                                            
+                    fo.setSize(250, 250);
+                    fo.setAlphaLimit(0.5f);
+                    fo.start();
+                    
+                    ImageIcon sizedIcon = new ImageIcon(new ImageIcon(imageFile2)
+                        .getImage().getScaledInstance(250, 250,
+                        Image.SCALE_SMOOTH));
+
+                    final JLabel labelImg = new JLabel(sizedIcon);
+                    
+                    labelImg.add(fo);
+                   
+                    imagePanel.add(labelImg, 1);
+                    
+                    revalidate();
+                    repaint();
+                                   
+            
+            } catch (IOException ex) {
+                Logger.getLogger(CompareImagesWindow.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent me) {
+            
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent me) {
+               
+            }
+
+            @Override
+            public void mouseExited(MouseEvent me) {
+                
+            }
+        };
+    
     /*
      public static void main(String... args) {
      CompareImagesWindow c = new CompareImagesWindow("image1.jpg", "image2.jpg");

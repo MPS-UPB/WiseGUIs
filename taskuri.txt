@@ -71,8 +71,7 @@ Luiza & Roxana:
 
 Liliana (tot ce tine de MainWindow):
 
-
-
+Am facut, dar nu pot testa pentru ca nu am operatie de execute de la voi si e destul de greu sa hardcodezi:
 	
 	3. In MainWindow, in panelul din dreapta , cuplurile "checkbox"+ poza trebuie generate dinamic, la
 apasarea butonului Update/daca este selectat checkboxul "ImmediateUpdate".
@@ -91,6 +90,9 @@ apasarea butonului Update/daca este selectat checkboxul "ImmediateUpdate".
 	5. De adaugat functionalitate butonului de "Compare" in care se verifica daca au fost selectate DOAR 2 poze din panelul din dreapta (Roxana a facut o metoda pentru asta, dar trebuie modificat codul, ca sa faca pentru cazul general - sa testeze daca sunt selectate ORICARE 2 poze din lista din dreapta).
 Daca da, atunci la afisarea ferestrei de comparare trebuie sa apara cele 2 imagini selectate ca icon-uri in stanga si prima poza in panelul central.
 
+
+A ramas de facut:
+
 	6. Legat de deschiderea si afisare imaginii in stanga:
 		- fisierele bmp nu se deschid (mie nu-mi afiseaza nimic)
 		- daca aleg o poza si apoi aleg alta, in panel nu se actualizeaza imaginea
@@ -98,6 +100,16 @@ Daca da, atunci la afisarea ferestrei de comparare trebuie sa apara cele 2 imagi
 
 
 	7. (Optional) fereastra principala sa fie mai mare si resizable
+
+	7' Trebuie sa permitem utilizatorului sa se razgandeasca si sa stearga din operatiile pe care le-a ales. Nu stiu sigur cum o sa facem asta, poate pastram un vector cu imaginile deja generate. O sa ma gandesc la asta. Roxana si Luiza trebuie sa va ganditi cum "ma anuntati" ca a fost stearsa o operatie si care operatie.
+
+
+	7'' In lista de parametri pentru o operatie va trebui sa retinem:
+	- fisierul de input
+	- fisierul de output
+	Care va fi cheia fiecaruia?
+	Propun ca pentru input sa avem <"inputImage", path> si pentru output <"outputImage", path> (eu asa le-am folosit in cod)
+
 
 
 

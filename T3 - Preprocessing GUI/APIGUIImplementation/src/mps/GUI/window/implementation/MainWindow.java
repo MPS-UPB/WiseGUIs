@@ -2,17 +2,11 @@ package mps.GUI.window.implementation;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
+import java.util.Hashtable;
 import java.util.List;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
-
-import sun.security.krb5.internal.crypto.CksumType;
-
+import javax.swing.border.BevelBorder;
 import mps.parser.implementation.Parser;
 
 /**
@@ -20,19 +14,15 @@ import mps.parser.implementation.Parser;
  * @author Liliana
  * @version Last modified by Roxana 11/15/2012
  */
-public class MainWindow extends JFrame {
+public class MainWindow extends JFrame{
 
     private static final long serialVersionUID = 1L;
     private JPanel basePanel;
     private JButton binarizationButton;
     private JButton browseButton;
     private JButton compareButton;
-    private JCheckBox compareCheckBox1;
-    private JCheckBox compareCheckBox2;
     private JPanel imagePanel;
     private JScrollPane imageScrollPane;
-    private JPanel jPanel1;
-    private JPanel jPanel2;
     private JPanel leftPanel;
     private JPanel newImgPanel;
     private JTextField pathTextField;
@@ -56,22 +46,33 @@ public class MainWindow extends JFrame {
      * Tipurile de executabile: rotate, crop, otsu etc.
      */
     List<Operation> execTypes;
+    /**
+     *  Vector cu operatiile care trebuie facute pe imagine
+     */
+    List<Operation> operations;
+    
+    /**
+     * Calea imaginii care va fi folosita la executie
+     */
+    String pathImage;
 
+    /**
+     * Lista perechilor checkBox - image 
+     */
+    Hashtable<JCheckBox, String> imageList;
+    
     public MainWindow() {
 
         super("Preprocesing GUI - Main Window");
 
-
         // execTypes = new ArrayList<Operation>();
-
-        //imaginile trebuie date dinamic - sau cream cate o fereastra de cmparare de fiecare data cand avem de comparat ceva?
-        //     compareWindow = new CompareImagesWindow("image1.jpg", "image2.jpg");
+        imageList = new Hashtable<JCheckBox, String>() ;
+        operations = new ArrayList<Operation>();
 
         initComponents();
 
         binarizationWindow = new BinarizationWindow(this);
         preprocessingWindow = new PreprocessingWindow(this);
-        //        compareWindow = new CompareWindow(this);
         setLocationRelativeTo(null);
         init();
     }
@@ -88,14 +89,10 @@ public class MainWindow extends JFrame {
         rightPanel = new JPanel();
         imageScrollPane = new JScrollPane();
         newImgPanel = new JPanel();
-        compareCheckBox1 = new JCheckBox();
-        jPanel1 = new JPanel();
-        compareCheckBox2 = new JCheckBox();
-        jPanel2 = new JPanel();
         updateCheckBox = new JCheckBox();
         updateButton = new JButton("Update");
         compareButton = new JButton("Compare");
-
+        
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(620, 550));
         addComponentListener(new ComponentAdapter() {
@@ -103,8 +100,6 @@ public class MainWindow extends JFrame {
                 formComponentResized(evt);
             }
         });
-
-
 
 
         final JFileChooser fileChooser = new JFileChooser();
@@ -121,6 +116,9 @@ public class MainWindow extends JFrame {
                             pathTextField.setText(fileChooser.getSelectedFile()
                                     .getAbsolutePath());
 
+                            // salvam calea catre imagine
+                            pathImage = pathTextField.getText();
+                            
                             // Incarcam imaginea in panel
                             int width = imagePanel.getSize().width;
                             int height = imagePanel.getSize().height;
@@ -138,7 +136,7 @@ public class MainWindow extends JFrame {
                 });
             }
         });
-
+     
         // facem disable butonul de update daca checkboxul este true
         updateCheckBox.addActionListener(new ActionListener() {
             @Override
@@ -152,6 +150,32 @@ public class MainWindow extends JFrame {
             }
         });
 
+        // la apasarea butonului de update se executa toate operatiile salvate
+        updateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        // sunt executate toate operatiile
+                        for (Operation oper : operations){             
+                            if(oper.getType() == 0){
+                                executePreprocesing(oper);
+                            }
+                            
+                            if(oper.getType() == 1){
+                                executeBinarization(oper);
+                            }
+                            imageScrollPane.setViewportView(newImgPanel);
+                            imageScrollPane.revalidate();
+                            imageScrollPane.repaint();
+                        }
+                        operations.clear();
+                    }
+                });
+            }
+        });
+        
         imagePanel.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
         imagePanel.setForeground(new Color(255, 255, 255));
 
@@ -170,6 +194,7 @@ public class MainWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 EventQueue.invokeLater(new Runnable() {
+                    @Override
                     public void run() {
                         binarizationWindow.setVisible(true);
 
@@ -230,28 +255,6 @@ public class MainWindow extends JFrame {
 
         newImgPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-        jPanel1.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-
-        GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-                jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                .addGap(0, 222, Short.MAX_VALUE));
-        jPanel1Layout.setVerticalGroup(
-                jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                .addGap(0, 144, Short.MAX_VALUE));
-
-        jPanel2.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
-
-        GroupLayout jPanel2Layout = new GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-                jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                .addGap(0, 226, Short.MAX_VALUE));
-        jPanel2Layout.setVerticalGroup(
-                jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                .addGap(0, 139, Short.MAX_VALUE));
-
         GroupLayout newImgPanelLayout = new GroupLayout(newImgPanel);
         newImgPanel.setLayout(newImgPanelLayout);
         newImgPanelLayout.setHorizontalGroup(
@@ -259,52 +262,38 @@ public class MainWindow extends JFrame {
                 .addGroup(newImgPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(newImgPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                .addGroup(newImgPanelLayout.createSequentialGroup()
-                .addComponent(compareCheckBox1)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addGroup(newImgPanelLayout.createSequentialGroup()
-                .addComponent(compareCheckBox2)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+                .addGroup(newImgPanelLayout.createSequentialGroup()))
                 .addContainerGap(39, Short.MAX_VALUE)));
+               
         newImgPanelLayout.setVerticalGroup(
                 newImgPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                 .addGroup(newImgPanelLayout.createSequentialGroup()
                 .addGroup(newImgPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                 .addGroup(newImgPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addGroup(newImgPanelLayout.createSequentialGroup()
-                .addGap(72, 72, 72)
-                .addComponent(compareCheckBox1)))
-                .addGroup(newImgPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                .addGroup(newImgPanelLayout.createSequentialGroup()
-                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addGroup(newImgPanelLayout.createSequentialGroup()
-                .addGap(61, 61, 61)
-                .addComponent(compareCheckBox2)))
+                .addGroup(newImgPanelLayout.createSequentialGroup())))
                 .addContainerGap(74, Short.MAX_VALUE)));
-
+               
         imageScrollPane.setViewportView(newImgPanel);
 
         updateCheckBox.setText("Immediate Update ");
         updateCheckBox.setActionCommand("Immediate Update ");
-        updateCheckBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                updateCheckBoxActionPerformed(evt);
-            }
-        });
-
 
         compareButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-
-                if (twoImagesSelected()) {
-
-                    compareWindow = new CompareImagesWindow("image1.jpg", "image2.jpg");
+                Enumeration<JCheckBox> enumKey=imageList.keys();
+                JCheckBox elem;
+                ArrayList<String> pictureSelected = new ArrayList<>();
+                while(enumKey.hasMoreElements()){
+                    elem = enumKey.nextElement();
+                    if (elem.isSelected()){
+                        pictureSelected.add(imageList.get(elem));              
+                    }
+                }
+                
+                if (pictureSelected.size() == 2) {
+                    compareWindow = new CompareImagesWindow(pictureSelected.get(0), pictureSelected.get(1));
                     compareWindow.setVisible(true);
                 }
             }
@@ -398,14 +387,11 @@ public class MainWindow extends JFrame {
          * Aici fac deosebirea tipurilor generale de executabile: preprocesare / binarizare
          */
         for (Operation execType : execTypes) {
-
             //tip preprocesare
             if (execType.getType() == 0) {
-
                 preprocessingWindow.addListElement(execType);
             } //tip binarizare
             else if (execType.getType() == 1) {
-
                 binarizationWindow.addListElement(execType);
             }
         }
@@ -416,18 +402,19 @@ public class MainWindow extends JFrame {
 
     /**
      * Metoda care primeste un set de operatii de preprocesare si le aplica pe
-     * imaginea orginara.
+     * imaginea originala.
      *
      * @param preprocOperations operatiile de preprocesare de executat
      */
     public void launchPreprocOperations(List<Operation> preprocOperations) {
-        /* TODO
-         * 
-         * Se parcurge vectorul de operatii;
-         * se completeaza lista de parametri ai fiecarei operatii cu numele fisierului de intrare;
-         * se lanseaza in executie operatia respectiva (operatie.execute())
-         * metoda execute() din clasa Operation va intoarce numele fisierului de iesire (cu tot cu calea unde se gaseste)
-         */
+        for (int i=0; i< preprocOperations.size(); i++){
+            execTypes.add(preprocOperations.get(i));
+            // Fisierul de input este pus in lista de parametri;
+            preprocOperations.get(i).getParamsList().put("inputImage", pathTextField.getText());
+            if(updateCheckBox.isSelected()){
+                executePreprocesing(preprocOperations.get(i));
+            }
+        }
     }   
 
     /**
@@ -438,35 +425,79 @@ public class MainWindow extends JFrame {
      */
     public void launchBinarizOperations(List<Operation> binarizOperations) {
         /* TODO
-         * 
-         * Se parcurge vectorul de operatii;
          * se completeaza lista de parametri ai fiecarei operatii cu numele fisierului de intrare;
-         * se lanseaza in executie operatia respectiva (operatie.execute())
-         * metoda execute() din clasa Operation va intoarce numele fisierului de iesire (cu tot cu calea unde se gaseste)
          */
+        
+        for (int i=0; i< binarizOperations.size(); i++){
+            execTypes.add(binarizOperations.get(i));
+            // TODO: de verificat partea cu fisierul de input
+            
+            if(updateCheckBox.isSelected()){
+                executeBinarization(binarizOperations.get(i));
+            }
+        }
+    }
+    
+    /**
+     * Metoda care primeste o operatie de preprocesare, o executa si updateaza
+     * panelul cu imaginea din stanga
+     * @param oper operatia de preprocesare de executat
+     */
+    private void executePreprocesing(Operation oper){
+        // Setam calea catre fisier in textBox
+        oper.execute();
+        pathTextField.setText(oper.getParamsList().get("outputImage"));
+
+        // salvam calea catre imagine
+        pathImage = pathTextField.getText();
+
+        // Incarcam imaginea in panel
+        int width = imagePanel.getSize().width;
+        int height = imagePanel.getSize().height;
+
+        ImageIcon myPicture = new ImageIcon(new ImageIcon(pathTextField.getText())
+            .getImage().getScaledInstance(width, height,
+            Image.SCALE_SMOOTH));
+        JLabel picLabel = new JLabel(myPicture);
+        picLabel.setSize(new Dimension(width, height));
+        imagePanel.removeAll();
+        imagePanel.add(picLabel);
+        MainWindow.this.repaint();
+    }
+    
+    /**
+     * Metoda care primeste o operatie de binarizare, o executa si updateaza
+     * panelul cu imaginea din stanga
+     * @param oper operatia de binarizare de executat
+     */
+    private void executeBinarization(Operation oper){
+        oper.execute();
+        JCheckBox box = new JCheckBox();
+        String path = oper.getParamsList().get("outputImage");
+        ImageIcon myPicture = new ImageIcon(new ImageIcon(path)
+            .getImage().getScaledInstance(imageScrollPane.getSize().width-70, 150,
+            Image.SCALE_SMOOTH));
+        JLabel label = new JLabel(myPicture);
+        int size = imageList.size();
+        label.setPreferredSize(new Dimension(imageScrollPane.getSize().width-70, 150));
+        label.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        box.setPreferredSize(new Dimension(20, 30));
+        JPanel containerPanel = new JPanel();
+        containerPanel.setSize(imageScrollPane.getSize().width-10,180);
+        //containerPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        containerPanel.setLocation(1, size*180+1);
+        containerPanel.add(box);
+        containerPanel.add(label);
+        imageList.put(box, path);
+        newImgPanel.setPreferredSize(new Dimension(containerPanel.getX(), newImgPanel.getHeight()+containerPanel.getY()));
+        newImgPanel.add(containerPanel);        
     }
     
      private void formComponentResized(ComponentEvent evt) {
     }
 
-    private void updateCheckBoxActionPerformed(ActionEvent evt) {
-        // TODO add your handling code here:
-    }
-
-    /**
-     * Metoda care verifica daca au fost selectate 2 imagini binare pentru
-     * comparare.
-     *
-     * @return rezultatul testului
-     */
-    private boolean twoImagesSelected() {
-
-        //TODO: cazul general - oricare 2 imagini selectate
-        return compareCheckBox1.isSelected() && compareCheckBox2.isSelected();
-    }
 
     public static void main(String args[]) {
-
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -474,13 +505,7 @@ public class MainWindow extends JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
@@ -491,4 +516,6 @@ public class MainWindow extends JFrame {
             }
         });
     }
+
+
 }

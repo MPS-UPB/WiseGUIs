@@ -30,13 +30,17 @@ public class ParametersWindow extends javax.swing.JFrame {
     ArrayList<JComboBox> combo;
     ArrayList<JSpinner> spinner;
     JLabel eroare1, eroare2;
-    //aici se vor adauga toate elementele grafice; indexul va corespunde indexului din params
-    //in functie de tipul elementului se va extrage informatia din elementul grafic - in OK
-    //si se va trece ca valoare in lista de parametri ai operatiei
+    
+    /*aici se vor adauga toate elementele grafice; indexul va corespunde indexului din params
+    in functie de tipul elementului se va extrage informatia din elementul grafic - in OK
+    si se va trece ca valoare in lista de parametri ai operatiei*/
     ArrayList<Component> graphicElements;
-
+    
+    /**
+     * Aceasta functie seteaza mesajele erorilor, culoarea si fontul lor si le seteaza sa nu fie afisate
+     */
     private void initializareErori() {
-        eroare1 = new JLabel("Trebuie sa completati campurile goale");
+        eroare1 = new JLabel("Trebuie sa completati toate campurile goale");
         eroare2 = new JLabel("Introduceti doar date valide(numere)");
         eroare1.setForeground(new java.awt.Color(255, 0, 0));
         eroare2.setForeground(new java.awt.Color(255, 0, 0));
@@ -45,28 +49,35 @@ public class ParametersWindow extends javax.swing.JFrame {
         eroare1.setVisible(false);
         eroare2.setVisible(false);
     }
-
+    
+    /**
+     * Constructorul clasei de parametri
+     * @param window reprezinta fereastra anterioara(de la care s-a ajuns aici)
+     * @param op este un obiect al clasei operatii, obiect care este descris in clasa lui
+     */
     public ParametersWindow(SecondaryWindow window, Operation op) {
 
         initComponents();
         setTitle(op.getName());
-
         this.motherWindow = window;
 
         text = new ArrayList<JTextField>();
         combo = new ArrayList<JComboBox>();
         spinner = new ArrayList<JSpinner>();
+        
         graphicElements = new ArrayList<Component>();
 
         initializareErori();
-        generateFields(op);
+        generateFields(op); //in functie de numarul de parametrii din op se genereaza dinamic fereastra
     }
-
+    /**
+     * metoda generata automat de java swing pentru initializare
+     */
     private void initComponents() {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setResizable(false);
-        setLocationRelativeTo(null);
+        setResizable(false);    //fereastra nu poate fi largita/micsorata cu mouse-ul
+        setLocationRelativeTo(null); //pozitionarea ferestrei in centrul ecranului
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -80,24 +91,36 @@ public class ParametersWindow extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * aceasta metoda specifica ce se intampla la apasarea butonului OK.
+     * Se preiau datele introduse in TextField, ComboBox si Spinner (doar daca au fost introduse corect, altfel se afisaza un 
+     * mesaj de eroare) si se transmit catre fereastra secundara(anterioara)
+     * @param evt este evenimentu ce reprezinta click-ul pe OK
+     */
     private void okClicked(java.awt.event.MouseEvent evt) {
 
         int k, okay1 = 1, okay2 = 1;
         Pattern p = Pattern.compile("[^0-9]");
+        //analizez fiecare "casuta" in care se pot introduce parametri
         for (k = 0; k < text.size(); k++) {
+            //daca am gasit un camp necompletat marchez eroarea
             if (text.get(k).getText().equals("")) {
                 okay1 = 0;
             }
+            //daca utilizatorul a introdus caractere nepermise, marchez si a doua eroare
             if (p.matcher(text.get(k).getText()).find()) {
                 okay2 = 0;
             }
         }
         if (okay1 == 0) {
             eroare1.setVisible(true);
-        } else if (okay2 == 0) {
+        } 
+        else if (okay2 == 0) {
             eroare2.setVisible(true);
             eroare1.setVisible(false);
-        } else {
+        }
+        //daca nu sunt erori(datele au fost introduse corect)
+        else {
             //intorc referinta crtOp
             int i = 0;
 
@@ -107,31 +130,31 @@ public class ParametersWindow extends javax.swing.JFrame {
             for (Map.Entry<String, String> entry : params.entrySet()) {
 
                 if (entry.getValue().equals("JTextField")) {
-
                     crtOp.getParamsValues().put(entry.getKey(), ((JTextField) graphicElements.get(i)).getText());
                 }
 
                 if (entry.getValue().equals("JComboBox")) {
-
                     //aici s-ar putea sa nu mearga cast-ul
                     crtOp.getParamsValues().put(entry.getKey(), (String) ((JComboBox) graphicElements.get(i)).getSelectedItem());
                 }
 
                 if (entry.getValue().equals("JSpinner")) {
-
                     crtOp.getParamsValues().put(entry.getKey(), ((JSpinner) graphicElements.get(i)).getValue().toString());
                 }
 
                 i++;
             }
-
             motherWindow.addExec(crtOp);
+            //pun erorile pe fals, deoarece daca se mai intra o data in aceasta fereastra, ele nu trebuie afisate
             eroare1.setVisible(false);
             eroare2.setVisible(false);
             dispose();
         }
     }
-
+    /**
+     * ne intoarce la fereastra precedenta fara niciun efect(se ignora orice date introduse de utilizatori)
+     * @param evt este evenimentul ce reprezinta apasarea cu mosue-ul a butonului 'cancel'
+     */
     private void cancelClicked(MouseEvent evt) {
 
         /*
@@ -150,19 +173,21 @@ public class ParametersWindow extends javax.swing.JFrame {
         dispose();
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    // End of variables declaration//GEN-END:variables
-    //map dummy de transmis
+    /**
+     * In functie de obiectul op (care contine mai multe informatii legate de numarul de parametrii si tipul lor) afisam dinamic
+     * butoanele in pagina
+     * @param op este obiectul de operatii
+     */
     void generateFields(Operation op) {
 
         params = op.getParamsList();
         crtOp = op;
 
+        //facem un tabel dinamic cu 2 coloane si numar variabil de linii depinzand de numarul de parametri primit
         this.setLayout(new GridLayout(params.size() + 1 + 1, 2, 10, 35));
 
         JButton okButton = new JButton("OK");
         JButton cancelButton = new JButton("Cancel");
-
 
         this.add(okButton, params.size(), 0);
         this.add(cancelButton, params.size(), 1);

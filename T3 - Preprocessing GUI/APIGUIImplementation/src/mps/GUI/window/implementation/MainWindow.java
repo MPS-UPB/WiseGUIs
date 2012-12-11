@@ -287,7 +287,7 @@ public class MainWindow extends JFrame{
             public void actionPerformed(ActionEvent arg0) {
                 Enumeration<JCheckBox> enumKey=imageList.keys();
                 JCheckBox elem;
-                ArrayList<String> pictureSelected = new ArrayList<>();
+                ArrayList<String> pictureSelected = new ArrayList<String>();
                 while(enumKey.hasMoreElements()){
                     elem = enumKey.nextElement();
                     if (elem.isSelected()){

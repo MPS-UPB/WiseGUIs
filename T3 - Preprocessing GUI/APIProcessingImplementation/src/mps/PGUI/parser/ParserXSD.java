@@ -1,6 +1,7 @@
 package mps.PGUI.parser;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -9,10 +10,46 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import com.sun.xml.xsom.XSSchemaSet;
+import com.sun.xml.xsom.parser.XSOMParser;
 
 public class ParserXSD {
 	
 
+	public static void parseXSDFile(String fileName){
+		XSOMParser parser = new XSOMParser();
+		try {
+			parser.parse( new File(fileName));
+			XSSchemaSet sset = parser.getResult();
+			
+		/*	Iterator<XSSchema> itr = sset.iterateSchema();
+			while( itr.hasNext() ) {
+			  XSSchema s = (XSSchema)itr.next();
+
+			  System.out.println("Target namespace: "+s.getTargetNamespace());
+
+			  Iterator<XSElementDecl> jtr = s.iterateElementDecls();
+			  while( jtr.hasNext() ) {
+			    XSElementDecl e = (XSElementDecl)jtr.next();
+
+			    System.out.print( e.getName() );
+			    if( e.isAbstract() )
+			      System.out.print(" (abstract)");
+			    System.out.println();
+			  }
+			  
+			}*/
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	public static void parse(File xmlFile){
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder;
@@ -63,8 +100,8 @@ public class ParserXSD {
 		
 	}
 	public static void main(String []args){
-		parse(new File("rotate.xsd"));
-		
+		//parse(new File("rotate.xsd"));
+		parseXSDFile("rotate.xsd");
 		//un map cu valori pentru gui : ex <unghi,JSpinner>
 	}
 	

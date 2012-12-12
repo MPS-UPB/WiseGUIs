@@ -8,6 +8,7 @@ package mps.GUI.window.implementation;
  *
  * @author Liz
  */
+import mps.parser.implementation.Operation;
 import javax.swing.*;
 
 import java.awt.*;

@@ -1,0 +1,398 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package mps.parser.implementation;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import com.sun.xml.xsom.*;
+import mps.parser.implementation.SimpleTypeParameter;
+import mps.parser.implementation.ComplexTypeParameter;
+
+/**
+ *
+ * @author Liz
+ */
+public class Operation {
+
+    /**
+     * Tipul general al executabilului: de procesare sau de binarizare. 0 pentru
+     * preprocesare sau 1 pentru binarizare
+     */
+    private int type;
+    /**
+     * Numele executabilului.
+     */
+    private String name;
+    /**
+     * Descrierea executabilului.
+     */
+    private String toolTip;
+    
+    
+    //!!!!!!!!!!!!!!!!!!!!!!!!!s
+    //nu e foarte eficient sa tinem toate informatiile despre un xsd in fiecare operatie
+    //mai bine am avea un tip abstract de operatie
+    //si mai multe tipuri mici, care vor face referire la tipul abstract
+    //desi s-ar putea sa fie tot aia pana la urma...
+    
+    /**
+     * Lista de parametri asociata operatiei.
+     */
+    private ArrayList<SimpleTypeParameter> parameters;
+    /**
+     * Tag-ul de baza.
+     */
+    private String rootElement;
+    /**
+     * Tagul de baza al sectiunii de descriere executabil.
+     */
+    private String rootDescription;
+    /**
+     * Tag-urile si valorile asociate pentru descrierea executabilului.
+     */
+    private LinkedHashMap<String, String> description;
+    /**
+     * Calea catre executabil.
+     */
+    private String execFolder = "..\\execs";
+    /**
+     * Calea catre folder-ul in care se vor depozita XML-urile.
+     */
+    private String XMLFolder = "..\\XMLs";    
+    
+    
+
+    public Operation() {
+
+        //Initializari
+        parameters = new ArrayList<SimpleTypeParameter>();
+        description = new LinkedHashMap<String, String>();
+    }
+
+    public Operation(int tip, String nume) {
+
+        this();
+        type = tip;
+        name = nume;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+        /**
+     * @return the toolTip
+     */
+    public String getToolTip() {
+        return toolTip;
+    }
+
+    /**
+     * @param toolTip the toolTip to set
+     */
+    public void setToolTip(String toolTip) {
+        this.toolTip = toolTip;
+    }
+
+    /**
+     * @return the parameters
+     */
+    public ArrayList<SimpleTypeParameter> getParameters() {
+        return parameters;
+    }
+
+    /**
+     * @param parameters the parameters to set
+     */
+    public void setParameters(ArrayList<SimpleTypeParameter> parameters) {
+        this.parameters.addAll(parameters);
+    }
+
+    /**
+     * @return the rootElement
+     */
+    public String getRootElement() {
+        return rootElement;
+    }
+
+    /**
+     * @param rootElement the rootElement to set
+     */
+    public void setRootElement(String rootElement) {
+        this.rootElement = rootElement;
+    }
+
+    /**
+     * @return the rootDescription
+     */
+    public String getRootDescription() {
+        return rootDescription;
+    }
+
+    /**
+     * @param rootDescription the rootDescription to set
+     */
+    public void setRootDescription(String rootDescription) {
+        this.rootDescription = rootDescription;
+    }
+
+    /**
+     * @return the description
+     */
+    public LinkedHashMap<String, String> getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(LinkedHashMap<String, String> description) {
+        this.description.putAll(description);
+    }
+
+    /**
+     * @return the execFolder
+     */
+    public String getExecFolder() {
+        return execFolder;
+    }
+
+    /**
+     * @param execFolder the execFolder to set
+     */
+    public void setExecFolder(String execFolder) {
+        this.execFolder = execFolder;
+    }
+
+    /**
+     * @return the XMLFolder
+     */
+    public String getXMLFolder() {
+        return XMLFolder;
+    }
+
+    /**
+     * @param XMLFolder the XMLFolder to set
+     */
+    public void setXMLFolder(String XMLFolder) {
+        this.XMLFolder = XMLFolder;
+    }
+
+    /**
+     * Metoda care executa programul, pe imaginea originara, cu un anumit set de
+     * parametri.
+     *
+     * @return intoarce fisierul rezultat (TODO)
+     */
+    public String execute() {
+        
+        String delims = ".";
+        String[] tokens = parameters.get(parameters.indexOf("inputFile")).getValue().split(delims);
+        String outputPath;
+        
+        //adaugare parametru fisier de iesire
+        if (type == 0) {
+            
+           outputPath = tokens[0] + "_preproc_output." + tokens[1];  
+            
+        }
+        //output in fisere dictincte, pentru executabilele de binarizare
+        else {       
+            
+            outputPath = tokens[0] + "_binariz_output" + hash() + "." + tokens[1];           
+        }
+            parameters.get(parameters.indexOf("outputFile")).setValue(outputPath);
+            String localXMLPath = generateXML();
+        
+        try {              
+            
+            //mai bine ar fi fost sa se citeasca executabilele din folder si apoi sa se dea calea absoluta ca param
+            String thisExecPath = getExecFolder() + "\\ " + getName() + ".exe";
+            
+            //lansare in executie
+            //defineste proces
+            ProcessBuilder exec = new ProcessBuilder(thisExecPath, localXMLPath);
+            //lanseaza proces
+            Process proc = exec.start();
+            //asteapta sa se termine executia programului
+            //nu e prea eficient; poate fi optimizat ulterior, din main window:
+            //se apeleaza execute() pe fiecare operatie, care doar lanseaza in executie programele
+            //apoi, inainte de a afisa imeginile rezultat in partea dreapta, se verifica daca procesul s-a terminat (tot cu waitFor() apelat pe undeva)
+            //se tine o referinta la proces in clasa Operatie
+            //inainte de a afisa imaginile rezultat se parcurge vectorul de operatii lansate in executie si se verifica daca procesul respectiv s-a incheiat, apelandu-se waitFor()
+            proc.waitFor();  
+            
+            //sterg fisierul XML generat anterior
+            new File(localXMLPath).delete();
+            
+        } catch (IOException ex) {
+            Logger.getLogger(Operation.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        catch (InterruptedException ex) {            
+            
+        }
+        
+         return outputPath;
+    }
+
+    /**
+     * Metoda care genereaza un fisier XML cu toti parametrii specifici unui
+     * executabil.
+     *
+     * @return fisierul XML generat (TODO)
+     */
+    public String generateXML() {        
+                
+         //fisierul XML se va genera intr-un folder separat de cel cu executabilele
+         String thisXMLPath = getXMLFolder() + "\\ " + getName() + ".xml";
+                
+         //iau fiecare parametru si trec in tag-uri
+         File file = new File(thisXMLPath);
+         BufferedWriter writer;
+        try {
+            
+            writer = new BufferedWriter(new FileWriter(file));
+            
+            //urmez structura documentului
+            
+            //tag-ul task
+            writer.write("<" + getRootElement() + ">");
+            
+            writer.write("<"+ getRootDescription() + ">");
+            
+            //descrierea executabilului
+            for (Map.Entry<String,String> entry : getDescription().entrySet()) {
+                
+                writer.write("<" + entry.getKey() + ">" + entry.getValue() + "<" + entry.getKey() + "/>");
+            } 
+            
+            writer.write("<"+ getRootDescription() + "/>");
+            
+            //lista de parametri
+            
+            for (SimpleTypeParameter param : getParameters()) {
+            
+                //daca elementul e de tip simplu
+                if (!(param instanceof ComplexTypeParameter)) {
+                    
+                    writer.write("<" + param.getName() + ">");
+                    writer.write(param.getValue());
+                    writer.write("<" + param.getName() + "/>");
+                }
+                
+                //daca este element de tip complex
+               else {
+                    
+                    ComplexTypeParameter complexParam = (ComplexTypeParameter)param;
+                    
+                    //tag-ul
+                    
+                    writer.write("<" + complexParam.getName());
+                    
+                    //atribute
+                    
+                    ArrayList<Attribute> attributes = complexParam.getAttributes();
+                    
+                    for (Attribute attribute : attributes) {
+                        
+                        //daca valoarea atributului nu este nula, inseamna ca:
+                        //1. este required
+                        //2. nu este required, dar valoarea lui a fost completata in fereastra de parametri
+                        if (attribute.getValue() != null)
+                            writer.write(" " + attribute.getName() + "=" + attribute.getValue());
+                    }
+                    
+                    writer.write(">");
+                    
+                    //se scrie valoarea efectiva a parametrului
+                    //daca tag-ul e de tip empty, atunci valoarea ramane null
+                    //elementele de tip simplu nu pot fi empty (cred) !!!!!!!!!!!!!!!!!
+                    
+                    //!!!!!!!!!!!!!!!
+                    //specificare inputFile si outputFile:
+                    //acesti parametri sunt tratati la fel ca toti ceilalti
+                    //ei reprezinta tag-uri vide, deci valorile lor vor ramane null                
+                    
+                    if (complexParam.getValue() != null)
+                        writer.write(complexParam.getValue());
+                    
+                    writer.write("<" + complexParam.getName() + "/>");
+                }
+            }            
+            
+            writer.write("<" + getRootElement() + "/>");
+            
+        } catch (IOException ex) {
+            Logger.getLogger(Operation.class.getName()).log(Level.SEVERE, null, ex);
+        }           
+         
+         return thisXMLPath;
+    }
+
+    /**
+     * Metoda care genereaza o copie a instantei Operation curente.
+     *
+     * @return o noua instanta Operation, avand campuri cu aceleasi valori ca
+     * ale instantei curente
+     */
+    public Operation copy() {
+
+        Operation newOp = new Operation();
+
+        //copiere valori campuri
+        newOp.setType(this.getType());
+        newOp.setName(this.getName());
+        newOp.setToolTip(this.getToolTip());
+        newOp.setExecFolder(this.getExecFolder());
+        newOp.setXMLFolder(this.getXMLFolder());
+        newOp.setDescription(this.getDescription());
+        newOp.setParameters(this.getParameters());
+        newOp.setRootDescription(this.getRootDescription());
+        newOp.setRootElement(this.getRootElement());
+
+        return newOp;
+    }
+    
+    public int hash() {
+        
+        String concat = new String();
+        
+        for (SimpleTypeParameter param: parameters) {
+            
+            if (param.getValue() != null)
+                concat += param.getValue(); 
+            
+            if (param instanceof ComplexTypeParameter) {
+                
+                ComplexTypeParameter complexParam = (ComplexTypeParameter)param;
+                for (Attribute attribute : complexParam.getAttributes()) {
+                    
+                    concat += attribute.getValue();
+                }
+            }
+        }
+        
+        return concat.hashCode();
+    }
+}

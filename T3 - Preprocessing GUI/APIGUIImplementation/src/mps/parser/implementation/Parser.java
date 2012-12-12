@@ -5,11 +5,10 @@ import com.sun.xml.xsom.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-
+import mps.parser.implementation.SimpleTypeRestriction;
 
 import org.xml.sax.SAXException;
 
-import mps.GUI.window.implementation.Operation;
 
 public class Parser {
 
@@ -203,7 +202,7 @@ public class Parser {
 		Operation op2 = new Operation(0,"crop");
 		Operation op3 = new Operation(1,"otsu1");
 		Operation op4 = new Operation(1,"otsu2");
-	
+                /*
 		op1.getParamsList().put("Angle", "JSpinner");
 		op1.getParamsList().put("Some param ", "JComboBox");
 		op1.getParamsList().put("Other param", "JTextField");
@@ -216,6 +215,7 @@ public class Parser {
 		op4.getParamsList().put("Angle", "JSpinner");
 		op4.getParamsList().put("Some param ", "JComboBox");
 		op4.getParamsList().put("Other param", "JTextField");
+                */
 		ops.add(op1);
 		ops.add(op2);
 		ops.add(op3);
@@ -231,13 +231,4 @@ public class Parser {
 
 }
 
-class SimpleTypeRestriction{
-    public String[] enumeration = null;
-    public String maxValue = null;
-    public String minValue = null;
-    public String length = null;
-    public String maxLength = null;
-    public String minLength = null;
-    public String pattern = null;
-    public String totalDigits = null;
-}
+

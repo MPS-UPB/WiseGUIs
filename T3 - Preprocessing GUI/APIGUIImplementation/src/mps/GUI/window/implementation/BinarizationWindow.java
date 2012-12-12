@@ -1,11 +1,13 @@
 package mps.GUI.window.implementation;
 
+import mps.parser.implementation.Operation;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
@@ -107,8 +109,8 @@ public class BinarizationWindow extends SecondaryWindow {
 
                 //Se elimina elementul selectat din lista din stanga
                 String selectedElement = (String) jChoicesModel.elementAt(selectedIndex);
-                jChoicesModel.removeElement(selectedElement);
-                currentSelection.remove(selectedIndex);
+                jChoicesModel.removeElement(selectedElement);                
+                mainWindow.removeBinarization(currentSelection.remove(selectedIndex));
             }
         }
     }
@@ -124,8 +126,13 @@ public class BinarizationWindow extends SecondaryWindow {
         this.setVisible(false);
 
         //Vechea selectie devine noul set de executabile selectate 
-        oldSelection.clear();
-        oldSelection.addAll(currentSelection);
+        ArrayList<Operation> aux = new ArrayList<Operation>();
+        aux.addAll(oldSelection);
+        
+        oldSelection.clear();        
+        oldSelection.addAll(currentSelection);        
+       
+        currentSelection.removeAll(aux);
         //Se transfera in fereastra principala lista cu executabilele de binarizare ce trebuie aplicate imaginii
         mainWindow.launchBinarizOperations(currentSelection);
     }

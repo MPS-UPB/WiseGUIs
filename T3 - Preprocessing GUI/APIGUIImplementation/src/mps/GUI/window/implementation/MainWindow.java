@@ -1,5 +1,6 @@
 package mps.GUI.window.implementation;
 
+import mps.parser.implementation.Operation;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
@@ -425,7 +426,7 @@ public class MainWindow extends JFrame{
         for (int i=0; i< preprocOperations.size(); i++){
             execTypes.add(preprocOperations.get(i));
             // Fisierul de input este pus in lista de parametri;
-            preprocOperations.get(i).getParamsList().put("inputImage", pathTextField.getText());
+            preprocOperations.get(i).getParameters().get(preprocOperations.get(i).getParameters().indexOf("inputFile")).setValue(pathTextField.getText());
             if(updateCheckBox.isSelected()){
                 executePreprocesing(preprocOperations.get(i));
             }
@@ -461,7 +462,7 @@ public class MainWindow extends JFrame{
     private void executePreprocesing(Operation oper){
         // Setam calea catre fisier in textBox
         oper.execute();
-        pathTextField.setText(oper.getParamsList().get("outputImage"));
+        pathTextField.setText(oper.getParameters().get(oper.getParameters().indexOf("outputImage")).getValue());
 
         // salvam calea catre imagine
         pathImage = pathTextField.getText();
@@ -488,7 +489,7 @@ public class MainWindow extends JFrame{
     private void executeBinarization(Operation oper){
         oper.execute();
         JCheckBox box = new JCheckBox();
-        String path = oper.getParamsList().get("outputImage");
+        String path = oper.getParameters().get(oper.getParameters().indexOf("outputFile")).getValue();
         ImageIcon myPicture = new ImageIcon(new ImageIcon(path)
             .getImage().getScaledInstance(imageScrollPane.getSize().width-70, 150,
             Image.SCALE_SMOOTH));

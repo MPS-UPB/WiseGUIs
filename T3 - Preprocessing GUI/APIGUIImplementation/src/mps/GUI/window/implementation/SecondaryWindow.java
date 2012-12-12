@@ -4,6 +4,7 @@
  */
 package mps.GUI.window.implementation;
 
+import mps.parser.implementation.Operation;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -204,9 +205,6 @@ public abstract class SecondaryWindow extends JFrame {
         //Operatia se va adauga listei curente de executabile; 
         //doar la apasarea butonului "OK" va fi transmisa mai departe in fereastra principala, spre a fi lansata in executie
         currentSelection.add(op);
-
-        //Pentru debugging
-        System.out.println(op.getParamsValues().toString());
 
         //Executabilul ales din stanga trece in lista din dreapta
         changeLists();

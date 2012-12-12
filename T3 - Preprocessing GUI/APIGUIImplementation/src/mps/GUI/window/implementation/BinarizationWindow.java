@@ -109,7 +109,7 @@ public class BinarizationWindow extends SecondaryWindow {
 
                 //Se elimina elementul selectat din lista din stanga
                 String selectedElement = (String) jChoicesModel.elementAt(selectedIndex);
-                jChoicesModel.removeElement(selectedElement);                
+                jChoicesModel.removeElement(selectedElement);
                 mainWindow.removeBinarization(currentSelection.remove(selectedIndex));
             }
         }
@@ -128,10 +128,10 @@ public class BinarizationWindow extends SecondaryWindow {
         //Vechea selectie devine noul set de executabile selectate 
         ArrayList<Operation> aux = new ArrayList<Operation>();
         aux.addAll(oldSelection);
-        
-        oldSelection.clear();        
-        oldSelection.addAll(currentSelection);        
-       
+
+        oldSelection.clear();
+        oldSelection.addAll(currentSelection);
+
         currentSelection.removeAll(aux);
         //Se transfera in fereastra principala lista cu executabilele de binarizare ce trebuie aplicate imaginii
         mainWindow.launchBinarizOperations(currentSelection);

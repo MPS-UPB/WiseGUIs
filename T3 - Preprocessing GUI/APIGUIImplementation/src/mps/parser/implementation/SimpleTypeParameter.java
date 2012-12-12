@@ -10,30 +10,38 @@ import java.util.ArrayList;
  *
  * @author Liz
  */
-
 public class SimpleTypeParameter {
-    
+
     /**
      * Numele tag-ului asociat parametrului.
      */
     private String name;
     /**
-     * Tipul de baza (xs:...), luat direct din declaratia elementului sau din restrictia de tip asociata tipului
+     * Tipul de baza (xs:...), luat direct din declaratia elementului sau din
+     * restrictia de tip asociata tipului
      */
-    private String baseType;   
+    private String baseType;
     /**
      * Lista de restrictii asociate tipului parametrului.
      */
-    private ArrayList<SimpleTypeRestriction> restrictions;
+    private SimpleTypeRestriction restrictions;
     /**
      * Valoarea efectiva a parametrului.
      */
     private String value;
-    
-    SimpleTypeParameter() {
-        
+
+    public SimpleTypeParameter() {
+
         value = null;
-    }    
+        restrictions = new SimpleTypeRestriction();
+    }
+
+    public SimpleTypeParameter(String name) {
+
+        this.name = name;
+        value = null;
+        restrictions = new SimpleTypeRestriction();
+    }
 
     /**
      * @return the name
@@ -66,15 +74,15 @@ public class SimpleTypeParameter {
     /**
      * @return the restrictions
      */
-    public ArrayList<SimpleTypeRestriction> getRestrictions() {
+    public SimpleTypeRestriction getRestrictions() {
         return restrictions;
     }
 
     /**
      * @param restrictions the restrictions to set
      */
-    public void setRestrictions(ArrayList<SimpleTypeRestriction> restrictions) {
-        this.restrictions.addAll(restrictions);
+    public void setRestrictions(SimpleTypeRestriction restrictions) {
+        this.restrictions = restrictions;
     }
 
     /**
@@ -90,20 +98,26 @@ public class SimpleTypeParameter {
     public void setValue(String value) {
         this.value = value;
     }
-    
+
     @Override
-    public boolean equals(Object name) {
-        
-        return this.name == (String)name;
+    public boolean equals(Object obj) {
+
+        return this.name.equals(((SimpleTypeParameter) obj).getName());
     }
-    
+
     public SimpleTypeParameter copy() {
-        
+
         SimpleTypeParameter clone = new SimpleTypeParameter();
         clone.setName(this.getName());
         clone.setBaseType(this.getBaseType());
         clone.setRestrictions(this.getRestrictions());
-        
+
         return clone;
+    }
+
+    @Override
+    public String toString() {
+
+        return getName() + " " + getBaseType() + " " + getValue();
     }
 }

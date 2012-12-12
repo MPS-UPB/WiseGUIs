@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * @author Liz
  */
 public class ComplexTypeParameter extends SimpleTypeParameter {
-    
+
     /**
      * Lista de atribute asociata tipului complex al parametrului.
      */

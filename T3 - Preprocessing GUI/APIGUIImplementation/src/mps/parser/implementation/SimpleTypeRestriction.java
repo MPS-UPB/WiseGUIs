@@ -8,8 +8,8 @@ package mps.parser.implementation;
  *
  * @author Liz
  */
-class SimpleTypeRestriction{
-    
+public class SimpleTypeRestriction {
+
     public String[] enumeration = null;
     public String maxValue = null;
     public String minValue = null;
@@ -18,4 +18,7 @@ class SimpleTypeRestriction{
     public String minLength = null;
     public String pattern = null;
     public String totalDigits = null;
+
+    public SimpleTypeRestriction() {
+    }
 }

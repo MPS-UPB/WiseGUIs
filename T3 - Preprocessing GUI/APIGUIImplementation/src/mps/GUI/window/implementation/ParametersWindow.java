@@ -20,25 +20,29 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 import javax.swing.border.EmptyBorder;
+import mps.parser.implementation.SimpleTypeParameter;
+import mps.parser.implementation.ComplexTypeParameter;
+import mps.parser.implementation.SimpleTypeRestriction;
+import java.util.ListIterator;
 
 //creez de fiecare data o fereastra noua? cam da
 public class ParametersWindow extends javax.swing.JFrame {
 
     Operation crtOp;
     SecondaryWindow motherWindow;
-    LinkedHashMap<String, String> params;//aici am declarat
+    ArrayList<SimpleTypeParameter> params;//aici am declarat
     ArrayList<JTextField> text;
     ArrayList<JComboBox> combo;
     ArrayList<JSpinner> spinner;
     JLabel eroare1, eroare2;
-    
     /*aici se vor adauga toate elementele grafice; indexul va corespunde indexului din params
-    in functie de tipul elementului se va extrage informatia din elementul grafic - in OK
-    si se va trece ca valoare in lista de parametri ai operatiei*/
+     in functie de tipul elementului se va extrage informatia din elementul grafic - in OK
+     si se va trece ca valoare in lista de parametri ai operatiei*/
     ArrayList<Component> graphicElements;
-    
+
     /**
-     * Aceasta functie seteaza mesajele erorilor, culoarea si fontul lor si le seteaza sa nu fie afisate
+     * Aceasta functie seteaza mesajele erorilor, culoarea si fontul lor si le
+     * seteaza sa nu fie afisate
      */
     private void initializareErori() {
         eroare1 = new JLabel("Trebuie sa completati toate campurile goale");
@@ -50,11 +54,13 @@ public class ParametersWindow extends javax.swing.JFrame {
         eroare1.setVisible(false);
         eroare2.setVisible(false);
     }
-    
+
     /**
      * Constructorul clasei de parametri
+     *
      * @param window reprezinta fereastra anterioara(de la care s-a ajuns aici)
-     * @param op este un obiect al clasei operatii, obiect care este descris in clasa lui
+     * @param op este un obiect al clasei operatii, obiect care este descris in
+     * clasa lui
      */
     public ParametersWindow(SecondaryWindow window, Operation op) {
 
@@ -65,12 +71,13 @@ public class ParametersWindow extends javax.swing.JFrame {
         text = new ArrayList<JTextField>();
         combo = new ArrayList<JComboBox>();
         spinner = new ArrayList<JSpinner>();
-        
+
         graphicElements = new ArrayList<Component>();
 
         initializareErori();
         generateFields(op); //in functie de numarul de parametrii din op se genereaza dinamic fereastra
     }
+
     /**
      * metoda generata automat de java swing pentru initializare
      */
@@ -93,9 +100,11 @@ public class ParametersWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     /**
-     * aceasta metoda specifica ce se intampla la apasarea butonului OK.
-     * Se preiau datele introduse in TextField, ComboBox si Spinner (doar daca au fost introduse corect, altfel se afisaza un 
-     * mesaj de eroare) si se transmit catre fereastra secundara(anterioara)
+     * aceasta metoda specifica ce se intampla la apasarea butonului OK. Se
+     * preiau datele introduse in TextField, ComboBox si Spinner (doar daca au
+     * fost introduse corect, altfel se afisaza un mesaj de eroare) si se
+     * transmit catre fereastra secundara(anterioara)
+     *
      * @param evt este evenimentu ce reprezinta click-ul pe OK
      */
     private void okClicked(java.awt.event.MouseEvent evt) {
@@ -115,36 +124,45 @@ public class ParametersWindow extends javax.swing.JFrame {
         }
         if (okay1 == 0) {
             eroare1.setVisible(true);
-        } 
-        else if (okay2 == 0) {
+        } else if (okay2 == 0) {
             eroare2.setVisible(true);
             eroare1.setVisible(false);
-        }
-        //daca nu sunt erori(datele au fost introduse corect)
+        } //daca nu sunt erori(datele au fost introduse corect)
         else {
             //intorc referinta crtOp
-            int i = 0;
-
             Collections.reverse(graphicElements);
 
             //completez parametrii
-            for (Map.Entry<String, String> entry : params.entrySet()) {
+            for (int i = 2; i < params.size(); i++) {
 
-                if (entry.getValue().equals("JTextField")) {
-                    crtOp.getParamsValues().put(entry.getKey(), ((JTextField) graphicElements.get(i)).getText());
+                SimpleTypeParameter param = params.get(i);
+
+
+                //caz special - cand parametrul are restrictie de tip enumeration
+                if (param.getRestrictions().enumeration != null) {
+
+                    param.setValue(((JComboBox) graphicElements.get(i - 2)).getSelectedItem().toString());
+                } else {
+
+                    String type = param.getBaseType();
+
+                    if (type.equals("decimal") || type.equals("integer") || type.equals("int")
+                            || type.equals("negativeInteger") || type.equals("nonNegativeInteger")
+                            || type.equals("nonPositiveInteger") || type.equals("positiveInteger")
+                            || type.equals("float") || type.equals("double")) {
+
+
+                        param.setValue(((JSpinner) graphicElements.get(i - 2)).getValue().toString());
+                    }
+
+                    if (type.equals("string")) {
+
+                        param.setValue(((JTextField) graphicElements.get(i - 2)).getText());
+                    }
                 }
-
-                if (entry.getValue().equals("JComboBox")) {
-                    //aici s-ar putea sa nu mearga cast-ul
-                    crtOp.getParamsValues().put(entry.getKey(), (String) ((JComboBox) graphicElements.get(i)).getSelectedItem());
-                }
-
-                if (entry.getValue().equals("JSpinner")) {
-                    crtOp.getParamsValues().put(entry.getKey(), ((JSpinner) graphicElements.get(i)).getValue().toString());
-                }
-
-                i++;
+                //daca e de tip complex, atunci se ia panelul corespunzator si se parcurg toate componentele din el
             }
+
             motherWindow.addExec(crtOp);
             //pun erorile pe fals, deoarece daca se mai intra o data in aceasta fereastra, ele nu trebuie afisate
             eroare1.setVisible(false);
@@ -152,9 +170,13 @@ public class ParametersWindow extends javax.swing.JFrame {
             dispose();
         }
     }
+
     /**
-     * ne intoarce la fereastra precedenta fara niciun efect(se ignora orice date introduse de utilizatori)
-     * @param evt este evenimentul ce reprezinta apasarea cu mosue-ul a butonului 'cancel'
+     * ne intoarce la fereastra precedenta fara niciun efect(se ignora orice
+     * date introduse de utilizatori)
+     *
+     * @param evt este evenimentul ce reprezinta apasarea cu mosue-ul a
+     * butonului 'cancel'
      */
     private void cancelClicked(MouseEvent evt) {
 
@@ -175,17 +197,18 @@ public class ParametersWindow extends javax.swing.JFrame {
     }
 
     /**
-     * In functie de obiectul op (care contine mai multe informatii legate de numarul de parametrii si tipul lor) afisam dinamic
-     * butoanele in pagina
+     * In functie de obiectul op (care contine mai multe informatii legate de
+     * numarul de parametrii si tipul lor) afisam dinamic butoanele in pagina
+     *
      * @param op este obiectul de operatii
      */
     void generateFields(Operation op) {
 
-        params = op.getParamsList();
+        params = op.getParameters();
         crtOp = op;
 
         //facem un tabel dinamic cu 2 coloane si numar variabil de linii depinzand de numarul de parametri primit
-        this.setLayout(new GridLayout(params.size() + 1 + 1, 2, 10, 35));
+        this.setLayout(new GridLayout(params.size() + 1 + 1, 2, 20, 15));
 
         JButton okButton = new JButton("OK");
         JButton cancelButton = new JButton("Cancel");
@@ -212,16 +235,12 @@ public class ParametersWindow extends javax.swing.JFrame {
         int ySmallPanel = -23;
         int k;
 
+        for (int ii = op.getParameters().size() - 1; ii >= 2; ii--) {
 
-
-        ArrayList<String> keys = new ArrayList<String>(params.keySet());
-
-        for (k = params.size() - 1; k >= 0; k--) {
-            String paramName = keys.get(k);
-            String graphicType = params.get(keys.get(k));
+            SimpleTypeParameter param = op.getParameters().get(ii);
 
             //genereaza un label cu numele parametrului (atributul name din element corespunzator parametrului)      
-            JLabel numeParam = new JLabel(paramName);
+            JLabel numeParam = new JLabel(param.getName());
             numeParam.setBounds(10, ySmallPanel, 50, 50);
             numeParam.setHorizontalAlignment(SwingConstants.RIGHT);
             this.add(numeParam, ySmallPanel, 0);
@@ -231,36 +250,132 @@ public class ParametersWindow extends javax.swing.JFrame {
             //elementele grafice si sa stabilim de la inceput ce generam, 
             //nu de fiecare data cand avem fereastra de parametri sa stam sa analizam)        
 
-            if (graphicType.equals("JTextField")) {
-                JTextField elem = new JTextField(10);
-                this.add(elem, ySmallPanel, 1);
-                graphicElements.add(elem);
-                text.add(elem);
-            }
+            //caz special - cand parametrul are restrictie de tip enumeration
 
-            if (graphicType.equals("JComboBox")) {
+
+            if (param.getRestrictions().enumeration != null) {
+
+                int n = param.getRestrictions().enumeration.length;
+
                 JComboBox elem = new JComboBox();
                 elem.setPreferredSize(new Dimension(140, 30));
                 this.add(elem, ySmallPanel, 1);
+
+                for (int i = 0; i < n; i++) {
+
+                    elem.addItem(param.getRestrictions().enumeration[i]);
+                }
+
                 graphicElements.add(elem);
                 combo.add(elem);
+            } else {
+
+
+                String type = param.getBaseType();
+
+
+                if (type.equals("decimal") || type.equals("float") || type.equals("double")) {
+
+                    //daca exista restrictii de tipul minVal / maxVal, atunci spinner-ul sa nu permita introducerea acestor valori
+
+                    double minValue = -1000.000;
+                    double maxValue = 1000.000;
+
+                    if (param.getRestrictions().minValue != null) {
+
+                        minValue = Double.parseDouble(param.getRestrictions().minValue);
+                    }
+
+                    if (param.getRestrictions().maxValue != null) {
+
+                        maxValue = Double.parseDouble(param.getRestrictions().maxValue);
+                    }
+
+                    SpinnerNumberModel spinnerModel = new SpinnerNumberModel(Math.max(minValue, 0), minValue, maxValue, 0.001);
+
+                    JSpinner elem = new JSpinner(spinnerModel);
+                    //      elem.setEditor(new JSpinner.NumberEditor(elem,"#00.00"));
+                    elem.setBounds(70, ySmallPanel, 140, 50);
+                    this.add(elem, ySmallPanel, 1);
+                    graphicElements.add(elem);
+                    spinner.add(elem);
+                }
+
+                if (type.equals("integer") || type.equals("int")
+                        || type.equals("negativeInteger") || type.equals("nonNegativeInteger")
+                        || type.equals("nonPositiveInteger") || type.equals("positiveInteger")) {
+
+                    int minValue = -1000;
+                    int maxValue = 1000;
+
+                    if (type.equals("negativeInteger")) {
+
+                        maxValue = -1;
+                    }
+
+                    if (type.equals("nonNegativeInteger")) {
+
+                        minValue = 0;
+                    }
+
+                    if (type.equals("nonPositiveInteger")) {
+
+                        maxValue = 0;
+                    }
+
+                    if (type.equals("positiveInteger")) {
+
+                        minValue = 1;
+                    }
+
+                    //presupunem ca minValue si maxvalue sunt date corect, tinand cont de restrictia de tip                
+                    if (param.getRestrictions().minValue != null) {
+
+                        minValue = Integer.parseInt(param.getRestrictions().minValue);
+                    }
+
+                    if (param.getRestrictions().maxValue != null) {
+
+                        maxValue = Integer.parseInt(param.getRestrictions().maxValue);
+                    }
+
+                    SpinnerNumberModel spinnerModel = new SpinnerNumberModel(Math.max(minValue, 0), minValue, maxValue, 1);
+
+                    JSpinner elem = new JSpinner(spinnerModel);
+                    //      elem.setEditor(new JSpinner.NumberEditor(elem,"#00.00"));
+                    elem.setBounds(70, ySmallPanel, 140, 50);
+                    this.add(elem, ySmallPanel, 1);
+                    graphicElements.add(elem);
+                    spinner.add(elem);
+                }
+
+
+                /*
+                 if (type.equals("float") || type.equals("double")) {
+
+                 SpinnerNumberModel spinnerModel = new SpinnerNumberModel(0.0000, -1000.0000, 1000.0000, 0.0001);
+
+                 JSpinner elem = new JSpinner(spinnerModel);
+                 //elem.setEditor(new JSpinner.NumberEditor(elem,"#00.00"));
+                 elem.setBounds(70, ySmallPanel, 140, 50);
+                 this.add(elem, ySmallPanel, 1);
+                 graphicElements.add(elem);
+                 spinner.add(elem);
+                 }
+                 */
+
+                if (type.equals("string")) {
+
+                    //ar trebui sa fac mai mare text box-ul, ca sa incapa orice sir
+                    JTextField elem = new JTextField(10);
+                    this.add(elem, ySmallPanel, 1);
+                    graphicElements.add(elem);
+                    text.add(elem);
+                }
+
             }
 
-
-            //Spinner-ul asta e foarte dubios; n-am idee cum trebuie folosit
-            //Vreau sa-l fac sa ia si valorile pe care i LE INTRODUC EU, cu 2 zecimale
-            if (graphicType.equals("JSpinner")) {
-                SpinnerNumberModel spinnerModel = new SpinnerNumberModel(0.00, -1000.00, 1000.00, 0.01);
-
-                JSpinner elem = new JSpinner(spinnerModel);
-                //      elem.setEditor(new JSpinner.NumberEditor(elem,"#00.00"));
-                elem.setBounds(70, ySmallPanel, 140, 50);
-                this.add(elem, ySmallPanel, 1);
-                graphicElements.add(elem);
-                spinner.add(elem);
-            }
-
+            //daca e de tip complex, atunci se va crea un panel in care vor fi adaugate si atributele
         }
-
     }
 }

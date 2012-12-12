@@ -9,7 +9,7 @@ package mps.parser.implementation;
  * @author Liz
  */
 public class Attribute extends SimpleTypeParameter {
-    
+
     /**
      * Specifica daca atributul este required sau optional.
      */

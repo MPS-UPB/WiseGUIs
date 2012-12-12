@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:simpleType name="execName">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="rotate.exe"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="execType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="support,rotate"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="execDescription">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="Rotate image according to specified parameter"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="fileType">
+    <xs:attribute name="name" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:simpleType name="dectype">
+    <xs:restriction base="xs:decimal"/>
+  </xs:simpleType>
+  <xs:element name="task">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="execInfo" minOccurs="0" maxOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="name" type="execName"/>
+              <xs:element name="type" type="execType"/>
+              <xs:element name="description" type="execDescription"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="inputFile" type="fileType"/>
+        <xs:element name="outputFile" type="fileType"/>
+        <xs:element name="angle" type="dectype"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

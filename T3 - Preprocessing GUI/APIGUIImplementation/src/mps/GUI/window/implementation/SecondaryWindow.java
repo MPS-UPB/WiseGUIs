@@ -206,6 +206,8 @@ public abstract class SecondaryWindow extends JFrame {
         //doar la apasarea butonului "OK" va fi transmisa mai departe in fereastra principala, spre a fi lansata in executie
         currentSelection.add(op);
 
+        System.out.println(op);
+
         //Executabilul ales din stanga trece in lista din dreapta
         changeLists();
     }

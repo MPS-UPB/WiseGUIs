@@ -32,11 +32,10 @@ public class Parser {
 			while (ztr.hasNext()) {
 
 				XSComplexType e = (XSComplexType) ztr.next();
-
+				System.out.println("--------------------");
 				System.out.println("Tip complex : " + e.getName());
-				
-				 
-				
+				getAttributesForComplex(e);
+	
 			}
 
 			// cauta tipuri simple
@@ -44,8 +43,12 @@ public class Parser {
 			while (str.hasNext()) {
 
 				XSSimpleType e = (XSSimpleType) str.next();
-
+				SimpleTypeRestriction simpleRestriction = new SimpleTypeRestriction();
+				
+				initRestrictions(e,simpleRestriction);
+				System.out.println("--------------------------");
 				System.out.println("Tip simplu : " + e.getName());
+				System.out.println(simpleRestriction.pattern);
 			
 			}
 
@@ -68,6 +71,72 @@ public class Parser {
 
 	}
 	
+	private static void getAttributesForComplex(XSComplexType xsComplexType){
+	    Collection<? extends XSAttributeUse> c = xsComplexType.getAttributeUses();
+	    Iterator<? extends XSAttributeUse> i = c.iterator();
+	    while(i.hasNext()){
+	        XSAttributeDecl attributeDecl = i.next().getDecl(); 
+	        System.out.println("\ttype: "+attributeDecl.getType());
+	        System.out.println("\tname:"+attributeDecl.getName());
+	       
+
+	       
+	    }
+	}
+	
+	 private static void initRestrictions(XSSimpleType xsSimpleType,SimpleTypeRestriction t){
+         XSRestrictionSimpleType restriction = xsSimpleType.asRestriction();
+         if(restriction != null){
+             Vector<String> enumeration = new Vector<String>();
+             Iterator<? extends XSFacet> i = restriction.getDeclaredFacets().iterator();
+             while(i.hasNext()){
+                 XSFacet facet = i.next();
+                 if(facet.getName().equals(XSFacet.FACET_ENUMERATION)){
+                     enumeration.add(facet.getValue().value);
+                 }
+                 if(facet.getName().equals(XSFacet.FACET_MAXINCLUSIVE)){
+                     t.maxValue = facet.getValue().value;
+                 }
+                 if(facet.getName().equals(XSFacet.FACET_MININCLUSIVE)){
+                     t.minValue = facet.getValue().value;
+                 }
+                 if(facet.getName().equals(XSFacet.FACET_MAXEXCLUSIVE)){
+                     t.maxValue = String.valueOf(Integer.parseInt(facet.getValue().value) - 1);
+                 }
+                 if(facet.getName().equals(XSFacet.FACET_MINEXCLUSIVE)){
+                     t.minValue = String.valueOf(Integer.parseInt(facet.getValue().value) + 1);
+                 }
+                 if(facet.getName().equals(XSFacet.FACET_LENGTH)){
+                     t.length = facet.getValue().value;
+                 }
+                 if(facet.getName().equals(XSFacet.FACET_MAXLENGTH)){
+                     t.maxLength = facet.getValue().value;
+                 }
+                 if(facet.getName().equals(XSFacet.FACET_MINLENGTH)){
+                     t.minLength = facet.getValue().value;
+                 }
+                 if(facet.getName().equals(XSFacet.FACET_PATTERN)){
+                     t.pattern = facet.getValue().value;
+                 }
+                 if(facet.getName().equals(XSFacet.FACET_TOTALDIGITS)){
+                     t.totalDigits = facet.getValue().value;
+                 }
+             }
+             if(enumeration.size() > 0){
+                 t.enumeration = enumeration.toArray(new String[]{});
+             }
+         }
+     }
+	 
+	private static void getAttributesForSimple(XSSimpleType xsSimpleType){
+	    Collection<? extends XSAttributeUse> c = ((XSAttContainer) xsSimpleType).getAttributeUses();
+	    Iterator<? extends XSAttributeUse> i = c.iterator();
+	    while(i.hasNext()){
+	        XSAttributeDecl attributeDecl = i.next().getDecl(); 
+	        System.out.println("\ttype: "+attributeDecl.getType());
+	        System.out.println("\tname:"+attributeDecl.getName());
+	    }
+	}
 
 	private static void getOptionalElements(List <String> list, XSParticle xsParticle) {
 		if (xsParticle != null) {
@@ -157,5 +226,18 @@ public class Parser {
 	public static void main(String []args){
 		parseXSDFile("crop.xsd");
 	}
+	
+	
 
+}
+
+class SimpleTypeRestriction{
+    public String[] enumeration = null;
+    public String maxValue = null;
+    public String minValue = null;
+    public String length = null;
+    public String maxLength = null;
+    public String minLength = null;
+    public String pattern = null;
+    public String totalDigits = null;
 }

@@ -60,11 +60,11 @@ public class Operation {
     /**
      * Calea catre executabil.
      */
-    private String execFolder = "D:\\Facultate\\Anul IV Sem I\\MPS\\Proiect\\Repository\\WiseGUIs\\T3 - Preprocessing GUI\\APIGUIImplementation\\execs";
+    private String execFolder = "execs";
     /**
      * Calea catre folder-ul in care se vor depozita XML-urile.
      */
-    private String XMLFolder = "D:\\Facultate\\Anul IV Sem I\\MPS\\Proiect\\Repository\\WiseGUIs\\T3 - Preprocessing GUI\\APIGUIImplementation\\XMLs";
+    private String XMLFolder = "XMLs";
 
    //date pentru parser 
     String tagForExecName = null;
@@ -209,9 +209,12 @@ public class Operation {
     public String execute() {
 
         String delims = "\\.";
-        String[] tokens = parameters.get(parameters.indexOf(new SimpleTypeParameter("inputFile"))).getValue().split(delims);
         
-        System.out.println(parameters.get(parameters.indexOf(new SimpleTypeParameter("inputFile"))).getValue() + " " + tokens.length);
+        
+      
+        
+        String[] tokens = ((ComplexTypeParameter)getParameter("inputFile")).getAttribute("name").getValue().split(delims);
+   //       System.out.println(getParameter("inputFile").getValue() + " " + tokens.length);
         
         String outputPath;
 
@@ -225,13 +228,13 @@ public class Operation {
 
             outputPath = tokens[0] + "_binariz_output" + hash() + "." + tokens[1];
         }
-        parameters.get(parameters.indexOf(new SimpleTypeParameter("outputFile"))).setValue(outputPath);
+        ((ComplexTypeParameter)getParameter("outputFile")).setAttribute("name", outputPath);
         String localXMLPath = generateXML();
 
         try {
 
             //mai bine ar fi fost sa se citeasca executabilele din folder si apoi sa se dea calea absoluta ca param
-            String thisExecPath = getExecFolder() + "\\" + getName() + ".exe";
+            String thisExecPath = getExecFolder() + "\\" + getName();// + ".exe";
 
             //lansare in executie
             //defineste proces
@@ -265,6 +268,13 @@ public class Operation {
      */
     public String generateXML() {
 
+     /*   ((ComplexTypeParameter)getParameter("inputFile")).getAttribute("name").setValue(
+               '"' + ((ComplexTypeParameter)getParameter("inputFile")).getAttribute("name").getValue() +  '"' );
+        
+        ((ComplexTypeParameter)getParameter("outputFile")).getAttribute("name").setValue(
+               '"' + ((ComplexTypeParameter)getParameter("outputFile")).getAttribute("name").getValue() +  '"' );
+        */
+        
         //fisierul XML se va genera intr-un folder separat de cel cu executabilele
         String thisXMLPath = getXMLFolder() + "\\" + getName() + ".xml";
         
@@ -324,6 +334,7 @@ public class Operation {
                 } //daca este element de tip complex
                 else {
 
+                    System.out.println("ALELUIA");
                     writer.newLine();
                     writer.write('\t');
                     
@@ -339,6 +350,7 @@ public class Operation {
 
                     for (Attribute attribute : attributes) {
 
+                         System.out.println("ceva");
                         //daca valoarea atributului nu este nula, inseamna ca:
                         //1. este required
                         //2. nu este required, dar valoarea lui a fost completata in fereastra de parametri
@@ -440,5 +452,25 @@ public class Operation {
         }
 
         return concat;
+    }
+    
+    public SimpleTypeParameter getParameter(String paramName) {
+        
+        for (SimpleTypeParameter param : parameters) {
+            
+            if (param.getName().equals(paramName))
+                return param;
+        }
+        
+        return null;
+    }
+    
+     public void setParameter(String paramName, String value) {
+        
+        for (SimpleTypeParameter param : parameters) {
+            
+            if (param.getName().equals(paramName))
+                param.setValue(value);
+        }
     }
 }

@@ -1,0 +1,8 @@
+<task>
+	<inputFile name="E:\[01] Politehnica\Anul 4\Sem 1\MPS\Repository\WiseGUIs\T3 - Preprocessing GUI\APIGUIImplementation\execs\Test1\tiger.jpg"></inputFile>
+	<outputFile name="E:\[01] Politehnica\Anul 4\Sem 1\MPS\Repository\WiseGUIs\T3 - Preprocessing GUI\APIGUIImplementation\execs\Test1\tiger_preproc_output.jpg"></outputFile>
+	<top>10</top>
+	<bottom>50</bottom>
+	<left>10</left>
+	<right>50</right>
+</task>

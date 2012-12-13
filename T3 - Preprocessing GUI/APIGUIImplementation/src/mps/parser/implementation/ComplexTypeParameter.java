@@ -12,6 +12,11 @@ import java.util.ArrayList;
  */
 public class ComplexTypeParameter extends SimpleTypeParameter {
 
+    public ComplexTypeParameter(){
+        super();
+        attributes = new ArrayList<Attribute>();
+    }
+    
     /**
      * Lista de atribute asociata tipului complex al parametrului.
      */
@@ -29,5 +34,29 @@ public class ComplexTypeParameter extends SimpleTypeParameter {
      */
     public void setAttributes(ArrayList<Attribute> attributes) {
         this.attributes.addAll(attributes);
+    }
+    
+    public Attribute getAttribute(String name) {
+        
+        for (Attribute attr : attributes) {
+            
+            if (attr.getName().equals(name))
+                return attr;
+        }
+        
+        return null;
+    }
+    
+     public void setAttribute(String name, String value) {
+        
+         System.out.println(value);
+         
+        for (Attribute attr : attributes) {
+            
+            if (attr.getName().equals(name)) {
+                attr.setValue(value);
+                System.out.println("seteaza");
+            }
+        }
     }
 }

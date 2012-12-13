@@ -1,5 +1,6 @@
 package mps.parser.implementation;
 
+import com.sun.xml.internal.ws.message.saaj.SAAJHeader;
 import com.sun.xml.xsom.parser.XSOMParser;
 import com.sun.xml.xsom.*;
 
@@ -16,7 +17,7 @@ public class Parser {
     public static Operation parseXSDFile(String fileName) {
     	Operation operation = new Operation();
     	Map<String,SimpleTypeRestriction>tipuriSimple = new HashMap<>();
-    	Map<String,Attribute>tipuriComplexe = new HashMap<>();
+    	Map<String,ComplexTypeParameter>tipuriComplexe = new HashMap<>();
         XSOMParser parser = new XSOMParser();
        
         XSType type = null;
@@ -37,8 +38,10 @@ public class Parser {
                 System.out.println("--------------------");
                 System.out.println("Tip complex : " + e.getName());
                 
-                Attribute a = getAttributesForComplex(e);
-                tipuriComplexe.put(e.getName(),a);
+                ComplexTypeParameter ctp = getAttributesForComplex(e);
+                ctp.setName(e.getName());
+                tipuriComplexe.put(ctp.getName(),ctp);
+               // System.out.println("<<< " + e.getName() + " >>>");
 
             }
 
@@ -66,7 +69,7 @@ public class Parser {
                 type = e.getType();
                 xsContentType = type.asComplexType().getContentType();
                 XSParticle xsParticle = xsContentType.asParticle();
-                getOptionalElements(operation, xsParticle);
+                getOptionalElements(operation,tipuriComplexe, xsParticle);
                // System.out.println("ELEMS :");
             }
 
@@ -91,15 +94,21 @@ public class Parser {
         System.out.println("tipuri simple"+tipuriSimple.keySet());
        // System.out.println("tipuri simple"+tipuriSimple.keySet());
         for(SimpleTypeParameter stp : operation.getParameters()){
-        	if(tipuriSimple.containsKey(stp.getBaseType())){
+            
+        	if(!(stp instanceof ComplexTypeParameter) && tipuriSimple.containsKey(stp.getBaseType())){
         		stp.setBaseType(tipuriSimple.get(stp.getBaseType()).baseType);
         	}
         }
         System.out.println("tipuri complexe"+tipuriComplexe.keySet());
         for(SimpleTypeParameter stp : operation.getParameters()){
-        	if(tipuriComplexe.containsKey(stp.getBaseType())){
+        	/*if(tipuriComplexe.containsKey(stp.getBaseType())){
         		stp.setBaseType(tipuriComplexe.get(stp.getBaseType()).getBaseType());
-        	}
+        	}*/
+            if(stp instanceof ComplexTypeParameter){
+                //operation.getParameters().add(stp);
+                System.out.println("!!!" + stp.getName()+"!!!");
+                System.out.println(((ComplexTypeParameter)stp).getAttributes());
+            }
         }
         
         System.out.println("OPERATIE:"+operation.getParameters());
@@ -112,20 +121,28 @@ public class Parser {
 		
 	}
 
-	private static Attribute getAttributesForComplex(XSComplexType xsComplexType) {
-		Attribute a = new Attribute();
+	private static ComplexTypeParameter getAttributesForComplex(XSComplexType xsComplexType) {
+            
+                ComplexTypeParameter ctp = new ComplexTypeParameter();
+                
+		
 		Collection<? extends XSAttributeUse> c = xsComplexType
 				.getAttributeUses();
 		Iterator<? extends XSAttributeUse> i = c.iterator();
+                while(i.hasNext()){
 
-		XSAttributeDecl attributeDecl = i.next().getDecl();
-		a.setBaseType(attributeDecl.getType().getName());
-		a.setName(attributeDecl.getName());
-		// a.setUse(attributeDecl.getType().getName());
-		System.out.println("\ttype: " + attributeDecl.getType());
-		System.out.println("\tname:" + attributeDecl.getName());
-
-		return a;
+                    Attribute a = new Attribute();
+                    XSAttributeDecl attributeDecl = i.next().getDecl();
+                    a.setBaseType(attributeDecl.getType().getName());
+                    a.setName(attributeDecl.getName());
+                    // a.setUse(attributeDecl.getType().getName());
+                    System.out.println("\ttype: " + attributeDecl.getType().getName());
+                    System.out.println("\tname:" + attributeDecl.getName());
+                    ctp.getAttributes().add(a);
+                    // System.out.println("Atribut  "+a);
+                    // System.out.println("Atribut  adaugat"+ctp.getAttributes());
+                }
+		return ctp;
        
     }
 
@@ -187,7 +204,7 @@ public class Parser {
         }
     }
 
-    private static void getOptionalElements(Operation operation, XSParticle xsParticle) {
+    private static void getOptionalElements(Operation operation,Map<String,ComplexTypeParameter>tipuriComplexe, XSParticle xsParticle) {
         if (xsParticle != null) {
             XSTerm pterm = xsParticle.getTerm();
             // daca am gasit un element inner
@@ -197,7 +214,7 @@ public class Parser {
 
             	
             	if(pterm.asElementDecl().getName().equals("execInfo")){
-					getOptionalElements(operation, pterm.asElementDecl()
+					getOptionalElements(operation,tipuriComplexe, pterm.asElementDecl()
 							.getType().asComplexType().getContentType()
 							.asParticle());
 					return;
@@ -229,10 +246,18 @@ public class Parser {
                      + ":" + pterm.asElementDecl().getName());*/
                 }
 
-				SimpleTypeParameter stp = createSimpleParameter(pterm
-						.asElementDecl().getName(), pterm.asElementDecl()
-						.getType().getName());
-				operation.getParameters().add(stp);
+                SimpleTypeParameter stp = null;
+                if(tipuriComplexe.containsKey( pterm.asElementDecl()
+                                                    .getType().getName())){
+                     stp = createComplexParameter(pterm.asElementDecl()
+                                                    .getType().getName(),tipuriComplexe);
+                     stp.setName(pterm.asElementDecl().getName());
+                }else{
+                     stp = createSimpleParameter(pterm
+                                            .asElementDecl().getName(), pterm.asElementDecl()
+                                                    .getType().getName());
+                }
+		operation.getParameters().add(stp);
                 System.out.println("Element Name : "
                         + pterm.asElementDecl().getName());
                 System.out.println("Element Type : "
@@ -266,7 +291,7 @@ public class Parser {
                 XSParticle[] xsParticleArray = xsModelGroup2.getChildren();
                 for (XSParticle xsParticleTemp : xsParticleArray) {
                 	System.out.println("IN GRUP");
-                    getOptionalElements(operation, xsParticleTemp);
+                    getOptionalElements(operation,tipuriComplexe, xsParticleTemp);
                 }
             }
         }
@@ -354,7 +379,25 @@ public class Parser {
 
     public static void main(String[] args) {
         Operation op1 = parseXSDFile("crop.xsd");
-        Operation op2 = parseXSDFile("rotate.xsd");
-        Operation op3 = parseXSDFile("otsu.xsd");
+       // Operation op2 = parseXSDFile("rotate.xsd");
+      //  Operation op3 = parseXSDFile("otsu.xsd");
+    }
+
+    private static SimpleTypeParameter createComplexParameter(String name, 
+            Map<String,ComplexTypeParameter> tipuriComplexe) {
+        
+        ComplexTypeParameter stp = new ComplexTypeParameter();
+        ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+        for(Attribute a : tipuriComplexe.get(name).getAttributes()){
+            Attribute b = new Attribute();
+            b.setBaseType(a.getBaseType());
+            b.setName(a.getName());
+            b.setRestrictions(a.getRestrictions());
+            b.setUse(a.getUse());
+            b.setValue(a.getValue());
+            attributes.add(b);
+        }
+        stp.setAttributes(attributes);
+        return stp;
     }
 }

@@ -153,13 +153,18 @@ public class PreprocessingWindow extends SecondaryWindow {
         //In Main Window se vor lansa in executie programele, dupa ce se vor adauga 2 parametri: fisierul de intrare si cel de iesire 
         //(sau doar fisierul de intrare, cel de iesire poate fi generat automat si transmis inapoi ca raspuns in ferestra principala)
 
-        mainWindow.setEnabled(true);
+         mainWindow.setEnabled(true);
         this.setVisible(false);
 
         //Vechea selectie devine noul set de executabile selectate 
+        ArrayList<Operation> aux = new ArrayList<Operation>();
+        aux.addAll(oldSelection);
+
         oldSelection.clear();
         oldSelection.addAll(currentSelection);
-        //Se transfera in fereastra principala lista cu executabilele de binarizare ce trebuie aplicate imaginii
+
+        currentSelection.removeAll(aux);
+        //Se transfera in fereastra principala lista cu executabilele de preprocesare ce trebuie aplicate imaginii
         mainWindow.launchPreprocOperations(currentSelection);
     }
 

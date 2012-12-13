@@ -1,0 +1,5 @@
+<task>
+	<inputFile name = "E:\[01] Politehnica\Anul 4\Sem 1\MPS\Repository\WiseGUIs\T3 - Preprocessing GUI\APIGUIImplementation\execs\Test1\tiger.png"/>
+	<outputFile name = "E:\[01] Politehnica\Anul 4\Sem 1\MPS\Repository\WiseGUIs\T3 - Preprocessing GUI\APIGUIImplementation\execs\Test1\tiger_out.png"/>
+	<angle>60.0</angle>
+</task>

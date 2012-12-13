@@ -1,8 +1,8 @@
 package mps.GUI.window.implementation;
 
-import mps.parser.implementation.Operation;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.Hashtable;
@@ -11,13 +11,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
+import mps.parser.implementation.ComplexTypeParameter;
 import mps.parser.implementation.Parser;
+import mps.parser.implementation.Operation;
 import mps.parser.implementation.SimpleTypeParameter;
 
 /**
  *
  * @author Liliana
- * @version Last modified by Roxana 11/15/2012
+ * @version Last modified by Liliana 12/12/2012
  */
 public class MainWindow extends JFrame{
 
@@ -66,13 +68,44 @@ public class MainWindow extends JFrame{
      */
     Hashtable<JCheckBox, String> imageList;
     
+    
+    /*
+     * Lista perechilor checkBox - Label
+     * Pentru update
+     */
+    Hashtable<JCheckBox,JLabel> labelList;
+   
+    
+    /**
+    * Vector cu checkboxurile din lista din dreapta 
+    * care sunt bifate 
+    */
+   ArrayList<JCheckBox> checkedImages;
+   
+   
+   /*
+    * Lista cu toate checkboxurile din lista din dreapta
+    */
+   ArrayList<JCheckBox> allImages;
+   
+   
+   /*
+    * Lista cu toate containerele din partea dreapta
+    * Folosit la remove
+    */
+   ArrayList<JPanel> containerList;
+    
     public MainWindow() {
 
         super("Preprocesing GUI - Main Window");
 
         // execTypes = new ArrayList<Operation>();
         imageList = new Hashtable<JCheckBox, String>() ;
+        labelList = new Hashtable<JCheckBox,JLabel>();
         operations = new ArrayList<Operation>();
+        checkedImages = new ArrayList<JCheckBox>();
+        allImages = new ArrayList<JCheckBox>();
+        containerList = new ArrayList<JPanel>();
 
         initComponents();
 
@@ -97,6 +130,7 @@ public class MainWindow extends JFrame{
         updateCheckBox = new JCheckBox();
         updateButton = new JButton("Update");
         compareButton = new JButton("Compare");
+        checkedImages = new ArrayList<JCheckBox>();
         
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(620, 550));
@@ -104,16 +138,24 @@ public class MainWindow extends JFrame{
             public void componentResized(ComponentEvent evt) {
                 formComponentResized(evt);
             }
+
+            private void formComponentResized(ComponentEvent evt) {
+            }
         });
 
 
-        final JFileChooser fileChooser = new JFileChooser();
+        final JFileChooser fileChooser = new JFileChooser("poze de test");
         browseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
+                     //  fileChooser.setCurrentDirectory(
+                       //         new File("../../../../../poze de test"));
+                    //    fileChooser.setCurrentDirectory(
+                    //            new File("E:\\[01] Politehnica\\Anul 4\\Sem 1\\MPS\\Repository\\WiseGUIs\\T3 - Preprocessing GUI\\APIGUIImplementation\\poze de test").getAbsoluteFile());
+                        
                         int returnVal = fileChooser.showOpenDialog(leftPanel);
                         if (returnVal == JFileChooser.APPROVE_OPTION) {
 
@@ -134,6 +176,7 @@ public class MainWindow extends JFrame{
                             JLabel picLabel = new JLabel(myPicture);
                             picLabel.setSize(new Dimension(width, height));
 
+                            imagePanel.removeAll();
                             imagePanel.add(picLabel);
                             MainWindow.this.repaint();
                         }
@@ -155,27 +198,61 @@ public class MainWindow extends JFrame{
             }
         });
 
-        // la apasarea butonului de update se executa toate operatiile salvate
+        /*
+         * La apasarea butonului Update:
+         *  - se verifica daca exista cel putin un checkbox selectat in dreapta
+         *  - se schimba imaginea de input al operatiilor corespunzatoare
+         *  - se executa din nou operatia de binarizare cu noua imagine de input
+         *     dar cu aceiasi parametri ca la inceput.
+         *  - se updateaza Label-ul cu noua imagine.
+         */
         updateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        // sunt executate toate operatiile
-                        for (Operation oper : operations){             
-                            if(oper.getType() == 0){
-                                executePreprocesing(oper);
-                            }
-                            
-                            if(oper.getType() == 1){
-                                executeBinarization(oper);
-                            }
-                            imageScrollPane.setViewportView(newImgPanel);
-                            imageScrollPane.revalidate();
-                            imageScrollPane.repaint();
-                        }
-                        operations.clear();
+                        /*
+                         * Daca exista cel putin un checkbox selectat caut numarul de ordine
+                         * al fiecarui checkbox selectat, astfel incat sa pot modifica
+                         * operatia corespunzatoare din vectorul "operations"
+                         */
+                         if(checkedImages.size() > 0){
+                             for (int i = 0 ; i < checkedImages.size(); i++){
+                                 JCheckBox checked = checkedImages.get(i);
+                                 for(int j = 0 ; j < allImages.size() ;j ++){
+                                     JCheckBox item = allImages.get(i);
+                                     // numarul de ordine este j
+                                     if(checked == item){
+                                         // modific operatia
+                                         ((ComplexTypeParameter)operations.get(j).getParameter("inputFile")).setAttribute
+                                                 ("name",'"' + pathImage + '"');
+                                         
+                                         // execut operatia pentru a obtine imaginea de output
+                                         operations.get(j).execute();
+                                         
+                                         // construiesc noua imagine din calea obtinuta
+                                         String path = ((ComplexTypeParameter)operations.get(j).getParameter("outputFile")).getAttribute("name").getValue();
+                                         ImageIcon myPicture = new ImageIcon(new ImageIcon(path)
+                                            .getImage().getScaledInstance(imageScrollPane.getSize().width-70, 
+                                            150,
+                                            Image.SCALE_SMOOTH));
+                                         
+                                         // Inlocuiesc Label-ul din dreapta
+                                         JLabel label = new JLabel(myPicture);
+                                         // daca cheia exista deja (cum e in cazul asta) , valoarea e inlocuita
+                                         labelList.put(checked,label);          
+                                         
+                                         // fac refresh la JScrollPane
+                                         imageScrollPane.revalidate();
+                                         imageScrollPane.repaint();
+                                         
+                                         // inlocuiesc calea in imageList
+                                         imageList.put(checked,path);
+                                     }
+                                 }
+                             }
+                         }
                     }
                 });
             }
@@ -287,16 +364,7 @@ public class MainWindow extends JFrame{
         compareButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                Enumeration<JCheckBox> enumKey=imageList.keys();
-                JCheckBox elem;
-                ArrayList<String> pictureSelected = new ArrayList<String>();
-                while(enumKey.hasMoreElements()){
-                    elem = enumKey.nextElement();
-                    if (elem.isSelected()){
-                        pictureSelected.add(imageList.get(elem));              
-                    }
-                }
-                
+               
                 // Decomentati ce e mai jos pentru verificare daca doua checkboxuri sunt selectate
             /*    if (pictureSelected.size() == 2) {
                     compareWindow = new CompareImagesWindow(pictureSelected.get(0), pictureSelected.get(1));
@@ -307,6 +375,9 @@ public class MainWindow extends JFrame{
                 // Comentati bucata de mai jos pentru intreaga functionalitate(la sfarsit)
                  try {
                         compareWindow = new CompareImagesWindow("image11.png", "image22.png");
+                        //if(checkedImages.size() == 2)
+                            //compareWindow = new CompareImagesWindow(imageList.get(checkedImages.get(0)), imageList.get(checkedImages.get(1)));
+                        
                     } 
                  catch (Exception ex) {
                         Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
@@ -426,11 +497,46 @@ public class MainWindow extends JFrame{
     public void launchPreprocOperations(List<Operation> preprocOperations) {
         for (int i=0; i< preprocOperations.size(); i++){
             execTypes.add(preprocOperations.get(i));
-            // Fisierul de input este pus in lista de parametri;
             
-            preprocOperations.get(i).getParameters().get(preprocOperations.get(i).getParameters().indexOf(new SimpleTypeParameter("inputFile"))).setValue(pathTextField.getText());
-            if(updateCheckBox.isSelected()){
-                executePreprocesing(preprocOperations.get(i));
+            // Fisierul de input este pus in lista de parametri;
+          
+            ((ComplexTypeParameter)preprocOperations.get(i).getParameter("inputFile")).setAttribute("name",'"' + pathImage +  '"');
+            
+            executePreprocesing(preprocOperations.get(i));
+            
+            if(updateCheckBox.isSelected())
+            {
+                for(int j=0;j<operations.size();j++){
+                    // se face update cu noua valoare (cheia exista)
+                    
+                    ((ComplexTypeParameter)operations.get(j).getParameter("inputFile")).setAttribute("name",'"' + pathImage + '"');
+                    
+                    // Executam operatia ca sa obtinem outputFile
+                    operations.get(j).execute();
+                    
+                    // construiesc noua imagine din calea obtinuta
+                 
+                     String path = ((ComplexTypeParameter)operations.get(j).getParameter("outputFile")).getAttribute("name").getValue();
+                    ImageIcon myPicture = new ImageIcon(new ImageIcon(path)
+                       .getImage().getScaledInstance(imageScrollPane.getSize().width-70, 
+                       150,
+                       Image.SCALE_SMOOTH));
+
+                    // Inlocuiesc Label-ul din dreapta
+                    JLabel label = new JLabel(myPicture);
+                    // Checkboxul j din vectorul allImages corespunde operatiei j din operations
+                    JCheckBox item = allImages.get(j);      
+                    // daca cheia exista deja (cum e in cazul asta) , valoarea e inlocuita
+                    labelList.put(item,label);          
+
+                    
+                    // inlocuiesc calea in imageList
+                    imageList.put(item,path);
+                    
+                }
+                // fac refresh la JScrollPane
+                imageScrollPane.revalidate();
+                imageScrollPane.repaint();
             }
         }
     }   
@@ -438,20 +544,59 @@ public class MainWindow extends JFrame{
     /**
      * Metoda care primeste un set de operatii de binarizare si le aplica pe
      * imaginea orginara.
+     * Operatiile sunt noi, fiind adaugate in vectorul operations
+     * Nu e nevoie de verificare de dubluri, operatiile care vin vor fi unice
      *
      * @param binarizOperations operatiile de binarizare de executat
      */
     public void launchBinarizOperations(List<Operation> binarizOperations) {
-        /* TODO
-         * se completeaza lista de parametri ai fiecarei operatii cu numele fisierului de intrare;
-         */
         
+        /*
+         * Pentru fiecare operatie de binarizare se completeaza imaginea de input
+         * si se executa operatia
+         * Dupa executie, operatia se salveaza in vectorul operations
+         */
         for (int i=0; i< binarizOperations.size(); i++){
             execTypes.add(binarizOperations.get(i));
-            // TODO: de verificat partea cu fisierul de input
-            
-            if(updateCheckBox.isSelected()){
-                executeBinarization(binarizOperations.get(i));
+         
+           ((ComplexTypeParameter)binarizOperations.get(i).getParameter("inputFile")).setAttribute
+                   ("name",'"' + pathImage + '"');
+            executeBinarization(binarizOperations.get(i));
+            operations.add(binarizOperations.get(i));
+        }
+    }
+    
+    /*
+     * Metoda primeste o operatie de BINARIZARE
+     * Se sterge din vectorul de operatii
+     * Se sterge din lista din dreapta
+     */
+    public void removeBinarization(Operation op){
+        for(int i = 0 ; i < operations.size() ; i++){
+            if(operations.get(i) == op){
+                JCheckBox deleted = allImages.get(i);
+                
+                // stergem din hashtable-uri
+                labelList.remove(deleted);
+                imageList.remove(deleted);
+                
+                // stergem din panelul mare din dreapta
+                newImgPanel.remove(i);
+                
+                // Verific daca trebuie sters si in vectorul de checkedImages
+                for(int j = 0 ; j < checkedImages.size();j++){
+                    if(checkedImages.get(j) == deleted){
+                        checkedImages.remove(j);
+                    }
+                }
+                
+                // Il sterg intr-un final si din vectorul ce contine toate checkboxurile
+                allImages.remove(i); 
+                
+                // refresh la scrollPane
+                imageScrollPane.revalidate();
+                imageScrollPane.repaint();
+                
             }
         }
     }
@@ -464,8 +609,12 @@ public class MainWindow extends JFrame{
     private void executePreprocesing(Operation oper){
         // Setam calea catre fisier in textBox
         oper.execute();
-        pathTextField.setText(oper.getParameters().get(oper.getParameters().indexOf(new SimpleTypeParameter("outputFile"))).getValue());
-
+       
+         String path =((ComplexTypeParameter)oper.getParameter("outputFile")).getAttribute("name").getValue();
+         path = path.substring(1, path.length()-1); // scot ghilimelele de la cale
+         pathTextField.setText(path);
+         System.out.println(path);         
+        
         // salvam calea catre imagine
         pathImage = pathTextField.getText();
 
@@ -478,41 +627,96 @@ public class MainWindow extends JFrame{
             Image.SCALE_SMOOTH));
         JLabel picLabel = new JLabel(myPicture);
         picLabel.setSize(new Dimension(width, height));
-        imagePanel.removeAll();
-        imagePanel.add(picLabel);
+       
+        
+        JLabel  lab = (JLabel)imagePanel.getComponent(0);
+        lab.setIcon(myPicture);
         MainWindow.this.repaint();
     }
     
     /**
-     * Metoda care primeste o operatie de binarizare, o executa si updateaza
-     * panelul cu imaginea din stanga
+     * Metoda care primeste o operatie de binarizare, o executa si adauga
+     * un checkbox cu poza in lista din dreapta
      * @param oper operatia de binarizare de executat
      */
     private void executeBinarization(Operation oper){
+        /*
+         * Executam operatia (generare de XML + rulare executabil)
+         * In urma executiei, operatia are completata calea catre fisierul
+         * de output ("outputFile")
+         */
         oper.execute();
-        JCheckBox box = new JCheckBox();
-        String path = oper.getParameters().get(oper.getParameters().indexOf(new SimpleTypeParameter("outputFile"))).getValue();
+        
+        // Se construieste checkboxul cu fotografie
+        final JCheckBox box = new JCheckBox();
+        String path = ((ComplexTypeParameter)oper.getParameter("outputFile")).getAttribute("name").getValue();
+        path = path.substring(1, path.length()-1);
+        System.out.println(path);
         ImageIcon myPicture = new ImageIcon(new ImageIcon(path)
             .getImage().getScaledInstance(imageScrollPane.getSize().width-70, 150,
             Image.SCALE_SMOOTH));
+        
         JLabel label = new JLabel(myPicture);
         int size = imageList.size();
         label.setPreferredSize(new Dimension(imageScrollPane.getSize().width-70, 150));
         label.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         box.setPreferredSize(new Dimension(20, 30));
+        
+        /*
+         * Ascultator pentru checkbox
+         * Daca se bifeaza aces checkbox si deja sunt bifate alte 2 checkboxuri
+         *  se inlocuieste primul bifat cu acesta
+         * Daca se debifeaza acest checkbox, atunci el se elimina din vectorul
+         * checkboxurilor selectate
+         */
+        box.addActionListener(new ActionListener() {
+           @Override
+           public void actionPerformed(ActionEvent arg0) {
+               java.awt.EventQueue.invokeLater(new Runnable() {
+                   public void run() {
+                       if (box.isSelected()){
+                           if(checkedImages.size() == 2){
+                               JCheckBox jcb=checkedImages.get(0);
+                               jcb.setSelected(false);
+                               checkedImages.remove(0);
+                           }
+                           checkedImages.add(box);
+                       }
+                       else {
+                           checkedImages.remove(box);
+                       }
+                   }
+               });
+
+           }
+       });
+        
+        // Salvez checkboxul
+        allImages.add(box);
+        
+        // Construiesc un panel care va cuprinde checkboxul si Label-ul cu imaginea
         JPanel containerPanel = new JPanel();
         containerPanel.setSize(imageScrollPane.getSize().width-10,180);
         //containerPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         containerPanel.setLocation(1, size*180+1);
         containerPanel.add(box);
         containerPanel.add(label);
+        
+        // Se salveaza containerul
+        containerList.add(containerPanel);
+        
+        // Se salveaza perechea checkbox-cale imagine intr-un Hastable
         imageList.put(box, path);
+        // Se salveaza perechea checkbox-label intr-un Hashtable , pentru update
+        labelList.put(box, label);
+        
+        // Se adauga panelul nou creat in lista din dreapta
         newImgPanel.setPreferredSize(new Dimension(containerPanel.getX(), newImgPanel.getHeight()+containerPanel.getY()));
-        newImgPanel.add(containerPanel);        
+        newImgPanel.add(containerPanel);  
+        imageScrollPane.revalidate();
+        imageScrollPane.repaint();
     }
     
-     private void formComponentResized(ComponentEvent evt) {
-    }
 
 
     public static void main(String args[]) {

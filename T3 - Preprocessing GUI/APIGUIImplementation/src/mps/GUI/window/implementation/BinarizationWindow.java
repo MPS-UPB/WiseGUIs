@@ -91,8 +91,10 @@ public class BinarizationWindow extends SecondaryWindow {
                 //Indexul elementului selectat din lista din stanga este acelasi cu al aceluiasi element in lista operations
                 Operation newOperation = operations.get(selectedIndex).copy();
                 //Se creeaza o fereastra de parametri careia i se transfera lista de parametri asociata operatiei, incapsulata in newOperation
-                parametersWindow = new ParametersWindow(this, newOperation);
-                parametersWindow.setVisible(true);
+              
+                
+                    parametersWindow = new ParametersWindow(this, newOperation);
+                    parametersWindow.setVisible(true);
             }
         }
     }

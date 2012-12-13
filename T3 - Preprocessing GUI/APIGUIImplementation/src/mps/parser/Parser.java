@@ -35,8 +35,8 @@ public class Parser {
             while (ztr.hasNext()) {
 
                 XSComplexType e = (XSComplexType) ztr.next();
-                System.out.println("--------------------");
-                System.out.println("Tip complex : " + e.getName());
+             //   System.out.println("--------------------");
+             //   System.out.println("Tip complex : " + e.getName());
                 
                 ComplexTypeParameter ctp = getAttributesForComplex(e);
                 ctp.setName(e.getName());
@@ -54,9 +54,9 @@ public class Parser {
 
                 initRestrictions(e, simpleRestriction);
                 registerType(tipuriSimple,e.getName(),simpleRestriction);
-                System.out.println("--------------------------");
-                System.out.println("Tip simplu : " + e.getName());
-                System.out.println(simpleRestriction.pattern);
+              //  System.out.println("--------------------------");
+              //  System.out.println("Tip simplu : " + e.getName());
+              //  System.out.println(simpleRestriction.pattern);
 
             }
 
@@ -64,7 +64,7 @@ public class Parser {
             Iterator<XSElementDecl> jtr = s.iterateElementDecls();
             while (jtr.hasNext()) {
                 XSElementDecl e = (XSElementDecl) jtr.next();
-                System.out.println(e.getName());
+              //  System.out.println(e.getName());
                 operation.setRootElement(e.getName());
                 type = e.getType();
                 xsContentType = type.asComplexType().getContentType();
@@ -87,11 +87,11 @@ public class Parser {
         else 
         	operation.setType(0);
         
-        System.out.println("OPERATIE:"+operation.getName());
-        System.out.println("OPERATIE:"+operation.getType());
-        System.out.println("OPERATIE:"+operation.getToolTip());
+       // System.out.println("OPERATIE:"+operation.getName());
+      //  System.out.println("OPERATIE:"+operation.getType());
+       // System.out.println("OPERATIE:"+operation.getToolTip());
         
-        System.out.println("tipuri simple"+tipuriSimple.keySet());
+     //   System.out.println("tipuri simple"+tipuriSimple.keySet());
        // System.out.println("tipuri simple"+tipuriSimple.keySet());
         for(SimpleTypeParameter stp : operation.getParameters()){
             
@@ -99,19 +99,19 @@ public class Parser {
         		stp.setBaseType(tipuriSimple.get(stp.getBaseType()).baseType);
         	}
         }
-        System.out.println("tipuri complexe"+tipuriComplexe.keySet());
+       // System.out.println("tipuri complexe"+tipuriComplexe.keySet());
         for(SimpleTypeParameter stp : operation.getParameters()){
         	/*if(tipuriComplexe.containsKey(stp.getBaseType())){
         		stp.setBaseType(tipuriComplexe.get(stp.getBaseType()).getBaseType());
         	}*/
             if(stp instanceof ComplexTypeParameter){
                 //operation.getParameters().add(stp);
-                System.out.println("!!!" + stp.getName()+"!!!");
-                System.out.println(((ComplexTypeParameter)stp).getAttributes());
+             //   System.out.println("!!!" + stp.getName()+"!!!");
+             //   System.out.println(((ComplexTypeParameter)stp).getAttributes());
             }
         }
         
-        System.out.println("OPERATIE:"+operation.getParameters());
+     //   System.out.println("OPERATIE:"+operation.getParameters());
         return operation;
     }
 
@@ -136,8 +136,8 @@ public class Parser {
                     a.setBaseType(attributeDecl.getType().getName());
                     a.setName(attributeDecl.getName());
                     // a.setUse(attributeDecl.getType().getName());
-                    System.out.println("\ttype: " + attributeDecl.getType().getName());
-                    System.out.println("\tname:" + attributeDecl.getName());
+                  //  System.out.println("\ttype: " + attributeDecl.getType().getName());
+                  //  System.out.println("\tname:" + attributeDecl.getName());
                     ctp.getAttributes().add(a);
                     // System.out.println("Atribut  "+a);
                     // System.out.println("Atribut  adaugat"+ctp.getAttributes());
@@ -199,8 +199,8 @@ public class Parser {
         Iterator<? extends XSAttributeUse> i = c.iterator();
         while (i.hasNext()) {
             XSAttributeDecl attributeDecl = i.next().getDecl();
-            System.out.println("\ttype: " + attributeDecl.getType());
-            System.out.println("\tname:" + attributeDecl.getName());
+        //    System.out.println("\ttype: " + attributeDecl.getType());
+         //   System.out.println("\tname:" + attributeDecl.getName());
         }
     }
 
@@ -223,25 +223,25 @@ public class Parser {
             	if(pterm.asElementDecl().getName().equals("name")){
             		operation.tagForExecName = pterm.asElementDecl().getType().getName();
             		
-					System.out.println("unde caut numele exec :"+pterm.asElementDecl().getType().getName());
+				//	System.out.println("unde caut numele exec :"+pterm.asElementDecl().getType().getName());
 					return;
             	}
             	if(pterm.asElementDecl().getName().equals("type")){
             		operation.tagForExecType = pterm.asElementDecl().getType().getName();
-					System.out.println("unde caut tipul exec :"+pterm.asElementDecl().getType().getName());
+				//	System.out.println("unde caut tipul exec :"+pterm.asElementDecl().getType().getName());
 					return;
             	}
             	
             	if(pterm.asElementDecl().getName().equals("description")){
             		operation.tagForExecDescription = pterm.asElementDecl().getType().getName();
-					System.out.println("unde caut desscrierea exec :"+pterm.asElementDecl().getType().getName());
+				//	System.out.println("unde caut desscrierea exec :"+pterm.asElementDecl().getType().getName());
 					return;
             	}
               //  System.out.println("---------------------------------");
                 if (xsParticle.getMinOccurs() == 0) {
-                    System.out.println("elem cu minOccurs = 0 : "
-                            + pterm.getSourceDocument().getTargetNamespace()
-                            + ":" + pterm.asElementDecl().getName());
+               //     System.out.println("elem cu minOccurs = 0 : "
+                //            + pterm.getSourceDocument().getTargetNamespace()
+                //            + ":" + pterm.asElementDecl().getName());
                     /*list.add(pterm.getSourceDocument().getTargetNamespace()
                      + ":" + pterm.asElementDecl().getName());*/
                 }
@@ -258,11 +258,11 @@ public class Parser {
                                                     .getType().getName());
                 }
 		operation.getParameters().add(stp);
-                System.out.println("Element Name : "
-                        + pterm.asElementDecl().getName());
-                System.out.println("Element Type : "
-                        + pterm.asElementDecl().getType().getName());
-                System.out.println("---------------------------------");
+            //    System.out.println("Element Name : "
+             //           + pterm.asElementDecl().getName());
+             //   System.out.println("Element Type : "
+             //           + pterm.asElementDecl().getType().getName());
+             //   System.out.println("---------------------------------");
 
                 XSComplexType xsComplexType = (pterm.asElementDecl()).getType()
                         .asComplexType();
@@ -290,7 +290,7 @@ public class Parser {
                 XSModelGroup xsModelGroup2 = pterm.asModelGroup();
                 XSParticle[] xsParticleArray = xsModelGroup2.getChildren();
                 for (XSParticle xsParticleTemp : xsParticleArray) {
-                	System.out.println("IN GRUP");
+                	//System.out.println("IN GRUP");
                     getOptionalElements(operation,tipuriComplexe, xsParticleTemp);
                 }
             }

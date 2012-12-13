@@ -272,8 +272,8 @@ public class Operation {
         String inputFileAux = ((ComplexTypeParameter)getParameter("inputFile")).getAttribute("name").getValue();
         String outputFileAux = ((ComplexTypeParameter)getParameter("outputFile")).getAttribute("name").getValue();
         
-        System.out.println(inputFileAux);
-        System.out.println(outputFileAux);
+       // System.out.println(inputFileAux);
+       // System.out.println(outputFileAux);
         
         ((ComplexTypeParameter)getParameter("inputFile")).getAttribute("name").setValue(
                "\"" + ((ComplexTypeParameter)getParameter("inputFile")).getAttribute("name").getValue() + "\"");
@@ -284,9 +284,9 @@ public class Operation {
         //fisierul XML se va genera intr-un folder separat de cel cu executabilele
         String thisXMLPath = getXMLFolder() + "\\" + getName() + hash() + ".xml";
         
-        System.out.println("-----------GENERARE XML---------");
-        System.out.println(thisXMLPath);
-        System.out.println(this);
+       // System.out.println("-----------GENERARE XML---------");
+       // System.out.println(thisXMLPath);
+       // System.out.println(this);
 
         //iau fiecare parametru si trec in tag-uri
         File file = new File(thisXMLPath);
@@ -340,7 +340,7 @@ public class Operation {
                 } //daca este element de tip complex
                 else {
 
-                    System.out.println("ALELUIA");
+                 //   System.out.println("ALELUIA");
                     writer.newLine();
                     writer.write('\t');
                     
@@ -356,7 +356,7 @@ public class Operation {
 
                     for (Attribute attribute : attributes) {
 
-                         System.out.println("ceva");
+                      //   System.out.println("ceva");
                         //daca valoarea atributului nu este nula, inseamna ca:
                         //1. este required
                         //2. nu este required, dar valoarea lui a fost completata in fereastra de parametri

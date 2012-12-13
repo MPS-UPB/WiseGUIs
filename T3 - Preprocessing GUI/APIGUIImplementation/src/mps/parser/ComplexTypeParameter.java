@@ -49,13 +49,13 @@ public class ComplexTypeParameter extends SimpleTypeParameter {
     
      public void setAttribute(String name, String value) {
         
-         System.out.println(value);
+      //   System.out.println(value);
          
         for (Attribute attr : attributes) {
             
             if (attr.getName().equals(name)) {
                 attr.setValue(value);
-                System.out.println("seteaza");
+             //   System.out.println("seteaza");
             }
         }
     }

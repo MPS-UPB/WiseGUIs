@@ -67,6 +67,8 @@ public abstract class SecondaryWindow extends JFrame {
      * Lista curenta cu executabilele selectate (pana sa se dea iar OK).
      */
     ArrayList<Operation> currentSelection;
+    ArrayList<Operation> newSelection;
+    
 
     /**
      * Creates new form SecondaryWindow.
@@ -80,6 +82,7 @@ public abstract class SecondaryWindow extends JFrame {
         jChoicesModel = new DefaultListModel();
         oldSelection = new ArrayList<Operation>();
         currentSelection = new ArrayList<Operation>();
+         newSelection = new ArrayList<Operation>();
         //initial nu este selectat nimic
         selectedIndex = -1;
         initComponents();
@@ -205,6 +208,7 @@ public abstract class SecondaryWindow extends JFrame {
         //Operatia se va adauga listei curente de executabile; 
         //doar la apasarea butonului "OK" va fi transmisa mai departe in fereastra principala, spre a fi lansata in executie
         currentSelection.add(op);
+        newSelection.add(op);
 
         System.out.println(op);
 

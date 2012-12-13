@@ -95,6 +95,7 @@ public class BinarizationWindow extends SecondaryWindow {
                  if (newOperation.getParameters().size() == 2) {
 
                             currentSelection.add(newOperation);
+                            newSelection.add(newOperation);
                             //Executabilul ales din stanga trece in lista din dreapta
                             changeLists();
                         } else {
@@ -118,7 +119,7 @@ public class BinarizationWindow extends SecondaryWindow {
 
                 //Se elimina elementul selectat din lista din stanga
                 String selectedElement = (String) jChoicesModel.elementAt(selectedIndex);
-                jChoicesModel.removeElement(selectedElement);
+                jChoicesModel.removeElementAt(selectedIndex);
                 mainWindow.removeBinarization(currentSelection.remove(selectedIndex));
             }
         }

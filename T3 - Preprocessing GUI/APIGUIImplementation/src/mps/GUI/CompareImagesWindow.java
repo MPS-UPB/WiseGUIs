@@ -14,8 +14,11 @@ import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -97,28 +100,139 @@ public final class CompareImagesWindow extends JFrame {
         setLocation(x, y);
         setResizable(false);
 
-        ImageIcon sizedIcon1 = new ImageIcon(new ImageIcon(imageFile1)
-                .getImage().getScaledInstance(250, 250,
-                Image.SCALE_SMOOTH));
-
-        ImageIcon sizedIcon2 = new ImageIcon(new ImageIcon(imageFile2)
-                .getImage().getScaledInstance(250, 250,
-                Image.SCALE_SMOOTH));
+        // Prima imagine
+        FileInputStream in = null;
+        ImageIcon sizedIcon1 = null;
+        try {
+            in = new FileInputStream(imageFile1);
+            FileChannel channel = in.getChannel();
+            ByteBuffer buffer = ByteBuffer.allocate((int)channel.size());
+            channel.read(buffer);
+            Image image = ImageViewer.load(buffer.array());
+            // make sure that the image is not too big
+            //  scale with a width of 250
+            Image imageScaled = 
+              image.getScaledInstance(250,250,  Image.SCALE_SMOOTH);
+            sizedIcon1 = new ImageIcon(imageScaled);
+        }
+        catch (Exception ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                in.close();
+            } catch (IOException ex) {
+                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        // A doua imagine
+        in = null;
+        ImageIcon sizedIcon2 = null;
+        try {
+            in = new FileInputStream(imageFile2);
+            FileChannel channel = in.getChannel();
+            ByteBuffer buffer = ByteBuffer.allocate((int)channel.size());
+            channel.read(buffer);
+            Image image = ImageViewer.load(buffer.array());
+            // make sure that the image is not too big
+            //  scale with a width of 250
+            Image imageScaled = 
+              image.getScaledInstance(250,250,  Image.SCALE_SMOOTH);
+            sizedIcon2 = new ImageIcon(imageScaled);
+        }
+        catch (Exception ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                in.close();
+            } catch (IOException ex) {
+                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
 
         final JLabel labelImg1 = new JLabel(sizedIcon1);
         final JLabel labelImg2 = new JLabel(sizedIcon2);
 
-        ImageIcon smallIcon1 = new ImageIcon(new ImageIcon(imageFile1)
-                .getImage().getScaledInstance(70, 70,
-                Image.SCALE_SMOOTH));
-
-        ImageIcon smallIcon2 = new ImageIcon(new ImageIcon(imageFile2)
-                .getImage().getScaledInstance(70, 70,
-                Image.SCALE_SMOOTH));
-
+        // Prima imagine mica din stanga
+        in = null;
+        ImageIcon smallIcon1 = null;
+        try {
+            in = new FileInputStream(imageFile1);
+            FileChannel channel = in.getChannel();
+            ByteBuffer buffer = ByteBuffer.allocate((int)channel.size());
+            channel.read(buffer);
+            Image image = ImageViewer.load(buffer.array());
+            // make sure that the image is not too big
+            //  scale with a width of 70
+            Image imageScaled = 
+              image.getScaledInstance(70,70,  Image.SCALE_SMOOTH);
+            smallIcon1 = new ImageIcon(imageScaled);
+        }
+        catch (Exception ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                in.close();
+            } catch (IOException ex) {
+                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         
-        final Image overlayImage = new ImageIcon(imageFile1).getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH);
-        final Image backgroundImage = new ImageIcon(imageFile2).getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH);
+        // A doua imagine mica din stanga
+        in = null;
+        ImageIcon smallIcon2 = null;
+        try {
+            in = new FileInputStream(imageFile2);
+            FileChannel channel = in.getChannel();
+            ByteBuffer buffer = ByteBuffer.allocate((int)channel.size());
+            channel.read(buffer);
+            Image image = ImageViewer.load(buffer.array());
+            // make sure that the image is not too big
+            //  scale with a width of 70
+            Image imageScaled = 
+              image.getScaledInstance(70,70,  Image.SCALE_SMOOTH);
+            smallIcon2 = new ImageIcon(imageScaled);
+        }
+        catch (Exception ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                in.close();
+            } catch (IOException ex) {
+                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+     //   final Image overlayImage = new ImageIcon(imageFile1).getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH);
+     //   final Image backgroundImage = new ImageIcon(imageFile2).getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH);
+        
+        // Bucata de cod pentru constructia de imagini tiff pentru overlayImage
+        in = new FileInputStream(imageFile1);
+        FileChannel channel = in.getChannel();
+        ByteBuffer buffer = ByteBuffer.allocate((int)channel.size());
+        channel.read(buffer);
+        Image overlayImage_tmp = null;
+        try {
+            overlayImage_tmp = ImageViewer.load(buffer.array());
+            overlayImage_tmp.getScaledInstance(250, 250, Image.SCALE_SMOOTH);
+        } catch (Exception ex) {
+            Logger.getLogger(CompareImagesWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        final Image overlayImage = overlayImage_tmp;
+        
+        // Bucata de cod pentru constructia de imagini tiff pentru backgroundImage
+        in = new FileInputStream(imageFile2);
+        FileChannel channel2 = in.getChannel();
+        ByteBuffer buffer2 = ByteBuffer.allocate((int)channel2.size());
+        channel2.read(buffer2);
+        Image backgroundImage_tmp = null;
+        try {
+            backgroundImage_tmp = ImageViewer.load(buffer2.array());
+            backgroundImage_tmp.getScaledInstance(250, 250, Image.SCALE_SMOOTH);
+        } catch (Exception ex) {
+            Logger.getLogger(CompareImagesWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        final Image backgroundImage = backgroundImage_tmp;
         
         buttonsPanel = new JPanel();
         imagePanel = new JPanel();
@@ -270,47 +384,116 @@ public final class CompareImagesWindow extends JFrame {
             }
 
             @Override
-            public void mousePressed(MouseEvent me) {
-            try {                
-                    Image img1 = ImageIO.read(new File(imageFile1)).getScaledInstance(250, 250, Image.SCALE_SMOOTH);
-                    Image img2 = ImageIO.read(new File(imageFile2)).getScaledInstance(250, 250, Image.SCALE_SMOOTH);
-                
-                    imagePanel.remove(imagePanel.getComponent(1));
-                    
-                   FadeOut fo = null;
-                    
-                    if (img1Selected)
-                    {
-                        fo = new FadeOut(img1, img2);
-                    } else
-                    {
-                        fo = new FadeOut(img2, img1);
-                    }
-                    
-                    img1Selected = false;
-                    img2Selected = false;
-                                            
-                    fo.setSize(250, 250);
-                    fo.setAlphaLimit(0.5f);
-                    fo.start();
-                    
-                    ImageIcon sizedIcon = new ImageIcon(new ImageIcon(imageFile2)
-                        .getImage().getScaledInstance(250, 250,
-                        Image.SCALE_SMOOTH));
+            public void mousePressed(MouseEvent me) {             
+            //    Image img1 = ImageIO.read(new File(imageFile1)).getScaledInstance(250, 250, Image.SCALE_SMOOTH);
+             //   Image img2 = ImageIO.read(new File(imageFile2)).getScaledInstance(250, 250, Image.SCALE_SMOOTH);
 
-                    final JLabel labelImg = new JLabel(sizedIcon);
-                    
-                    labelImg.add(fo);
-                   
-                    imagePanel.add(labelImg, 1);
-                    
-                    revalidate();
-                    repaint();
+                // Pentru img1
+                FileInputStream in = null;
+                Image img1 = null;
+                try {
+                    in = new FileInputStream(imageFile1);
+                    FileChannel channel = in.getChannel();
+                    ByteBuffer buffer = ByteBuffer.allocate((int)channel.size());
+                    channel.read(buffer);
+                    Image image = ImageViewer.load(buffer.array());
+                    // make sure that the image is not too big
+                    //  scale with a width of 250
+                    img1 = 
+                      image.getScaledInstance(250,250,  Image.SCALE_SMOOTH);
+                }
+                catch (Exception ex) {
+                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                } finally {
+                    try {
+                        in.close();
+                    } catch (IOException ex) {
+                        Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+
+                // Pentru img2
+                in = null;
+                Image img2 = null;
+                try {
+                    in = new FileInputStream(imageFile2);
+                    FileChannel channel = in.getChannel();
+                    ByteBuffer buffer = ByteBuffer.allocate((int)channel.size());
+                    channel.read(buffer);
+                    Image image = ImageViewer.load(buffer.array());
+                    // make sure that the image is not too big
+                    //  scale with a width of 250
+                    img2 = 
+                      image.getScaledInstance(250,250,  Image.SCALE_SMOOTH);
+                }
+                catch (Exception ex) {
+                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                } finally {
+                    try {
+                        in.close();
+                    } catch (IOException ex) {
+                        Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+
+                imagePanel.remove(imagePanel.getComponent(1));
+
+               FadeOut fo = null;
+
+                if (img1Selected)
+                {
+                    fo = new FadeOut(img1, img2);
+                } else
+                {
+                    fo = new FadeOut(img2, img1);
+                }
+
+                img1Selected = false;
+                img2Selected = false;
+
+                fo.setSize(250, 250);
+                fo.setAlphaLimit(0.5f);
+                fo.start();
+              /*  
+                ImageIcon sizedIcon = new ImageIcon(new ImageIcon(imageFile2)
+                    .getImage().getScaledInstance(250, 250,
+                    Image.SCALE_SMOOTH));
+               */
+                
+                // Pentru sizedIcon
+                in = null;
+                ImageIcon sizedIcon = null;
+                try {
+                    in = new FileInputStream(imageFile2);
+                    FileChannel channel = in.getChannel();
+                    ByteBuffer buffer = ByteBuffer.allocate((int)channel.size());
+                    channel.read(buffer);
+                    Image image = ImageViewer.load(buffer.array());
+                    // make sure that the image is not too big
+                    //  scale with a width of 250
+                    Image imageScaled = 
+                      image.getScaledInstance(250,250,  Image.SCALE_SMOOTH);
+                    sizedIcon = new ImageIcon(imageScaled);
+                }
+                catch (Exception ex) {
+                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                } finally {
+                    try {
+                        in.close();
+                    } catch (IOException ex) {
+                        Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                final JLabel labelImg = new JLabel(sizedIcon);
+
+                labelImg.add(fo);
+
+                imagePanel.add(labelImg, 1);
+
+                revalidate();
+                repaint();
                                    
             
-            } catch (IOException ex) {
-                Logger.getLogger(CompareImagesWindow.class.getName()).log(Level.SEVERE, null, ex);
-            }
             }
 
             @Override

@@ -93,18 +93,19 @@ public class PreprocessingWindow extends SecondaryWindow {
 
                 //Procedeul de aici nu mai este acelasi ca in fereastra de binarizare, pentru ca executabilele se muta dintr-o lista in alta
                 //Este necesara cautarea "manuala" a executabilului in operations, dupa nume
-                
+
                 for (Operation op : operations) {
 
                     if (selectedElement.equals(op.getName())) {
 
                         Operation newOperation = op.copy();
                         //transfer ferestrei de parametri lista de parametri asociata operatiei
-                        
+
                         //daca are si alti parametri, in afara de fisierul de input si cel de output
-                          if (newOperation.getParameters().size() == 2) {
+                        if (newOperation.getParameters().size() == 2) {
 
                             currentSelection.add(newOperation);
+                            newSelection.add(newOperation);
                             //Executabilul ales din stanga trece in lista din dreapta
                             changeLists();
                         } else {
@@ -112,7 +113,7 @@ public class PreprocessingWindow extends SecondaryWindow {
                             ParametersWindow parametersWindow = new ParametersWindow(this, newOperation);
                             parametersWindow.setVisible(true);
                         }
-                        
+
                         break;
                     }
                 }
@@ -120,6 +121,8 @@ public class PreprocessingWindow extends SecondaryWindow {
         }
     }
 
+    int oldIndex;
+    
     @Override
     protected void jRemoveButtonActionPerformed(java.awt.event.ActionEvent evt) {
 
@@ -131,29 +134,51 @@ public class PreprocessingWindow extends SecondaryWindow {
 
                 //Elementul este eliminat din lista din dreapta si trecut inapoi in lista din stanga                
                 String selectedElement = (String) jChoicesModel.elementAt(selectedIndex);
-                jChoicesModel.removeElement(selectedElement);
-                currentSelection.remove(selectedIndex);
+             
 
                 //Daca elimin un executabil, sa fie pus inapoi in lista din stanga pe aceeasi pozitie pe care era inainte 
                 //(relativ la celelalte elemente, sa se pastreze ordinea elementelor, ca sa nu ametim utilizatorul)
 
                 Object[] ceva = jListingModel.toArray();
-                jListingModel.clear();
 
-                for (Operation op : operations) {
+                if (selectedIndex > oldIndex) {
+                    
+                       jChoicesModel.removeElementAt(selectedIndex);
+                       currentSelection.remove(selectedIndex);
 
-                    if (op.getName().equals(selectedElement)) {
+                        newSelection.remove(selectedIndex - oldIndex-1);
 
-                        jListingModel.addElement(selectedElement);
-                    }
+                        //daca elementul selectat este in jListingModel deja, atunci cand in sterg nu-l mai trec dincolo
+                        boolean yesRemove = true;
+                        for (int i = 0; i < ceva.length; i++) {
 
-                    for (int j = 0; j < ceva.length; j++) {
-                        if (op.getName().equals(ceva[j])) {
-
-                            jListingModel.addElement(ceva[j].toString());
+                            if (selectedElement.equals(ceva[i].toString())) {
+                                yesRemove = false;
+                                break;
+                            }
                         }
-                    }
+
+                        if (yesRemove) {
+
+                            jListingModel.clear();
+                            for (Operation op2 : operations) {
+
+                                if (op2.getName().equals(selectedElement)) {
+
+                                    jListingModel.addElement(selectedElement);
+                                }
+
+                                for (int j = 0; j < ceva.length; j++) {
+                                    if (op2.getName().equals(ceva[j])) {
+
+                                        jListingModel.addElement(ceva[j].toString());
+                                    }
+                                }
+                            }
+                        }                    
                 }
+
+
             }
         }
     }
@@ -165,7 +190,7 @@ public class PreprocessingWindow extends SecondaryWindow {
         //In Main Window se vor lansa in executie programele, dupa ce se vor adauga 2 parametri: fisierul de intrare si cel de iesire 
         //(sau doar fisierul de intrare, cel de iesire poate fi generat automat si transmis inapoi ca raspuns in ferestra principala)
 
-         mainWindow.setEnabled(true);
+        mainWindow.setEnabled(true);
         this.setVisible(false);
 
         //Vechea selectie devine noul set de executabile selectate 
@@ -174,10 +199,12 @@ public class PreprocessingWindow extends SecondaryWindow {
 
         oldSelection.clear();
         oldSelection.addAll(currentSelection);
+        
+        oldIndex = oldSelection.size()-1;
 
         currentSelection.removeAll(aux);
         //Se transfera in fereastra principala lista cu executabilele de preprocesare ce trebuie aplicate imaginii
-        mainWindow.launchPreprocOperations(currentSelection);
+        mainWindow.launchPreprocOperations(newSelection);
     }
 
     @Override
@@ -224,10 +251,12 @@ public class PreprocessingWindow extends SecondaryWindow {
         for (Operation op : oldSelection) {
 
             jChoicesModel.addElement(op.getName());
-            jListingModel.removeElement(op.getName());
+            //   jListingModel.removeElement(op.getName());
         }
 
         currentSelection.addAll(oldSelection);
+        newSelection.clear();
+         oldIndex = oldSelection.size()-1;
 
         mainWindow.setEnabled(true);
         this.setVisible(false);

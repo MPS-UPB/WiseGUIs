@@ -6,19 +6,22 @@ import com.sun.xml.xsom.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+
 import mps.parser.implementation.SimpleTypeRestriction;
 
 import org.xml.sax.SAXException;
 
 public class Parser {
 
-    public static void parseXSDFile(String fileName) {
+    public static Operation parseXSDFile(String fileName) {
+    	Operation operation = new Operation();
+    	Map<String,SimpleTypeRestriction>tipuriSimple = new HashMap<>();
+    	Map<String,Attribute>tipuriComplexe = new HashMap<>();
         XSOMParser parser = new XSOMParser();
-        parser.setErrorHandler(null);
-        parser.setEntityResolver(null);
+       
         XSType type = null;
         XSContentType xsContentType = null;
-        List<String> list = new ArrayList<String>();
+       
         try {
             parser.parse(new File(fileName));
             XSSchemaSet sset = parser.getResult();
@@ -33,7 +36,9 @@ public class Parser {
                 XSComplexType e = (XSComplexType) ztr.next();
                 System.out.println("--------------------");
                 System.out.println("Tip complex : " + e.getName());
-                getAttributesForComplex(e);
+                
+                Attribute a = getAttributesForComplex(e);
+                tipuriComplexe.put(e.getName(),a);
 
             }
 
@@ -45,6 +50,7 @@ public class Parser {
                 SimpleTypeRestriction simpleRestriction = new SimpleTypeRestriction();
 
                 initRestrictions(e, simpleRestriction);
+                registerType(tipuriSimple,e.getName(),simpleRestriction);
                 System.out.println("--------------------------");
                 System.out.println("Tip simplu : " + e.getName());
                 System.out.println(simpleRestriction.pattern);
@@ -56,10 +62,12 @@ public class Parser {
             while (jtr.hasNext()) {
                 XSElementDecl e = (XSElementDecl) jtr.next();
                 System.out.println(e.getName());
+                operation.setRootElement(e.getName());
                 type = e.getType();
                 xsContentType = type.asComplexType().getContentType();
                 XSParticle xsParticle = xsContentType.asParticle();
-                getOptionalElements(list, xsParticle);
+                getOptionalElements(operation, xsParticle);
+               // System.out.println("ELEMS :");
             }
 
         } catch (SAXException e) {
@@ -68,19 +76,57 @@ public class Parser {
             e.printStackTrace();
         }
 
+         
+        operation.setName(tipuriSimple.get(operation.tagForExecName).pattern);
+        operation.setToolTip(tipuriSimple.get(operation.tagForExecDescription).pattern);
+        if(tipuriSimple.get(operation.tagForExecType).pattern.equals("binarization"))
+        	operation.setType(1);
+        else 
+        	operation.setType(0);
+        
+        System.out.println("OPERATIE:"+operation.getName());
+        System.out.println("OPERATIE:"+operation.getType());
+        System.out.println("OPERATIE:"+operation.getToolTip());
+        
+        System.out.println("tipuri simple"+tipuriSimple.keySet());
+       // System.out.println("tipuri simple"+tipuriSimple.keySet());
+        for(SimpleTypeParameter stp : operation.getParameters()){
+        	if(tipuriSimple.containsKey(stp.getBaseType())){
+        		stp.setBaseType(tipuriSimple.get(stp.getBaseType()).baseType);
+        	}
+        }
+        System.out.println("tipuri complexe"+tipuriComplexe.keySet());
+        for(SimpleTypeParameter stp : operation.getParameters()){
+        	if(tipuriComplexe.containsKey(stp.getBaseType())){
+        		stp.setBaseType(tipuriComplexe.get(stp.getBaseType()).getBaseType());
+        	}
+        }
+        
+        System.out.println("OPERATIE:"+operation.getParameters());
+        return operation;
     }
 
-    private static void getAttributesForComplex(XSComplexType xsComplexType) {
-        Collection<? extends XSAttributeUse> c = xsComplexType.getAttributeUses();
-        Iterator<? extends XSAttributeUse> i = c.iterator();
-        while (i.hasNext()) {
-            XSAttributeDecl attributeDecl = i.next().getDecl();
-            System.out.println("\ttype: " + attributeDecl.getType());
-            System.out.println("\tname:" + attributeDecl.getName());
+    private static void registerType(Map<String, SimpleTypeRestriction> tipuri,
+			String name, SimpleTypeRestriction simpleRestriction) {
+		tipuri.put(name,simpleRestriction);
+		
+	}
 
+	private static Attribute getAttributesForComplex(XSComplexType xsComplexType) {
+		Attribute a = new Attribute();
+		Collection<? extends XSAttributeUse> c = xsComplexType
+				.getAttributeUses();
+		Iterator<? extends XSAttributeUse> i = c.iterator();
 
+		XSAttributeDecl attributeDecl = i.next().getDecl();
+		a.setBaseType(attributeDecl.getType().getName());
+		a.setName(attributeDecl.getName());
+		// a.setUse(attributeDecl.getType().getName());
+		System.out.println("\ttype: " + attributeDecl.getType());
+		System.out.println("\tname:" + attributeDecl.getName());
 
-        }
+		return a;
+       
     }
 
     private static void initRestrictions(XSSimpleType xsSimpleType, SimpleTypeRestriction t) {
@@ -120,11 +166,15 @@ public class Parser {
                 if (facet.getName().equals(XSFacet.FACET_TOTALDIGITS)) {
                     t.totalDigits = facet.getValue().value;
                 }
+               
             }
             if (enumeration.size() > 0) {
                 t.enumeration = enumeration.toArray(new String[]{});
             }
+            t.baseType = restriction.getBaseType().getName();
+            System.out.println(xsSimpleType.getName()+" BASE :"+restriction.getBaseType().getName());
         }
+        
     }
 
     private static void getAttributesForSimple(XSSimpleType xsSimpleType) {
@@ -137,13 +187,40 @@ public class Parser {
         }
     }
 
-    private static void getOptionalElements(List<String> list, XSParticle xsParticle) {
+    private static void getOptionalElements(Operation operation, XSParticle xsParticle) {
         if (xsParticle != null) {
             XSTerm pterm = xsParticle.getTerm();
             // daca am gasit un element inner
+            
+            
             if (pterm.isElementDecl()) {
 
-                System.out.println("---------------------------------");
+            	
+            	if(pterm.asElementDecl().getName().equals("execInfo")){
+					getOptionalElements(operation, pterm.asElementDecl()
+							.getType().asComplexType().getContentType()
+							.asParticle());
+					return;
+            	}
+            	
+            	if(pterm.asElementDecl().getName().equals("name")){
+            		operation.tagForExecName = pterm.asElementDecl().getType().getName();
+            		
+					System.out.println("unde caut numele exec :"+pterm.asElementDecl().getType().getName());
+					return;
+            	}
+            	if(pterm.asElementDecl().getName().equals("type")){
+            		operation.tagForExecType = pterm.asElementDecl().getType().getName();
+					System.out.println("unde caut tipul exec :"+pterm.asElementDecl().getType().getName());
+					return;
+            	}
+            	
+            	if(pterm.asElementDecl().getName().equals("description")){
+            		operation.tagForExecDescription = pterm.asElementDecl().getType().getName();
+					System.out.println("unde caut desscrierea exec :"+pterm.asElementDecl().getType().getName());
+					return;
+            	}
+              //  System.out.println("---------------------------------");
                 if (xsParticle.getMinOccurs() == 0) {
                     System.out.println("elem cu minOccurs = 0 : "
                             + pterm.getSourceDocument().getTargetNamespace()
@@ -152,7 +229,10 @@ public class Parser {
                      + ":" + pterm.asElementDecl().getName());*/
                 }
 
-
+				SimpleTypeParameter stp = createSimpleParameter(pterm
+						.asElementDecl().getName(), pterm.asElementDecl()
+						.getType().getName());
+				operation.getParameters().add(stp);
                 System.out.println("Element Name : "
                         + pterm.asElementDecl().getName());
                 System.out.println("Element Type : "
@@ -181,19 +261,27 @@ public class Parser {
 
             } else if (pterm.isModelGroup()) {
 
+            	
                 XSModelGroup xsModelGroup2 = pterm.asModelGroup();
                 XSParticle[] xsParticleArray = xsModelGroup2.getChildren();
                 for (XSParticle xsParticleTemp : xsParticleArray) {
-                    getOptionalElements(list, xsParticleTemp);
+                	System.out.println("IN GRUP");
+                    getOptionalElements(operation, xsParticleTemp);
                 }
             }
         }
     }
 
-    public static List<Operation> getExecTypes() {
+    private static SimpleTypeParameter createSimpleParameter(String name,
+			String type) {
+    	return new SimpleTypeParameter(name, type);
+		
+	}
+
+	public static List<Operation> getExecTypes() {
 
         List<Operation> ops = new ArrayList<Operation>();
-        Operation op1 = new Operation(0, "rotate");
+       /* Operation op1 = new Operation(0, "rotate");
         Operation op2 = new Operation(0, "crop");
         Operation op3 = new Operation(1, "otsu1");
         Operation op4 = new Operation(1, "otsu2");
@@ -254,14 +342,19 @@ public class Parser {
         op4.getParameters().add(param3);
         op4.getParameters().add(param4);
 
+*/
+        Operation op1 = parseXSDFile("crop.xsd");
+        Operation op2 = parseXSDFile("rotate.xsd");
+        Operation op3 = parseXSDFile("otsu.xsd");
         ops.add(op1);
         ops.add(op2);
         ops.add(op3);
-        ops.add(op4);
         return ops;
     }
 
     public static void main(String[] args) {
-        parseXSDFile("crop.xsd");
+        Operation op1 = parseXSDFile("crop.xsd");
+        Operation op2 = parseXSDFile("rotate.xsd");
+        Operation op3 = parseXSDFile("otsu.xsd");
     }
 }

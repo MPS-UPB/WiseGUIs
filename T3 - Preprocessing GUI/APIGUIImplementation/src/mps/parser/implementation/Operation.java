@@ -23,7 +23,6 @@ import java.io.FileOutputStream;
  * @author Liz
  */
 public class Operation {
-
     /**
      * Tipul general al executabilului: de procesare sau de binarizare. 0 pentru
      * preprocesare sau 1 pentru binarizare
@@ -67,6 +66,12 @@ public class Operation {
      */
     private String XMLFolder = "D:\\Facultate\\Anul IV Sem I\\MPS\\Proiect\\Repository\\WiseGUIs\\T3 - Preprocessing GUI\\APIGUIImplementation\\XMLs";
 
+   //date pentru parser 
+    String tagForExecName = null;
+    String tagForExecType = null;
+    String tagForExecDescription = null;
+    
+    
     public Operation() {
 
         //Initializari

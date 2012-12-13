@@ -41,7 +41,7 @@
        
        <xs:element name="inputFile" type="fileType"/>
        <xs:element name="outputFile" type="fileType"/>
-       <xs:element name="top" type="xs:integer"/>
+       <xs:element name="top" type="inttype"/>
        <xs:element name="bottom" type="xs:integer"/>
        <xs:element name="left" type="xs:integer"/>
        <xs:element name="right" type="xs:integer"/>

@@ -10,6 +10,7 @@ package mps.parser.implementation;
  */
 public class SimpleTypeRestriction {
 
+	public String baseType;
     public String[] enumeration = null;
     public String maxValue = null;
     public String minValue = null;

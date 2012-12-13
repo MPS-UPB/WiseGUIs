@@ -42,6 +42,10 @@ public class SimpleTypeParameter {
         value = null;
         restrictions = new SimpleTypeRestriction();
     }
+    public SimpleTypeParameter(String name, String baseType) {
+       this(name);
+       this.baseType = baseType;
+    }
 
     /**
      * @return the name

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package mps.parser.implementation;
+package mps.parser;
 
 import java.util.ArrayList;
 
@@ -106,7 +106,18 @@ public class SimpleTypeParameter {
     @Override
     public boolean equals(Object obj) {
 
-        return this.name.equals(((SimpleTypeParameter) obj).getName());
+        //verific sa fie toate chestiile egale (nume, tip de baza, restrictii...)
+        //s-ar putea sa arunce NullPointerException, daca n-are completate valorile...
+        
+        SimpleTypeParameter newParam = (SimpleTypeParameter)obj;        
+      
+        if (!this.name.equals(newParam.getName()))
+            return false;
+        if (this.value == null && newParam.getValue() != null || this.value != null && newParam.getValue() == null)
+            return false;
+        if (this.value == null && newParam.getValue() == null)
+            return true;
+        return this.value.equals(newParam.getValue());
     }
 
     public SimpleTypeParameter copy() {
@@ -124,4 +135,6 @@ public class SimpleTypeParameter {
 
         return getName() + " " + getBaseType() + " " + getValue();
     }
+    
+    
 }

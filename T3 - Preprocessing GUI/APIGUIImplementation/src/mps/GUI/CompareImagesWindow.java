@@ -1,4 +1,4 @@
-package mps.GUI.window.implementation;
+package mps.GUI;
 
 /**
  * @author Roxana

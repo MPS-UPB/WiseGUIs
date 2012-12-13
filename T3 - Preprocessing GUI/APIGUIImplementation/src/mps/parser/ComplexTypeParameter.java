@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package mps.parser.implementation;
+package mps.parser;
 
 import java.util.ArrayList;
 
@@ -58,5 +58,25 @@ public class ComplexTypeParameter extends SimpleTypeParameter {
                 System.out.println("seteaza");
             }
         }
+    }
+     
+      @Override
+    public boolean equals(Object obj) {
+
+        //verific sa fie toate chestiile egale (nume, tip de baza, restrictii...)
+        //s-ar putea sa arunce NullPointerException, daca n-are completate valorile...
+        
+        if (!super.equals(obj)) 
+            return false;
+          
+        ComplexTypeParameter newParam = (ComplexTypeParameter)obj;  
+
+        for (int i = 0 ; i < attributes.size(); i++) {
+
+           if (!this.attributes.get(i).equals(newParam.getAttributes().get(i)))
+               return false;
+        }      
+                
+        return true;
     }
 }

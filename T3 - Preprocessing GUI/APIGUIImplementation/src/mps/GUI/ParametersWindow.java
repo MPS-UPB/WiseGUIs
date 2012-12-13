@@ -1,4 +1,4 @@
-package mps.GUI.window.implementation;
+package mps.GUI;
 
 /*
  * To change this template, choose Tools | Templates
@@ -8,11 +8,15 @@ package mps.GUI.window.implementation;
  *
  * @author Liz
  */
-import mps.parser.implementation.Operation;
+import mps.parser.Operation;
 import javax.swing.*;
 
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -20,9 +24,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 import javax.swing.border.EmptyBorder;
-import mps.parser.implementation.SimpleTypeParameter;
-import mps.parser.implementation.ComplexTypeParameter;
-import mps.parser.implementation.SimpleTypeRestriction;
+import mps.parser.SimpleTypeParameter;
+import mps.parser.ComplexTypeParameter;
+import mps.parser.SimpleTypeRestriction;
 import java.util.ListIterator;
 
 //creez de fiecare data o fereastra noua? cam da
@@ -83,10 +87,58 @@ public class ParametersWindow extends javax.swing.JFrame {
      */
     private void initComponents() {
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+    //    setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);    //fereastra nu poate fi largita/micsorata cu mouse-ul
         setLocationRelativeTo(null); //pozitionarea ferestrei in centrul ecranului
 
+         addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent arg0) {
+            }
+
+            @Override
+            public void windowIconified(WindowEvent arg0) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent arg0) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent arg0) {
+            }
+
+            @Override
+            public void windowClosing(WindowEvent arg0) {
+
+                //cand se inchide fereastra de la "X", nu se salveaza modificarile
+                close();
+            }
+
+            @Override
+            public void windowClosed(WindowEvent arg0) {
+            }
+
+            @Override
+            public void windowActivated(WindowEvent arg0) {
+                //    mainWindow.setEnabled(false);
+            }
+        });
+
+        addComponentListener(new ComponentAdapter() {
+            public void componentHidden(ComponentEvent e) {
+
+                close();
+            }
+
+            public void componentShown(ComponentEvent e) {
+                //    mainWindow.setEnabled(false);
+            }
+        });
+        
+        
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -191,9 +243,7 @@ public class ParametersWindow extends javax.swing.JFrame {
          }
          */
 
-        eroare1.setVisible(false);
-        eroare2.setVisible(false);
-        dispose();
+       close();
     }
 
     /**
@@ -377,5 +427,12 @@ public class ParametersWindow extends javax.swing.JFrame {
 
             //daca e de tip complex, atunci se va crea un panel in care vor fi adaugate si atributele
         }
+    }
+    
+    private void close() {
+        
+         eroare1.setVisible(false);
+        eroare2.setVisible(false);
+        dispose();
     }
 }

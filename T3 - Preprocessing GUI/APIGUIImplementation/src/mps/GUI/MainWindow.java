@@ -1,4 +1,4 @@
-package mps.GUI.window.implementation;
+package mps.GUI;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -11,10 +11,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
-import mps.parser.implementation.ComplexTypeParameter;
-import mps.parser.implementation.Parser;
-import mps.parser.implementation.Operation;
-import mps.parser.implementation.SimpleTypeParameter;
+import mps.parser.ComplexTypeParameter;
+import mps.parser.Parser;
+import mps.parser.Operation;
+import mps.parser.SimpleTypeParameter;
 
 /**
  *
@@ -226,7 +226,7 @@ public class MainWindow extends JFrame{
                                      if(checked == item){
                                          // modific operatia
                                          ((ComplexTypeParameter)operations.get(j).getParameter("inputFile")).setAttribute
-                                                 ("name",'"' + pathImage + '"');
+                                                 ("name",pathImage);
                                          
                                          // execut operatia pentru a obtine imaginea de output
                                          operations.get(j).execute();
@@ -500,7 +500,7 @@ public class MainWindow extends JFrame{
             
             // Fisierul de input este pus in lista de parametri;
           
-            ((ComplexTypeParameter)preprocOperations.get(i).getParameter("inputFile")).setAttribute("name",'"' + pathImage +  '"');
+            ((ComplexTypeParameter)preprocOperations.get(i).getParameter("inputFile")).setAttribute("name",pathImage);
             
             executePreprocesing(preprocOperations.get(i));
             
@@ -509,7 +509,7 @@ public class MainWindow extends JFrame{
                 for(int j=0;j<operations.size();j++){
                     // se face update cu noua valoare (cheia exista)
                     
-                    ((ComplexTypeParameter)operations.get(j).getParameter("inputFile")).setAttribute("name",'"' + pathImage + '"');
+                    ((ComplexTypeParameter)operations.get(j).getParameter("inputFile")).setAttribute("name",pathImage);
                     
                     // Executam operatia ca sa obtinem outputFile
                     operations.get(j).execute();
@@ -560,7 +560,7 @@ public class MainWindow extends JFrame{
             execTypes.add(binarizOperations.get(i));
          
            ((ComplexTypeParameter)binarizOperations.get(i).getParameter("inputFile")).setAttribute
-                   ("name",'"' + pathImage + '"');
+                   ("name",pathImage);
             executeBinarization(binarizOperations.get(i));
             operations.add(binarizOperations.get(i));
         }
@@ -611,7 +611,6 @@ public class MainWindow extends JFrame{
         oper.execute();
        
          String path =((ComplexTypeParameter)oper.getParameter("outputFile")).getAttribute("name").getValue();
-         path = path.substring(1, path.length()-1); // scot ghilimelele de la cale
          pathTextField.setText(path);
          System.out.println(path);         
         
@@ -650,7 +649,6 @@ public class MainWindow extends JFrame{
         // Se construieste checkboxul cu fotografie
         final JCheckBox box = new JCheckBox();
         String path = ((ComplexTypeParameter)oper.getParameter("outputFile")).getAttribute("name").getValue();
-        path = path.substring(1, path.length()-1);
         System.out.println(path);
         ImageIcon myPicture = new ImageIcon(new ImageIcon(path)
             .getImage().getScaledInstance(imageScrollPane.getSize().width-70, 150,

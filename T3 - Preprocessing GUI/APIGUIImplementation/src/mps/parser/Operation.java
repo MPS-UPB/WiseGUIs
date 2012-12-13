@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package mps.parser.implementation;
+package mps.parser;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,8 +14,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.sun.xml.xsom.*;
-import mps.parser.implementation.SimpleTypeParameter;
-import mps.parser.implementation.ComplexTypeParameter;
+import mps.parser.SimpleTypeParameter;
+import mps.parser.ComplexTypeParameter;
 import java.io.FileOutputStream;
 
 /**
@@ -99,7 +99,11 @@ public class Operation {
     }
 
     public void setName(String name) {
-        this.name = name;
+       
+        //numele sa fie fara extensie
+        String delims = "\\.";       
+        String[] tokens = name.split(delims);
+        this.name = tokens[0];
     }
 
     /**
@@ -208,11 +212,7 @@ public class Operation {
      */
     public String execute() {
 
-        String delims = "\\.";
-        
-        
-      
-        
+        String delims = "\\.";       
         String[] tokens = ((ComplexTypeParameter)getParameter("inputFile")).getAttribute("name").getValue().split(delims);
    //       System.out.println(getParameter("inputFile").getValue() + " " + tokens.length);
         
@@ -221,12 +221,12 @@ public class Operation {
         //adaugare parametru fisier de iesire
         if (type == 0) {
 
-            outputPath = tokens[0] + "_preproc_output." + tokens[1];
+            outputPath = tokens[0] + "_preproc_output" + ".tiff"; //+ tokens[1];
 
         } //output in fisere dictincte, pentru executabilele de binarizare
         else {
 
-            outputPath = tokens[0] + "_binariz_output" + hash() + "." + tokens[1];
+            outputPath = tokens[0] + "_binariz_output" + hash() + ".tiff"; // "." + tokens[1];
         }
         ((ComplexTypeParameter)getParameter("outputFile")).setAttribute("name", outputPath);
         String localXMLPath = generateXML();
@@ -234,7 +234,7 @@ public class Operation {
         try {
 
             //mai bine ar fi fost sa se citeasca executabilele din folder si apoi sa se dea calea absoluta ca param
-            String thisExecPath = getExecFolder() + "\\" + getName();// + ".exe";
+            String thisExecPath = getExecFolder() + "\\" + getName() + ".exe";
 
             //lansare in executie
             //defineste proces
@@ -250,7 +250,8 @@ public class Operation {
             proc.waitFor();
 
             //sterg fisierul XML generat anterior
-       //     new File(localXMLPath).delete();
+           // new File(localXMLPath).delete();
+            //pot sa fac clear la directorul cu XML-uri, cand ies din aplicatie; sau pot sa le pastrez ca un fel de log
 
         } catch (IOException ex) {
             Logger.getLogger(Operation.class.getName()).log(Level.SEVERE, null, ex);
@@ -268,15 +269,20 @@ public class Operation {
      */
     public String generateXML() {
 
-     /*   ((ComplexTypeParameter)getParameter("inputFile")).getAttribute("name").setValue(
-               '"' + ((ComplexTypeParameter)getParameter("inputFile")).getAttribute("name").getValue() +  '"' );
+        String inputFileAux = ((ComplexTypeParameter)getParameter("inputFile")).getAttribute("name").getValue();
+        String outputFileAux = ((ComplexTypeParameter)getParameter("outputFile")).getAttribute("name").getValue();
+        
+        System.out.println(inputFileAux);
+        System.out.println(outputFileAux);
+        
+        ((ComplexTypeParameter)getParameter("inputFile")).getAttribute("name").setValue(
+               "\"" + ((ComplexTypeParameter)getParameter("inputFile")).getAttribute("name").getValue() + "\"");
         
         ((ComplexTypeParameter)getParameter("outputFile")).getAttribute("name").setValue(
-               '"' + ((ComplexTypeParameter)getParameter("outputFile")).getAttribute("name").getValue() +  '"' );
-        */
+               '\"' + ((ComplexTypeParameter)getParameter("outputFile")).getAttribute("name").getValue() +  '\"' );        
         
         //fisierul XML se va genera intr-un folder separat de cel cu executabilele
-        String thisXMLPath = getXMLFolder() + "\\" + getName() + ".xml";
+        String thisXMLPath = getXMLFolder() + "\\" + getName() + hash() + ".xml";
         
         System.out.println("-----------GENERARE XML---------");
         System.out.println(thisXMLPath);
@@ -387,6 +393,9 @@ public class Operation {
         } catch (IOException ex) {
             Logger.getLogger(Operation.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+         ((ComplexTypeParameter)getParameter("inputFile")).getAttribute("name").setValue(inputFileAux);
+         ((ComplexTypeParameter)getParameter("outputFile")).getAttribute("name").setValue(outputFileAux);
 
         return thisXMLPath;
     }
@@ -472,5 +481,22 @@ public class Operation {
             if (param.getName().equals(paramName))
                 param.setValue(value);
         }
+    }
+     
+       @Override
+    public boolean equals(Object obj) {
+        
+        Operation newOp = (Operation)obj;
+        
+        if (!(this.name.equals(newOp.name)))
+            return false;
+        
+        for (int i = 0 ; i < parameters.size(); i++) {
+            
+            if (!this.parameters.get(i).equals(newOp.getParameters().get(i)))
+                return false;                            
+        }
+        
+        return true;
     }
 }

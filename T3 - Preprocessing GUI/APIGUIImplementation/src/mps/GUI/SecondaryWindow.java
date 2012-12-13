@@ -2,9 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package mps.GUI.window.implementation;
+package mps.GUI;
 
-import mps.parser.implementation.Operation;
+import mps.parser.Operation;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;

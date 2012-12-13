@@ -1,4 +1,4 @@
-package mps.parser.implementation;
+package mps.parser;
 
 import com.sun.xml.internal.ws.message.saaj.SAAJHeader;
 import com.sun.xml.xsom.parser.XSOMParser;
@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import mps.parser.implementation.SimpleTypeRestriction;
+import mps.parser.SimpleTypeRestriction;
 
 import org.xml.sax.SAXException;
 

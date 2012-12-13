@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package mps.GUI.window.implementation;
+package mps.GUI;
 
 import java.awt.AlphaComposite;
 import java.awt.Graphics;

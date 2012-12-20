@@ -10,30 +10,18 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import mps.parser.ComplexTypeParameter;
 import mps.parser.Parser;
 import mps.parser.Operation;
-import mps.parser.SimpleTypeParameter;
-import javax.media.jai.PlanarImage;
-import com.sun.media.jai.codec.ByteArraySeekableStream;
-import com.sun.media.jai.codec.ImageCodec;
-import com.sun.media.jai.codec.ImageDecoder;
-import com.sun.media.jai.codec.SeekableStream;
-import java.io.FileInputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-import java.io.FileNotFoundException;
 import javax.imageio.ImageIO;
 
 
 /**
  *
  * @author Liliana
- * @version Last modified by Liliana 12/12/2012
+ * @version Last modified by Liliana 20/12/2012
  */
 public class MainWindow extends JFrame{
 
@@ -170,8 +158,6 @@ public class MainWindow extends JFrame{
                     public void run() {
                         int returnVal = fileChooser.showOpenDialog(leftPanel);
                         if (returnVal == JFileChooser.APPROVE_OPTION) {
-                            FileInputStream in = null;
-                            try {
                                 // Setam calea catre fisier in textBox
                                 pathTextField.setText(fileChooser.getSelectedFile()
                                         .getAbsolutePath());
@@ -180,49 +166,40 @@ public class MainWindow extends JFrame{
                                 // Incarcam imaginea in panel
                                 int width = imagePanel.getSize().width;
                                 int height = imagePanel.getSize().height;
-                                in = new FileInputStream(pathImage);
-                                FileChannel channel = in.getChannel();
-                                ByteBuffer buffer = ByteBuffer.allocate((int)channel.size());
-                                channel.read(buffer);
-                                Image image = ImageViewer.load(buffer.array());
-                                // make sure that the image is not too big
-                                //  scale with a width of 300
-                                Image imageScaled = 
-                                  image.getScaledInstance(width, height,  Image.SCALE_SMOOTH);
-                                
+                             
+                                // construieste imagine din calea "pathImage" cu dimensiunile width si height
+                                Image image = ImageViewer.buildImage(pathImage);
                                 
                                 // facem imaginea greyscale in spate
-                                BufferedImage image_new = ImageIO.read(new File (pathTextField.getText()));
-                                BufferedImage image2 = new BufferedImage(image_new.getWidth(), image_new.getHeight(),  
-                                BufferedImage.TYPE_BYTE_GRAY);  
-                                Graphics g = image2.getGraphics();  
-                                g.drawImage(image, 0, 0, null);  
-                                g.dispose();  
-                                
-                                // Scriem noua imagine greyscale pe disc
-                                String delim = "\\.";
-                                String[] tokens = pathTextField.getText().split(delim);
-                                inputPath = tokens[0] + "_input.png";
-                                File outputBlack = new File(inputPath);
-                                outputBlack.createNewFile();
-                                ImageIO.write(image2, "png", outputBlack);
+                                BufferedImage image_new = null;
+                                File outputBlack = null;
+                                try{
+                                    image_new = ImageIO.read(new File (pathTextField.getText()));
+                                    BufferedImage image2 = new BufferedImage(image_new.getWidth(), image_new.getHeight(),  
+                                                BufferedImage.TYPE_BYTE_GRAY);  
+                                    Graphics g = image2.getGraphics();  
+                                    g.drawImage(image, 0, 0, null);  
+                                    g.dispose();  
+
+                                    // Scriem noua imagine greyscale pe disc
+                                    String delim = "\\.";
+                                    String[] tokens = pathTextField.getText().split(delim);
+                                    inputPath = tokens[0] + "_input.png";
+                                    outputBlack = new File(inputPath);
+                                    outputBlack.createNewFile();
+                                    ImageIO.write(image2, "png", outputBlack);
+                                }catch(Exception e){}
+                               
+                                // redimensionam imaginea
+                                image = ImageViewer.resize(image, width, height);
                                 
                                 // Setam imaginea originala in stanga (pana la o preprocesare)
-                                ImageIcon myPicture =   new ImageIcon( imageScaled );
+                                ImageIcon myPicture =   new ImageIcon( image );
                                 JLabel picLabel = new JLabel(myPicture);
                                 picLabel.setSize(new Dimension(width, height));
                                 imagePanel.removeAll();
                                 imagePanel.add(picLabel);
                                 MainWindow.this.repaint();
-                            } catch (Exception ex) {
-                                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-                            } finally {
-                                try {
-                                    in.close();
-                                } catch (IOException ex) {
-                                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            }
                         }
                     }
                 });
@@ -265,7 +242,7 @@ public class MainWindow extends JFrame{
                      for (int i = 0 ; i < checkedImages.size(); i++){
                          JCheckBox checked = checkedImages.get(i);
                          for(int j = 0 ; j < allImages.size() ;j ++){
-                             JCheckBox item = allImages.get(i);
+                             JCheckBox item = allImages.get(j);
                              // numarul de ordine este j
                              if(checked == item){
                                  // modific operatia
@@ -277,31 +254,12 @@ public class MainWindow extends JFrame{
                                  // construiesc noua imagine din calea obtinuta
                                  String path = ((ComplexTypeParameter)operations.get(j).getParameter("outputFile")).getAttribute("name").getValue();
                                 
-                                FileInputStream in = null;
-                                ImageIcon myPicture = null;
-                                try {
-                                    in = new FileInputStream(path);
-                                    FileChannel channel = in.getChannel();
-                                    ByteBuffer buffer = ByteBuffer.allocate((int)channel.size());
-                                    channel.read(buffer);
-                                    Image image = ImageViewer.load(buffer.array());
-                                    // make sure that the image is not too big
-                                    //  scale with a width of ???
-                                    int width = imageScrollPane.getSize().width-70;
-                                    Image imageScaled = 
-                                      image.getScaledInstance(width, 150,  Image.SCALE_SMOOTH);
-
-                                    myPicture =   new ImageIcon( imageScaled );
-                                }
-                                catch (Exception ex) {
-                                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-                                } finally {
-                                    try {
-                                        in.close();
-                                    } catch (IOException ex) {
-                                        Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-                                    }
-                                }
+                                 int width = imageScrollPane.getSize().width-70;
+                                 int height = 150;
+                                 
+                                 Image image = ImageViewer.buildImage(path);
+                                 image = ImageViewer.resize(image, width, height);
+                                 ImageIcon myPicture =   new ImageIcon( image );
 
                                  // Inlocuiesc Label-ul din dreapta
                                  JLabel label = labelList.get(checked);
@@ -451,22 +409,6 @@ public class MainWindow extends JFrame{
                     }
                 }
                 
-                
-                
-                
-                // Comentati bucata de mai jos pentru intreaga functionalitate(la sfarsit)
-                /* try {
-                        compareWindow = new CompareImagesWindow("image11.png", "image22.png");
-                        //if(checkedImages.size() == 2)
-                            //compareWindow = new CompareImagesWindow(imageList.get(checkedImages.get(0)), imageList.get(checkedImages.get(1)));
-                        
-                    } 
-                 catch (Exception ex) {
-                        Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    compareWindow.setVisible(true);
-                    */
-                
             }
         });
 
@@ -534,8 +476,6 @@ public class MainWindow extends JFrame{
                 .addComponent(basePanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 18, Short.MAX_VALUE)));
 
-        //setLocationRelativeTo(null);
-
         pack();
     }
 
@@ -601,31 +541,14 @@ public class MainWindow extends JFrame{
                     // construiesc noua imagine din calea obtinuta
                  
                     String path = ((ComplexTypeParameter)operations.get(j).getParameter("outputFile")).getAttribute("name").getValue();
-                    FileInputStream in = null;
+                    
+                    int width = imageScrollPane.getSize().width-70;
+                    int height = 150;
                     ImageIcon myPicture = null;
-                    try {
-                        in = new FileInputStream(path);
-                        FileChannel channel = in.getChannel();
-                        ByteBuffer buffer = ByteBuffer.allocate((int)channel.size());
-                        channel.read(buffer);
-                        Image image = ImageViewer.load(buffer.array());
-                        // make sure that the image is not too big
-                        //  scale with a width of ???
-                        int width = imageScrollPane.getSize().width-70;
-                        Image imageScaled = 
-                          image.getScaledInstance(width, 150,  Image.SCALE_SMOOTH);
-
-                        myPicture =   new ImageIcon( imageScaled );
-                    }
-                    catch (Exception ex) {
-                        Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-                    } finally {
-                        try {
-                            in.close();
-                        } catch (IOException ex) {
-                            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
+                    Image image = ImageViewer.buildImage(path);
+                    image = ImageViewer.resize(image, width, height);
+                    
+                    myPicture =   new ImageIcon( image );
 
                     // Inlocuiesc Label-ul din dreapta
                     JLabel label = null;
@@ -685,6 +608,18 @@ public class MainWindow extends JFrame{
                 labelList.remove(deleted);
                 imageList.remove(deleted);
                 
+                // le urcam pe cele de sub cel sters mai sus
+                int width = imageScrollPane.getSize().width-10;
+                int height = 180;
+                
+                for(int k = (i+1); k < newImgPanel.getComponentCount();k++){
+                    JPanel containerPanel = (JPanel) newImgPanel.getComponent(k);
+                    int posX = containerPanel.getLocation().x;
+                    int posY = containerPanel.getLocation().y;
+                    posY -= height;
+                    containerPanel.setLocation(posX, posY);
+                }
+                
                 // stergem din panelul mare din dreapta
                 newImgPanel.remove(i);
                 
@@ -731,40 +666,14 @@ public class MainWindow extends JFrame{
         int width = imagePanel.getSize().width;
         int height = imagePanel.getSize().height;
 
-        FileInputStream in = null;
-        try {
-            in = new FileInputStream(inputPath);
-            FileChannel channel = in.getChannel();
-            ByteBuffer buffer = ByteBuffer.allocate((int)channel.size());
-            channel.read(buffer);
-            Image image = ImageViewer.load(buffer.array());
-            // make sure that the image is not too big
-            //  scale with a width of 300
-            Image imageScaled = 
-              image.getScaledInstance(width,height,  Image.SCALE_SMOOTH);
+        Image image = ImageViewer.buildImage(inputPath);
+        image = ImageViewer.resize(image, width, height);
+        ImageIcon myPicture =   new ImageIcon(image);
+        JLabel picLabel = new JLabel(myPicture);
+        picLabel.setSize(new Dimension(width, height));
 
-            ImageIcon myPicture =   new ImageIcon( imageScaled );
-            JLabel picLabel = new JLabel(myPicture);
-            picLabel.setSize(new Dimension(width, height));
-
-
-            JLabel  lab = (JLabel)imagePanel.getComponent(0);
-            lab.setIcon(myPicture);
-        }
-        catch (Exception ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                in.close();
-            } catch (IOException ex) {
-                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        /*
-        ImageIcon myPicture = new ImageIcon(new ImageIcon(pathTextField.getText())
-            .getImage().getScaledInstance(width, height,
-            Image.SCALE_SMOOTH));
-            */
+        JLabel  lab = (JLabel)imagePanel.getComponent(0);
+        lab.setIcon(myPicture);
         
         MainWindow.this.repaint();
     }
@@ -785,31 +694,12 @@ public class MainWindow extends JFrame{
         // Se construieste checkboxul cu fotografie
         final JCheckBox box = new JCheckBox();
         String path = ((ComplexTypeParameter)oper.getParameter("outputFile")).getAttribute("name").getValue();
-        FileInputStream in = null;
-        ImageIcon myPicture = null;
-        try {
-            in = new FileInputStream(path);
-            FileChannel channel = in.getChannel();
-            ByteBuffer buffer = ByteBuffer.allocate((int)channel.size());
-            channel.read(buffer);
-            Image image = ImageViewer.load(buffer.array());
-            // make sure that the image is not too big
-            //  scale with a width of ???
-            int width = imageScrollPane.getSize().width-70;
-            Image imageScaled = 
-              image.getScaledInstance(width, 150,  Image.SCALE_SMOOTH);
-
-            myPicture =   new ImageIcon( imageScaled );
-        }
-        catch (Exception ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                in.close();
-            } catch (IOException ex) {
-                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+        int width = imageScrollPane.getSize().width-70;
+        int height = 150;
+        
+        Image image = ImageViewer.buildImage(path);
+        image = ImageViewer.resize(image, width, height);
+        ImageIcon myPicture =   new ImageIcon( image );
         
         JLabel label = new JLabel(myPicture);
         int size = imageList.size();

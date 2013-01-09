@@ -137,6 +137,11 @@ public class MainWindow extends JFrame{
         compareButton = new JButton("Compare");
         checkedImages = new ArrayList<JCheckBox>();
         
+        compareButton.setEnabled(false);
+        binarizationButton.setEnabled(false);
+        preprocessingButton.setEnabled(false);
+        updateButton.setEnabled(false);
+        
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(620, 550));
         addComponentListener(new ComponentAdapter() {
@@ -150,6 +155,7 @@ public class MainWindow extends JFrame{
 
 
         final JFileChooser fileChooser = new JFileChooser("poze de test");
+        pathTextField.setEditable(false);
         browseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
@@ -158,6 +164,12 @@ public class MainWindow extends JFrame{
                     public void run() {
                         int returnVal = fileChooser.showOpenDialog(leftPanel);
                         if (returnVal == JFileChooser.APPROVE_OPTION) {
+                                // facem enabled butoanele
+                                compareButton.setEnabled(true);
+                                binarizationButton.setEnabled(true);
+                                preprocessingButton.setEnabled(true);
+                                updateButton.setEnabled(true);
+                                
                                 // Setam calea catre fisier in textBox
                                 pathTextField.setText(fileChooser.getSelectedFile()
                                         .getAbsolutePath());

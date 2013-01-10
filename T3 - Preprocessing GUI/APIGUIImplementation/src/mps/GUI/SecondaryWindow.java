@@ -374,8 +374,10 @@ public abstract class SecondaryWindow extends JFrame {
 		// Operatia se va adauga listei curente de executabile;
 		// doar la apasarea butonului "OK" va fi transmisa mai departe in
 		// fereastra principala, spre a fi lansata in executie
-		newSelection.add(op);
+
+		op.setId(Operation.opGlobalId++);
 		System.out.println(op);
+		newSelection.add(op);
 
 		// Executabilul ales din stanga trece in lista din dreapta
 		changeLists();
@@ -407,6 +409,12 @@ public abstract class SecondaryWindow extends JFrame {
 		this.setVisible(false);
 
 		oldSelection.addAll(newSelection);
+		
+		//inainte de a trimite in feerastra principala, calculez hash-ul UNIC!!
+		for (Operation op : newSelection) {
+			
+			op.hash();
+		}
 
 		// trimit in fereastra principala
 	}

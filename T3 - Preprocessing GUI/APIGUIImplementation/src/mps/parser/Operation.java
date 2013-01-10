@@ -23,6 +23,12 @@ import java.io.FileOutputStream;
  * @author Liz
  */
 public class Operation {
+	
+
+	  public static int opGlobalId = 0;
+	
+	private int id;
+	
     /**
      * Tipul general al executabilului: de procesare sau de binarizare. 0 pentru
      * preprocesare sau 1 pentru binarizare
@@ -226,7 +232,7 @@ public class Operation {
         } //output in fisere disctincte, pentru executabilele de binarizare
         else {
 
-            outputPath = tokens[0] + "_binariz_output" + hash() + ".tiff"; // "." + tokens[1];
+            outputPath = tokens[0] + "_binariz_output" + id + ".tiff"; // "." + tokens[1];
         }
         ((ComplexTypeParameter)getParameter("outputFile")).setAttribute("name", outputPath);
         String localXMLPath = generateXML();
@@ -282,7 +288,7 @@ public class Operation {
                '\"' + ((ComplexTypeParameter)getParameter("outputFile")).getAttribute("name").getValue() +  '\"' );        
         
         //fisierul XML se va genera intr-un folder separat de cel cu executabilele
-        String thisXMLPath = getXMLFolder() + "\\" + getName() + hash() + ".xml";
+        String thisXMLPath = getXMLFolder() + "\\" + getName() + id + ".xml";
         
        // System.out.println("-----------GENERARE XML---------");
        // System.out.println(thisXMLPath);
@@ -424,9 +430,9 @@ public class Operation {
         return newOp;
     }
 
-    public int hash() {
+    public void hash() {
 
-        String concat = new String();
+        String concat = "";
 
         for (SimpleTypeParameter param : parameters) {
 
@@ -444,7 +450,7 @@ public class Operation {
             }
         }
 
-        return concat.hashCode();
+    //   hashString = String.valueOf(concat.hashCode());
     }
 
     @Override
@@ -499,4 +505,12 @@ public class Operation {
         
         return true;
     }
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 }

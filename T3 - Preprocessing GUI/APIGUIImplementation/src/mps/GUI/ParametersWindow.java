@@ -597,7 +597,7 @@ public class ParametersWindow extends javax.swing.JDialog {
 
 	public void doubleSpinnerListener(ChangeEvent e) {
 		
-		System.out.println("a intrat");
+		
 
 		// identific parametrul coresp.
 		JSpinner source = (JSpinner) e.getSource();
@@ -630,9 +630,6 @@ public class ParametersWindow extends javax.swing.JDialog {
 		
 		double input = (Double)field.getValue();
 		
-		System.out.println(input);
-		System.out.println(maxValue);
-		System.out.println(minValue);
 		
 		if (input > maxValue
 				|| input < minValue) {

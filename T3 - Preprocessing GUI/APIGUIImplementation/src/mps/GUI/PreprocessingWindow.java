@@ -61,10 +61,7 @@ public class PreprocessingWindow extends SecondaryWindow {
 						// input si cel de output
 						if (newOperation.getParameters().size() == 2) {
 
-							newSelection.add(newOperation);
-							// Executabilul ales din stanga trece in lista din
-							// dreapta
-							changeLists();
+							addExec(newOperation);
 						} else {
 
 							ParametersWindow parametersWindow = new ParametersWindow(

@@ -48,9 +48,7 @@ public class BinarizationWindow extends SecondaryWindow {
 
 				if (newOperation.getParameters().size() == 2) {
 
-					newSelection.add(newOperation);
-					// Executabilul ales din stanga trece in lista din dreapta
-					changeLists();
+				addExec(newOperation);
 
 				} else {
 
@@ -84,7 +82,6 @@ public class BinarizationWindow extends SecondaryWindow {
 				// altfel, elimin din oldSelection
 				else {
 
-					System.out.println("ok");
 					removedOps[selectedIndex] = oldSelection.remove(selectedIndex);
 				}
 			}

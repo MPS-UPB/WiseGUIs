@@ -221,9 +221,9 @@ public class Operation {
         //adaugare parametru fisier de iesire
         if (type == 0) {
 
-            outputPath = tokens[0] + "_preproc_output" + ".tiff"; //+ tokens[1];
+            outputPath = ((ComplexTypeParameter)getParameter("inputFile")).getAttribute("name").getValue();
 
-        } //output in fisere dictincte, pentru executabilele de binarizare
+        } //output in fisere disctincte, pentru executabilele de binarizare
         else {
 
             outputPath = tokens[0] + "_binariz_output" + hash() + ".tiff"; // "." + tokens[1];
@@ -307,7 +307,7 @@ public class Operation {
             //tag-ul task
             writer.write("<" + getRootElement() + ">");
 
-            /*
+            
             writer.newLine();
             writer.write('\t');
             writer.write("<" + getRootDescription() + ">");
@@ -321,9 +321,9 @@ public class Operation {
                 writer.write("<" + entry.getKey() + ">" + entry.getValue() + "</" + entry.getKey() + ">");
             }
 
-*           writer.newLine();
+            writer.newLine();
             writer.write("</" + getRootDescription() + ">");
-            */
+            
             
             //lista de parametri
 

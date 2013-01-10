@@ -706,6 +706,7 @@ public class MainWindow extends JFrame{
         // Se construieste checkboxul cu fotografie
         final JCheckBox box = new JCheckBox();
         String path = ((ComplexTypeParameter)oper.getParameter("outputFile")).getAttribute("name").getValue();
+        System.out.println(path);
         int width = imageScrollPane.getSize().width-70;
         int height = 150;
         

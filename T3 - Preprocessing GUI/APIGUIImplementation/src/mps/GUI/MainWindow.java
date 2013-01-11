@@ -15,6 +15,11 @@ import mps.parser.Parser;
 import mps.parser.Operation;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
 import javax.imageio.ImageIO;
 
 
@@ -99,6 +104,10 @@ public class MainWindow extends JFrame{
    
    // input path
    String inputPath;
+   
+   // Campuri pentru verificarea erorilor la citirea din fisierul din configurare
+   public static String XSD_ERROR = "Error in reading the config.txt file";
+   public static String XSD_NOPATH ="No path found in the config.txt file";
    
    
     
@@ -506,6 +515,10 @@ public class MainWindow extends JFrame{
          * Intoarce un set de Operatii abstracte - execTypes
          */
         execTypes = Parser.getExecTypes();
+        
+        // Doar pentru teste,  stergeti cand terminati
+        System.out.println(getPath("XSD:"));
+        System.out.println(getPath("EXEC:"));
 
         /*
          * Pasare lista executabile de binarizare/preprocesare catre ferestrele aferente;
@@ -524,7 +537,42 @@ public class MainWindow extends JFrame{
         //Se afiseaza fereastra principala (se da drumul aplicatiei)
         this.setVisible(true);
     }
+    
+    
+    /*
+     *  Metoda care deschide fisierul de configurare si citeste de acolo calea catre folderul cu XSD-uri 
+     *  Se deschide fisierul "config.txt" si se citeste linia care are ca header stringul "ofWhat"
+     *  Stringul "ofWhat" poate fi "XSD:" pentru a intoarce calea catre XSD-uri sau "EXEC:" pentru a intoarce
+     * calea catre executabile
+     *  Daca fisierul nu se deschide/nu este gasit , metoda intoarce un string eroare MainWindow.XSD_ERROR
+     *  Daca nici o cale nu se gaseste in fisierul config.txt , metoda intoarce un string eroare MainWindow.XSD_NOPATH
+     */
 
+    public String getPath(String ofWhat){
+        String path ="";
+        try{
+            FileInputStream file = new FileInputStream("config.txt");
+            DataInputStream in = new DataInputStream(file);
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            String strLine;
+            while((strLine = br.readLine())!=null){
+                if(strLine.contains(ofWhat)){
+                    path = (strLine.substring(ofWhat.length())).trim(); 
+                    break;
+                }
+            }
+            if(path.equals("")){
+                path = MainWindow.XSD_NOPATH;
+            }
+        }
+        catch(IOException e){
+            path = MainWindow.XSD_ERROR;
+        }
+        return path;
+    }
+    
+    
+    
     /**
      * Metoda care primeste un set de operatii de preprocesare si le aplica pe
      * imaginea originala.

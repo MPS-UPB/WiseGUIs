@@ -7,6 +7,7 @@ import com.sun.xml.xsom.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import mps.GUI.MainWindow;
 
 import mps.parser.SimpleTypeRestriction;
 
@@ -247,17 +248,15 @@ public class Parser {
 
 	public static List<Operation> getExecTypes() {
 
-		//TODO
-		//aici trebuie luat folderul de xsd-uri specificat in MainWindow
-		//si trebuie parsat fiecare fisier in parte
-		
-        List<Operation> ops = new ArrayList<Operation>();
-        Operation op1 = parseXSDFile("crop.xsd");
-        Operation op2 = parseXSDFile("rotate.xsd");
-        Operation op3 = parseXSDFile("otsu.xsd");
-        ops.add(op1);
-        ops.add(op2);
-        ops.add(op3);
+            List<Operation> ops = new ArrayList<Operation>();
+         System.out.println("Folder:"+MainWindow.xsdPath);
+	File folder = new File(MainWindow.xsdPath);
+         for (final File fileEntry : folder.listFiles()) {
+             if (fileEntry.isFile()) {
+                 System.out.println(fileEntry.getAbsolutePath());
+                 ops.add(parseXSDFile(fileEntry.getAbsolutePath()));
+              }
+          }
         return ops;
     }
 
@@ -278,4 +277,5 @@ public class Parser {
         stp.setAttributes(attributes);
         return stp;
     }
+    
 }

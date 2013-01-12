@@ -527,7 +527,7 @@ public class MainWindow extends JFrame{
     		JOptionPane.showMessageDialog(this,
 					XSD_ERROR, this.getTitle(),
 					JOptionPane.ERROR_MESSAGE);
-    		return;
+    		System.exit(1);
     	}
     	
     	if (res1.equals(XSD_NOPATH) || res2.equals(XSD_NOPATH)) {
@@ -535,11 +535,9 @@ public class MainWindow extends JFrame{
     		JOptionPane.showMessageDialog(this,
 					XSD_NOPATH, this.getTitle(),
 					JOptionPane.ERROR_MESSAGE);	
-    		return;
+    		System.exit(1);
     	}    	
-    	
-    	System.out.println(xsdPath);
-    	System.out.println(execPath);
+    
     	
         /* 
          * Rulare parser

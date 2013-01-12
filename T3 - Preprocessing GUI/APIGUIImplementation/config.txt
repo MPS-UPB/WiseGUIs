@@ -1,2 +1,2 @@
-XSD: Hello world!
-EXEC: Hei Hei!
+XSD: XSDs
+EXEC: execs

@@ -247,6 +247,10 @@ public class Parser {
 
 	public static List<Operation> getExecTypes() {
 
+		//TODO
+		//aici trebuie luat folderul de xsd-uri specificat in MainWindow
+		//si trebuie parsat fiecare fisier in parte
+		
         List<Operation> ops = new ArrayList<Operation>();
         Operation op1 = parseXSDFile("crop.xsd");
         Operation op2 = parseXSDFile("rotate.xsd");

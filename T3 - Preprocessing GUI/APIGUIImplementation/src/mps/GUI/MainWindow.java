@@ -5,11 +5,11 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
+
 import mps.parser.ComplexTypeParameter;
 import mps.parser.Parser;
 import mps.parser.Operation;
@@ -109,7 +109,8 @@ public class MainWindow extends JFrame{
    public static String XSD_ERROR = "Error in reading the config.txt file";
    public static String XSD_NOPATH ="No path found in the config.txt file";
    
-   
+   public static String xsdPath = "";
+   public static String execPath = "";
     
     public MainWindow() {
 
@@ -508,6 +509,38 @@ public class MainWindow extends JFrame{
      */
     private void init() {
 
+    	/*
+    	 * Citire fisier de configurare
+    	 * 
+    	 * Daca apar erori la citire, atunci utilizatorul va fi informat printr-un Message Dialog
+    	 * si metoda va face return, fara alte operatii (practic trebuie repornita aplicatia)
+    	 * 
+    	 * sau putem face o facilitate: un dialog window, in care intrebam daca se doreste iar citirea fisierului; 
+    	 * daca da, atunci se reapeleaza getPath()
+    	 */
+    	
+    	String res1 = getPath("XSD:");
+    	String res2 = getPath("EXEC:");
+    	
+    	if (res1.equals(XSD_ERROR) || res2.equals(XSD_ERROR)) {
+    		
+    		JOptionPane.showMessageDialog(this,
+					XSD_ERROR, this.getTitle(),
+					JOptionPane.ERROR_MESSAGE);
+    		return;
+    	}
+    	
+    	if (res1.equals(XSD_NOPATH) || res2.equals(XSD_NOPATH)) {
+    		
+    		JOptionPane.showMessageDialog(this,
+					XSD_NOPATH, this.getTitle(),
+					JOptionPane.ERROR_MESSAGE);	
+    		return;
+    	}    	
+    	
+    	System.out.println(xsdPath);
+    	System.out.println(execPath);
+    	
         /* 
          * Rulare parser
          * 
@@ -516,10 +549,7 @@ public class MainWindow extends JFrame{
          */
         execTypes = Parser.getExecTypes();
         
-        // Doar pentru teste,  stergeti cand terminati
-        System.out.println(getPath("XSD:"));
-        System.out.println(getPath("EXEC:"));
-
+      
         /*
          * Pasare lista executabile de binarizare/preprocesare catre ferestrele aferente;
          * Aici fac deosebirea tipurilor generale de executabile: preprocesare / binarizare
@@ -558,6 +588,17 @@ public class MainWindow extends JFrame{
             while((strLine = br.readLine())!=null){
                 if(strLine.contains(ofWhat)){
                     path = (strLine.substring(ofWhat.length())).trim(); 
+                    
+                    if (ofWhat.equals("XSD:")) {
+                    	
+                    	xsdPath = path;
+                    }
+                    
+                    if (ofWhat.equals("EXEC:")) {
+                    	
+                    	execPath = path;
+                    }
+                    
                     break;
                 }
             }

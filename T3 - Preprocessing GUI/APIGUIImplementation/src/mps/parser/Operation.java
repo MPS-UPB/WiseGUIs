@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.sun.xml.xsom.*;
+
+import mps.GUI.MainWindow;
 import mps.parser.SimpleTypeParameter;
 import mps.parser.ComplexTypeParameter;
 import java.io.FileOutputStream;
@@ -63,10 +65,7 @@ public class Operation {
      * Tag-urile si valorile asociate pentru descrierea executabilului.
      */
     private LinkedHashMap<String, String> description;
-    /**
-     * Calea catre executabil.
-     */
-    private String execFolder = "execs";
+ 
     /**
      * Calea catre folder-ul in care se vor depozita XML-urile.
      */
@@ -182,19 +181,6 @@ public class Operation {
         this.description.putAll(description);
     }
 
-    /**
-     * @return the execFolder
-     */
-    public String getExecFolder() {
-        return execFolder;
-    }
-
-    /**
-     * @param execFolder the execFolder to set
-     */
-    public void setExecFolder(String execFolder) {
-        this.execFolder = execFolder;
-    }
 
     /**
      * @return the XMLFolder
@@ -240,7 +226,7 @@ public class Operation {
         try {
 
             //mai bine ar fi fost sa se citeasca executabilele din folder si apoi sa se dea calea absoluta ca param
-            String thisExecPath = getExecFolder() + "\\" + getName() + ".exe";
+            String thisExecPath = MainWindow.execPath + "\\" + getName() + ".exe";
 
             //lansare in executie
             //defineste proces
@@ -420,7 +406,6 @@ public class Operation {
         newOp.setType(this.getType());
         newOp.setName(this.getName());
         newOp.setToolTip(this.getToolTip());
-        newOp.setExecFolder(this.getExecFolder());
         newOp.setXMLFolder(this.getXMLFolder());
         newOp.setDescription(this.getDescription());
         newOp.setParameters(this.getParameters());

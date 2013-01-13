@@ -69,7 +69,7 @@ public class Parser {
 
          
         operation.setName(tipuriSimple.get(operation.tagForExecName).pattern);
-        operation.setToolTip(tipuriSimple.get(operation.tagForExecDescription).pattern);
+        operation.setDesc(tipuriSimple.get(operation.tagForExecDescription).pattern);
         if(tipuriSimple.get(operation.tagForExecType).pattern.equals("binarization")){
         	operation.setType(1);
         }
@@ -257,6 +257,116 @@ public class Parser {
                  ops.add(parseXSDFile(fileEntry.getAbsolutePath()));
               }
           }
+          
+          
+		
+	/*
+        List<Operation> ops = new ArrayList<Operation>();
+        
+        
+         Operation op1 = new Operation(0, "rotate");
+        Operation op2 = new Operation(0, "crop");
+        Operation op3 = new Operation(1, "otsu1");
+        Operation op4 = new Operation(1, "otsu2");
+
+        ComplexTypeParameter param0 = new ComplexTypeParameter();
+        param0.setBaseType("string");
+        param0.setName("inputFile");
+        Attribute attr01 = new Attribute();
+        attr01.setBaseType("string");
+        attr01.setName("name");        
+        param0.addAttribute(attr01);
+
+
+        ComplexTypeParameter param1 = new ComplexTypeParameter();
+        param1.setBaseType("string");
+        param1.setName("outputFile");
+        attr01 = new Attribute();
+        attr01.setBaseType("string");
+        attr01.setName("name");        
+        param1.addAttribute(attr01);
+
+        SimpleTypeParameter param2 = new SimpleTypeParameter();
+        param2.setBaseType("positiveInteger");
+        param2.setName("Intreg pozitiv");
+
+        SimpleTypeParameter param3 = new SimpleTypeParameter();
+        param3.setBaseType("float");
+        param3.setName("Un float");
+        SimpleTypeRestriction restr = new SimpleTypeRestriction();
+        restr.maxValue = new Float(89.45).toString();
+        param3.setRestrictions(restr);
+
+        SimpleTypeParameter param4 = new SimpleTypeParameter();
+        param4.setBaseType("string");
+        param4.setName("Enumerare");
+        SimpleTypeRestriction restr2 = new SimpleTypeRestriction();
+        restr2.enumeration = new String[3];
+        restr2.enumeration[0] = "ceva1";
+        restr2.enumeration[1] = "ceva2";
+        restr2.enumeration[2] = "ceva3";
+        param4.setRestrictions(restr2);
+        
+        //------------------- Definire element complex ------------
+        
+        ComplexTypeParameter param5 = new ComplexTypeParameter();
+        param5.setName("Complex");
+        param5.setBaseType("");
+        Attribute attr1 = new Attribute();
+        attr1.setBaseType("string");
+        attr1.setName("Enumerare");
+        restr2 = new SimpleTypeRestriction();
+        restr2.enumeration = new String[3];
+        restr2.enumeration[0] = "ceva1";
+        restr2.enumeration[1] = "ceva2";
+        restr2.enumeration[2] = "ceva3";
+        attr1.setRestrictions(restr2);
+        param5.addAttribute(attr1);
+        
+        Attribute attr2 = new Attribute();
+        attr2.setBaseType("string");
+        attr2.setName("outputFile");
+        attr2.setUse("optional");
+        param5.addAttribute(attr2);
+        
+        Attribute attr3 = new Attribute();
+        attr3.setBaseType("positiveInteger");
+        attr3.setName("Intreg pozitiv");
+        param5.addAttribute(attr3);
+        
+        
+         //definire rotate
+        param2.setBaseType("float");
+        param2.setName("angle");
+        
+        op1.getParameters().add(param0);
+        op1.getParameters().add(param1);
+        op1.getParameters().add(param2);
+        
+        op2.getParameters().add(param0);
+        op2.getParameters().add(param1);
+        op2.getParameters().add(param2);
+        op2.getParameters().add(param3);
+        op2.getParameters().add(param4);      
+        
+        op3.getParameters().add(param0);
+        op3.getParameters().add(param1);
+        op3.getParameters().add(param2);
+        op3.getParameters().add(param5);
+        op3.getParameters().add(param4);
+        
+        op4.getParameters().add(param0);
+        op4.getParameters().add(param1);
+        op4.getParameters().add(param2);
+        op4.getParameters().add(param3);
+        op4.getParameters().add(param4);
+        
+        ops.add(op1);
+        ops.add(op2);
+        ops.add(op3);
+        ops.add(op4);
+        
+		*/
         return ops;
     }
 

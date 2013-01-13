@@ -687,6 +687,9 @@ public class MainWindow extends JFrame{
          */
         for (int i=0; i< binarizOperations.size(); i++){
             execTypes.add(binarizOperations.get(i));
+            
+            System.out.println("-----------------------");
+            System.out.println(binarizOperations.get(i));
          
            ((ComplexTypeParameter)binarizOperations.get(i).getParameter("inputFile")).setAttribute
                    ("name",inputPath);
@@ -848,6 +851,45 @@ public class MainWindow extends JFrame{
         containerPanel.setLocation(1, size*180+1);
         containerPanel.add(box);
         containerPanel.add(label);
+        
+        
+        label.setToolTipText(oper.toString2());
+        label.addMouseListener(new MouseAdapter() {
+        	
+        	public void mouseClicked(MouseEvent e) {
+        		
+        		JLabel source = (JLabel)e.getSource();
+        		JCheckBox checkbox = new JCheckBox(); 
+        		
+        		//trebuie sa fie un linked hash map, ca ordinea imaginilor sa reflecte ordinea operatiilor
+        		int index = 0;
+        		 for (Map.Entry<JCheckBox, JLabel> entry : labelList.entrySet()) {
+        			 
+        		        if (source == entry.getValue()) {
+        		        	
+        		        	//checkbox-ul aferent
+        		            checkbox = entry.getKey();
+        		            break;
+        		        }
+        		        index++;
+        		    }
+        		 
+        		 //operatia la care se refera
+        		 Operation op = operations.get(index);
+        		 //calea imaginii aferente
+        		 String image = imageList.get(checkbox);
+        		
+        		if (e.getButton() == MouseEvent.BUTTON1) {
+        			
+        			
+        		}  
+        		
+        		if (e.getButton() == MouseEvent.BUTTON3) {
+        			
+        			
+        		}        		
+        	}
+		});
         
         // Se salveaza containerul
         containerList.add(containerPanel);

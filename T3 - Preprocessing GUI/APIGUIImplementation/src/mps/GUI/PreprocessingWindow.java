@@ -7,6 +7,7 @@ package mps.GUI;
 import mps.parser.Operation;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -28,6 +29,8 @@ public class PreprocessingWindow extends SecondaryWindow {
 
 		super(window);
 		this.setTitle("Preprocessing");
+		
+		
 	}
 
 	@Override

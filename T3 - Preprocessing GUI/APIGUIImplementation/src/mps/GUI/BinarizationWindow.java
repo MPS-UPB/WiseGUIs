@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
@@ -25,6 +26,10 @@ public class BinarizationWindow extends SecondaryWindow {
 
 		super(window);
 		this.setTitle("Binarization");
+		
+		
+		
+		
 	}
 
 	@Override

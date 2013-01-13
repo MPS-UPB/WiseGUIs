@@ -126,6 +126,7 @@ public class SimpleTypeParameter {
         clone.setName(this.getName());
         clone.setBaseType(this.getBaseType());
         clone.setRestrictions(this.getRestrictions());
+        clone.setValue(this.getValue());
 
         return clone;
     }
@@ -133,8 +134,6 @@ public class SimpleTypeParameter {
     @Override
     public String toString() {
 
-        return getName() + " " + getBaseType() + " " + getValue();
-    }
-    
-    
+        return "<br>" + getName() + " " + getValue();
+    }  
 }

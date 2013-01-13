@@ -25,6 +25,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 import javax.swing.border.EmptyBorder;
+
+import mps.parser.Attribute;
 import mps.parser.SimpleTypeParameter;
 import mps.parser.ComplexTypeParameter;
 import mps.parser.SimpleTypeRestriction;
@@ -36,6 +38,9 @@ import javax.swing.text.DefaultFormatter;
 
 import java.awt.event.InputMethodListener;
 import java.awt.event.InputMethodEvent;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.CaretListener;
+import javax.swing.event.CaretEvent;
 
 //creez de fiecare data o fereastra noua? cam da
 public class ParametersWindow extends javax.swing.JDialog {
@@ -46,7 +51,8 @@ public class ParametersWindow extends javax.swing.JDialog {
 	ArrayList<JTextField> textFields;
 	ArrayList<JComboBox<String>> combos;
 	ArrayList<JSpinner> spinners;
-	JLabel eroare1, eroare2;
+	ArrayList<JCheckBox> checkboxes;
+	String eroare1, eroare2;
 	/*
 	 * aici se vor adauga toate elementele grafice; indexul va corespunde
 	 * indexului din params in functie de tipul elementului se va extrage
@@ -70,6 +76,8 @@ public class ParametersWindow extends javax.swing.JDialog {
 	protected JSpinner elem;
 	protected Component verticalStrut_1;
 	protected JLabel errorLabel;
+	protected JPanel attrPanel;
+	protected JCheckBox chckbxNewCheckBox;
 
 	/**
 	 * Constructorul clasei de parametri
@@ -81,15 +89,16 @@ public class ParametersWindow extends javax.swing.JDialog {
 	 *            clasa lui
 	 */
 	public ParametersWindow(SecondaryWindow window, Operation op) {
-	//	setMinimumSize(new Dimension(300, 120));
+		setMinimumSize(new Dimension(300, 120));
 
 		initComponents();
 		setTitle(op.getName());
 		this.motherWindow = window;
-	
+
 		textFields = new ArrayList<JTextField>();
 		combos = new ArrayList<JComboBox<String>>();
 		spinners = new ArrayList<JSpinner>();
+		checkboxes = new ArrayList<JCheckBox>();
 
 		graphicElements = new ArrayList<Component>();
 
@@ -155,11 +164,11 @@ public class ParametersWindow extends javax.swing.JDialog {
 
 		setResizable(false);
 		setPreferredSize(new Dimension(300, 120));
-		
+
 		paramsPanel = new JPanel();
 		getContentPane().add(paramsPanel, BorderLayout.CENTER);
-		paramsPanel.setLayout(new BoxLayout(paramsPanel, BoxLayout.Y_AXIS));	
-		
+		paramsPanel.setLayout(new BoxLayout(paramsPanel, BoxLayout.Y_AXIS));
+
 		errorLabel = new JLabel("");
 		errorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -168,36 +177,35 @@ public class ParametersWindow extends javax.swing.JDialog {
 		errorLabel.setPreferredSize(new Dimension(300, 15));
 		errorLabel.setMinimumSize(new Dimension(300, 15));
 		errorLabel.setMaximumSize(new Dimension(300, 15));
-			
+
 		buttonsPanel = new JPanel();
 		buttonsPanel.setMaximumSize(new Dimension(250, 50));
 		buttonsPanel.setMinimumSize(new Dimension(250, 50));
 		buttonsPanel.setPreferredSize(new Dimension(250, 50));
 		buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.X_AXIS));
 		getContentPane().add(buttonsPanel, BorderLayout.SOUTH);
-		
+
 		horizontalGlue = Box.createHorizontalGlue();
 		buttonsPanel.add(horizontalGlue);
-		
+
 		okButton = new JButton("OK");
 		okButton.setPreferredSize(new Dimension(100, 30));
 		okButton.setMaximumSize(new Dimension(100, 30));
 		okButton.setMinimumSize(new Dimension(100, 30));
 		buttonsPanel.add(okButton);
-		
+
 		horizontalStrut = Box.createHorizontalStrut(20);
 		buttonsPanel.add(horizontalStrut);
-		
+
 		cancelButton = new JButton("Cancel");
 		cancelButton.setPreferredSize(new Dimension(100, 30));
 		cancelButton.setMaximumSize(new Dimension(100, 30));
 		cancelButton.setMinimumSize(new Dimension(100, 30));
 		buttonsPanel.add(cancelButton);
-		
+
 		horizontalGlue_1 = Box.createHorizontalGlue();
 		buttonsPanel.add(horizontalGlue_1);
-		
-		
+
 		okButton.addMouseListener(new java.awt.event.MouseAdapter() {
 			public void mouseClicked(java.awt.event.MouseEvent evt) {
 				ParametersWindow.this.okClicked(evt);
@@ -209,8 +217,7 @@ public class ParametersWindow extends javax.swing.JDialog {
 				ParametersWindow.this.cancelClicked(evt);
 			}
 		});
-		
-		
+
 		pack();
 	}// </editor-fold>//GEN-END:initComponents
 
@@ -219,14 +226,8 @@ public class ParametersWindow extends javax.swing.JDialog {
 	 * seteaza sa nu fie afisate
 	 */
 	private void initializareErori() {
-		eroare1 = new JLabel("Trebuie sa completati toate campurile goale");
-		eroare2 = new JLabel("Introduceti doar date valide(litere)");
-		eroare1.setForeground(new java.awt.Color(255, 0, 0));
-		eroare2.setForeground(new java.awt.Color(255, 0, 0));
-		eroare1.setFont(new java.awt.Font("Tahoma", 2, 11));
-		eroare2.setFont(new java.awt.Font("Tahoma", 2, 11));
-		eroare1.setVisible(false);
-		eroare2.setVisible(false);
+		eroare1 = "Trebuie sa completati toate campurile goale";
+		eroare2 = "Introduceti doar date valide(litere)";
 	}
 
 	/**
@@ -241,40 +242,44 @@ public class ParametersWindow extends javax.swing.JDialog {
 	private void okClicked(java.awt.event.MouseEvent evt) {
 
 		int k, okay1 = 1, okay2 = 1;
-		Pattern p = Pattern.compile("[^a-z][A-Z]");
+		Pattern p = Pattern.compile("[0-9]");
 		// analizez fiecare "casuta" in care se pot introduce parametri
 		for (k = 0; k < textFields.size(); k++) {
 			// daca am gasit un camp necompletat marchez eroarea
-			if (textFields.get(k).getText().equals("")) {
-				okay1 = 0;
-			}
+			// if (textFields.get(k).getText().equals("")) {
+			// okay1 = 0;
+			// }
 			// daca utilizatorul a introdus caractere nepermise, marchez si a
 			// doua eroare
-			if (p.matcher(textFields.get(k).getText()).find()) {
-				okay2 = 0;
-			}
+			// if (p.matcher(textFields.get(k).getText()).find()) {
+			// okay2 = 0;
+			// }
 		}
 		if (okay1 == 0) {
-			eroare1.setVisible(true);
+			errorLabel.setText(eroare1);
 		} else if (okay2 == 0) {
-			eroare2.setVisible(true);
-			eroare1.setVisible(false);
+			errorLabel.setText(eroare2);
 		} // daca nu sunt erori(datele au fost introduse corect)
 		else {
 			// intorc referinta crtOp
-			Collections.reverse(graphicElements);
+
+			// numar elementele in total ; e indice pt graphicElements
+			int ii = -1;
+			// numar doar atributele; e indice pt checkboxes
+			int jj = -1;
 
 			// completez parametrii
 			for (int i = 2; i < params.size(); i++) {
 
 				SimpleTypeParameter param = params.get(i);
+				ii++;
 
 				// caz special - cand parametrul are restrictie de tip
 				// enumeration
 				if (param.getRestrictions().enumeration != null) {
 
-					param.setValue(((JComboBox<String>) graphicElements
-							.get(i - 2)).getSelectedItem().toString());
+					param.setValue(((JComboBox<String>) graphicElements.get(ii))
+							.getSelectedItem().toString());
 				} else {
 
 					String type = param.getBaseType();
@@ -287,25 +292,112 @@ public class ParametersWindow extends javax.swing.JDialog {
 							|| type.equals("positiveInteger")
 							|| type.equals("float") || type.equals("double")) {
 
-						param.setValue(((JSpinner) graphicElements.get(i - 2))
+						param.setValue(((JSpinner) graphicElements.get(ii))
 								.getValue().toString());
 					}
 
 					if (type.equals("string")) {
 
-						param.setValue(((JTextField) graphicElements.get(i - 2))
+						if (((JTextField) graphicElements.get(ii)).getText()
+								.isEmpty()) {
+							errorLabel.setText(eroare1);
+							graphicElements.get(ii).requestFocus();
+							return;
+						}
+
+						if ((p.matcher(((JTextField) graphicElements.get(ii))
+								.getText()).find())) {
+
+							errorLabel.setText(eroare2);
+							graphicElements.get(ii).requestFocus();
+							return;
+						}
+
+						param.setValue(((JTextField) graphicElements.get(ii))
 								.getText());
 					}
 				}
 				// daca e de tip complex, atunci se ia panelul corespunzator si
 				// se parcurg toate componentele din el
+
+				if (param instanceof ComplexTypeParameter) {
+
+					ArrayList<Attribute> attributes = ((ComplexTypeParameter) param)
+							.getAttributes();
+
+					for (int j = 0; j < attributes.size(); j++) {
+
+						int coord = ii + j;
+						jj++;
+
+						Attribute attr = attributes.get(j);
+
+						JCheckBox elemName = checkboxes.get(jj);
+
+						// daca utilizatorul vrea acel atribut, atunci i se
+						// completeaza valoarea
+						if (elemName.isSelected()) {
+
+							// caz special - cand parametrul are restrictie de
+							// tip
+							// enumeration
+							if (attr.getRestrictions().enumeration != null) {
+
+								attr.setValue(((JComboBox<String>) graphicElements
+										.get(coord)).getSelectedItem()
+										.toString());
+							} else {
+
+								String type = attr.getBaseType();
+
+								if (type.equals("decimal")
+										|| type.equals("integer")
+										|| type.equals("int")
+										|| type.equals("negativeInteger")
+										|| type.equals("nonNegativeInteger")
+										|| type.equals("nonPositiveInteger")
+										|| type.equals("positiveInteger")
+										|| type.equals("float")
+										|| type.equals("double")) {
+
+									attr.setValue(((JSpinner) graphicElements
+											.get(coord)).getValue().toString());
+								}
+
+								if (type.equals("string")) {
+
+									if (((JTextField) graphicElements
+											.get(coord)).getText().isEmpty()) {
+										errorLabel.setText(eroare1);
+										graphicElements.get(coord)
+												.requestFocus();
+										return;
+									}
+
+									if ((p.matcher(((JTextField) graphicElements
+											.get(coord)).getText()).find())) {
+
+										errorLabel.setText(eroare2);
+										graphicElements.get(coord)
+												.requestFocus();
+										return;
+									}
+
+									attr.setValue(((JTextField) graphicElements
+											.get(coord)).getText());
+								}
+							}
+						}
+					}
+
+					ii += attributes.size() - 1;
+				}
 			}
 
 			motherWindow.addExec(crtOp);
 			// pun erorile pe fals, deoarece daca se mai intra o data in aceasta
 			// fereastra, ele nu trebuie afisate
-			eroare1.setVisible(false);
-			eroare2.setVisible(false);
+			errorLabel.setText("");
 			dispose();
 		}
 	}
@@ -342,37 +434,36 @@ public class ParametersWindow extends javax.swing.JDialog {
 		params = op.getParameters();
 		crtOp = op;
 
-		//trebuie redimensionata fereastra, dupa nr de parametri = nr de panel-uri care vor trebui sa incapa
-		this.setPreferredSize(new Dimension(300, 40 * (params.size()) + 20));		
+		int totalSize = params.size();
 
-		for (int ii = op.getParameters().size() - 1; ii >= 2; ii--) {
+		for (int ii = 2; ii < op.getParameters().size(); ii++) {
 
 			SimpleTypeParameter param = op.getParameters().get(ii);
-			
+
 			paramsPanel.add(Box.createVerticalStrut(10));
 			// genereaza un label cu numele parametrului (atributul name din
 			// element corespunzator parametrului)
 			param1Panel = new JPanel();
-			//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			param1Panel.setPreferredSize(new Dimension(320, 30));
 			param1Panel.setMinimumSize(new Dimension(320, 30));
 			param1Panel.setMaximumSize(new Dimension(320, 30));
 			paramsPanel.add(param1Panel);
 			param1Panel.setLayout(new BoxLayout(param1Panel, BoxLayout.X_AXIS));
-			
+
 			horizontalStrut_1 = Box.createHorizontalStrut(20);
 			horizontalStrut_1.setPreferredSize(new Dimension(10, 0));
 			horizontalStrut_1.setMinimumSize(new Dimension(10, 0));
 			horizontalStrut_1.setMaximumSize(new Dimension(10, 32767));
 			param1Panel.add(horizontalStrut_1);
-			
+
 			elemName = new JLabel(param.getName());
 			elemName.setPreferredSize(new Dimension(100, 15));
 			elemName.setMinimumSize(new Dimension(100, 15));
 			elemName.setMaximumSize(new Dimension(100, 15));
 			elemName.setHorizontalAlignment(SwingConstants.RIGHT);
 			param1Panel.add(elemName);
-			
+
 			horizontalStrut_2 = Box.createHorizontalStrut(20);
 			horizontalStrut_2.setMaximumSize(new Dimension(10, 32767));
 			horizontalStrut_2.setMinimumSize(new Dimension(10, 0));
@@ -390,7 +481,9 @@ public class ParametersWindow extends javax.swing.JDialog {
 
 			if (param.getRestrictions().enumeration != null) {
 
-				JComboBox<String> elem = new JComboBox<String>(new DefaultComboBoxModel<String>(param.getRestrictions().enumeration));
+				JComboBox<String> elem = new JComboBox<String>(
+						new DefaultComboBoxModel<String>(
+								param.getRestrictions().enumeration));
 				elem.setPreferredSize(new Dimension(150, 25));
 				elem.setMinimumSize(new Dimension(150, 25));
 				elem.setMaximumSize(new Dimension(150, 25));
@@ -398,7 +491,7 @@ public class ParametersWindow extends javax.swing.JDialog {
 
 				graphicElements.add(elem);
 				combos.add(elem);
-				
+
 			} else {
 
 				String type = param.getBaseType();
@@ -428,35 +521,32 @@ public class ParametersWindow extends javax.swing.JDialog {
 							Math.max(minValue, 0), minValue, maxValue, 0.001);
 
 					JSpinner elem = new JSpinner(spinnerModel);
-					elem.setPreferredSize(new Dimension(150, 20));
+					elem.setPreferredSize(new Dimension(150, 25));
 					elem.setMinimumSize(new Dimension(150, 25));
 					elem.setMaximumSize(new Dimension(150, 25));
-					 JComponent comp = elem.getEditor();
-					    JFormattedTextField field = (JFormattedTextField) comp.getComponent(0);
-					    DefaultFormatter formatter = (DefaultFormatter) field.getFormatter();
-					    formatter.setCommitsOnValidEdit(true);
+					JComponent comp = elem.getEditor();
+					JFormattedTextField field = (JFormattedTextField) comp
+							.getComponent(0);
+					DefaultFormatter formatter = (DefaultFormatter) field
+							.getFormatter();
+					formatter.setCommitsOnValidEdit(true);
 					param1Panel.add(elem);
 
-					
 					elem.addChangeListener(new ChangeListener() {
 						public void stateChanged(ChangeEvent e) {
 
 							doubleSpinnerListener(e);
 						}
 					});
-					
-					
+
 					/*
-					elem.addInputMethodListener(new InputMethodListener() {
-						public void caretPositionChanged(InputMethodEvent event) {
-						}
-						public void inputMethodTextChanged(InputMethodEvent event) {
-							
-							doubleSpinnerListener(event);
-						}
-					});
-					*/
-					
+					 * elem.addInputMethodListener(new InputMethodListener() {
+					 * public void caretPositionChanged(InputMethodEvent event)
+					 * { } public void inputMethodTextChanged(InputMethodEvent
+					 * event) {
+					 * 
+					 * doubleSpinnerListener(event); } });
+					 */
 
 					graphicElements.add(elem);
 					spinners.add(elem);
@@ -509,33 +599,32 @@ public class ParametersWindow extends javax.swing.JDialog {
 							Math.max(minValue, 0), minValue, maxValue, 1);
 
 					JSpinner elem = new JSpinner(spinnerModel);
-					elem.setPreferredSize(new Dimension(150, 20));
+					elem.setPreferredSize(new Dimension(150, 25));
 					elem.setMinimumSize(new Dimension(150, 25));
 					elem.setMaximumSize(new Dimension(150, 25));
-					 JComponent comp = elem.getEditor();
-					    JFormattedTextField field = (JFormattedTextField) comp.getComponent(0);
-					    DefaultFormatter formatter = (DefaultFormatter) field.getFormatter();
-					   // formatter.setCommitsOnValidEdit(true);
+					JComponent comp = elem.getEditor();
+					JFormattedTextField field = (JFormattedTextField) comp
+							.getComponent(0);
+					DefaultFormatter formatter = (DefaultFormatter) field
+							.getFormatter();
+					// formatter.setCommitsOnValidEdit(true);
 					param1Panel.add(elem);
 
-					
 					elem.addChangeListener(new ChangeListener() {
 						public void stateChanged(ChangeEvent e) {
 
 							integerSpinnerListener(e);
 						}
 					});
-					
+
 					/*
-					elem.addInputMethodListener(new InputMethodListener() {
-						public void caretPositionChanged(InputMethodEvent event) {
-						}
-						public void inputMethodTextChanged(InputMethodEvent event) {
-							
-							integerSpinnerListener(event);
-						}
-					});
-					*/
+					 * elem.addInputMethodListener(new InputMethodListener() {
+					 * public void caretPositionChanged(InputMethodEvent event)
+					 * { } public void inputMethodTextChanged(InputMethodEvent
+					 * event) {
+					 * 
+					 * integerSpinnerListener(event); } });
+					 */
 
 					graphicElements.add(elem);
 					spinners.add(elem);
@@ -557,15 +646,22 @@ public class ParametersWindow extends javax.swing.JDialog {
 				if (type.equals("string")) {
 
 					// ar trebui sa fac mai mare text box-ul, ca sa incapa orice
-					// sir					
-					
+					// sir
+
 					JTextField elem = new JTextField();
 					elem.setPreferredSize(new Dimension(150, 25));
 					elem.setMinimumSize(new Dimension(150, 25));
 					elem.setMaximumSize(new Dimension(150, 25));
 					param1Panel.add(elem);
-					elem.setColumns(10);				
-					
+					elem.setColumns(10);
+
+					elem.addCaretListener(new CaretListener() {
+						public void caretUpdate(CaretEvent e) {
+
+							errorLabel.setText("");
+						}
+					});
+
 					graphicElements.add(elem);
 					textFields.add(elem);
 				}
@@ -573,31 +669,301 @@ public class ParametersWindow extends javax.swing.JDialog {
 			}
 
 			// daca e de tip complex, atunci se va crea un panel in care vor fi
-			// adaugate si atributele		
-			
-			
+			// adaugate si atributele
+			if (param instanceof ComplexTypeParameter) {
+
+				createAttributesFields((ComplexTypeParameter) param);
+				totalSize += ((ComplexTypeParameter) param).getAttributes()
+						.size() + 1;
+			}
+
 			horizontalStrut_3 = Box.createHorizontalStrut(20);
 			horizontalStrut_3.setPreferredSize(new Dimension(10, 0));
 			horizontalStrut_3.setMinimumSize(new Dimension(10, 0));
 			horizontalStrut_3.setMaximumSize(new Dimension(10, 32767));
 			param1Panel.add(horizontalStrut_3);
 		}
-		
+
 		paramsPanel.add(errorLabel);
-				
+
+		// trebuie redimensionata fereastra, dupa nr de parametri = nr de
+		// panel-uri care vor trebui sa incapa
+		this.setPreferredSize(new Dimension(300, 40 * (totalSize) + 20));
+
 		pack();
+	}
+
+	public void createAttributesFields(ComplexTypeParameter complexParam) {
+
+		System.out.println("a intrat");
+
+		paramsPanel.add(Box.createVerticalStrut(10));
+
+		attrPanel = new JPanel();
+		attrPanel.setBorder(new TitledBorder(null, complexParam.getName()
+				+ " attributes", TitledBorder.LEADING, TitledBorder.TOP, null,
+				null));
+		paramsPanel.add(attrPanel);
+		attrPanel.setLayout(new BoxLayout(attrPanel, BoxLayout.Y_AXIS));
+
+		paramsPanel.add(attrPanel);
+
+		for (int ii = 0; ii < complexParam.getAttributes().size(); ii++) {
+
+			Attribute attr = complexParam.getAttributes().get(ii);
+
+			attrPanel.add(Box.createVerticalStrut(10));
+
+			// genereaza un label cu numele parametrului (atributul name din
+			// element corespunzator parametrului)
+			param1Panel = new JPanel();
+			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			param1Panel.setPreferredSize(new Dimension(320, 30));
+			param1Panel.setMinimumSize(new Dimension(320, 30));
+			param1Panel.setMaximumSize(new Dimension(320, 30));
+			attrPanel.add(param1Panel);
+			param1Panel.setLayout(new BoxLayout(param1Panel, BoxLayout.X_AXIS));
+
+			horizontalStrut_1 = Box.createHorizontalStrut(30);
+			param1Panel.add(horizontalStrut_1);
+
+			JCheckBox elemName = new JCheckBox(attr.getName());
+			elemName.setPreferredSize(new Dimension(100, 15));
+			elemName.setMinimumSize(new Dimension(100, 15));
+			elemName.setMaximumSize(new Dimension(100, 15));
+			elemName.setHorizontalAlignment(SwingConstants.LEFT);
+
+			checkboxes.add(elemName);
+
+			// daca atributul e required, atunci este obligatoriu sa fie
+			// introdusa o valoare acolo -> nu poate fi debifat
+			if (attr.getUse().equals("required")) {
+				elemName.setSelected(true);
+				elemName.addChangeListener(new ChangeListener() {
+					public void stateChanged(ChangeEvent e) {
+
+						((JCheckBox) e.getSource()).setSelected(true);
+					}
+				});
+			}
+			param1Panel.add(elemName);
+
+			horizontalStrut_2 = Box.createHorizontalStrut(10);
+			param1Panel.add(horizontalStrut_2);
+
+			// in functie de tipul parametrului, genereaza elementul grafic
+			// asociat
+			// (am putea direct sa stabilim o corespondenta intre
+			// elementele grafice si sa stabilim de la inceput ce generam,
+			// nu de fiecare data cand avem fereastra de parametri sa stam sa
+			// analizam)
+
+			// caz special - cand parametrul are restrictie de tip enumeration
+
+			if (attr.getRestrictions().enumeration != null) {
+
+				JComboBox<String> elem = new JComboBox<String>(
+						new DefaultComboBoxModel<String>(
+								attr.getRestrictions().enumeration));
+				elem.setPreferredSize(new Dimension(120, 25));
+				elem.setMinimumSize(new Dimension(120, 25));
+				elem.setMaximumSize(new Dimension(120, 25));
+				param1Panel.add(elem);
+
+				graphicElements.add(elem);
+				combos.add(elem);
+
+			} else {
+
+				String type = attr.getBaseType();
+
+				if (type.equals("decimal") || type.equals("float")
+						|| type.equals("double")) {
+
+					// daca exista restrictii de tipul minVal / maxVal, atunci
+					// spinner-ul sa nu permita introducerea acestor valori
+
+					double minValue = -1000.000;
+					double maxValue = 1000.000;
+
+					if (attr.getRestrictions().minValue != null) {
+
+						minValue = Double
+								.parseDouble(attr.getRestrictions().minValue);
+					}
+
+					if (attr.getRestrictions().maxValue != null) {
+
+						maxValue = Double
+								.parseDouble(attr.getRestrictions().maxValue);
+					}
+
+					SpinnerNumberModel spinnerModel = new SpinnerNumberModel(
+							Math.max(minValue, 0), minValue, maxValue, 0.001);
+
+					JSpinner elem = new JSpinner(spinnerModel);
+					elem.setPreferredSize(new Dimension(120, 25));
+					elem.setMinimumSize(new Dimension(120, 25));
+					elem.setMaximumSize(new Dimension(120, 25));
+					JComponent comp = elem.getEditor();
+					JFormattedTextField field = (JFormattedTextField) comp
+							.getComponent(0);
+					DefaultFormatter formatter = (DefaultFormatter) field
+							.getFormatter();
+					formatter.setCommitsOnValidEdit(true);
+					param1Panel.add(elem);
+
+					elem.addChangeListener(new ChangeListener() {
+						public void stateChanged(ChangeEvent e) {
+
+							doubleSpinnerListener(e);
+						}
+					});
+
+					/*
+					 * elem.addInputMethodListener(new InputMethodListener() {
+					 * public void caretPositionChanged(InputMethodEvent event)
+					 * { } public void inputMethodTextChanged(InputMethodEvent
+					 * event) {
+					 * 
+					 * doubleSpinnerListener(event); } });
+					 */
+
+					graphicElements.add(elem);
+					spinners.add(elem);
+				}
+
+				if (type.equals("integer") || type.equals("int")
+						|| type.equals("negativeInteger")
+						|| type.equals("nonNegativeInteger")
+						|| type.equals("nonPositiveInteger")
+						|| type.equals("positiveInteger")) {
+
+					int minValue = -1000;
+					int maxValue = 1000;
+
+					if (type.equals("negativeInteger")) {
+
+						maxValue = -1;
+					}
+
+					if (type.equals("nonNegativeInteger")) {
+
+						minValue = 0;
+					}
+
+					if (type.equals("nonPositiveInteger")) {
+
+						maxValue = 0;
+					}
+
+					if (type.equals("positiveInteger")) {
+
+						minValue = 1;
+					}
+
+					// presupunem ca minValue si maxvalue sunt date corect,
+					// tinand cont de restrictia de tip
+					if (attr.getRestrictions().minValue != null) {
+
+						minValue = Integer
+								.parseInt(attr.getRestrictions().minValue);
+					}
+
+					if (attr.getRestrictions().maxValue != null) {
+
+						maxValue = Integer
+								.parseInt(attr.getRestrictions().maxValue);
+					}
+
+					SpinnerNumberModel spinnerModel = new SpinnerNumberModel(
+							Math.max(minValue, 0), minValue, maxValue, 1);
+
+					JSpinner elem = new JSpinner(spinnerModel);
+					elem.setPreferredSize(new Dimension(120, 25));
+					elem.setMinimumSize(new Dimension(120, 25));
+					elem.setMaximumSize(new Dimension(120, 25));
+					JComponent comp = elem.getEditor();
+					JFormattedTextField field = (JFormattedTextField) comp
+							.getComponent(0);
+					DefaultFormatter formatter = (DefaultFormatter) field
+							.getFormatter();
+					// formatter.setCommitsOnValidEdit(true);
+					param1Panel.add(elem);
+
+					elem.addChangeListener(new ChangeListener() {
+						public void stateChanged(ChangeEvent e) {
+
+							integerSpinnerListener(e);
+						}
+					});
+
+					/*
+					 * elem.addInputMethodListener(new InputMethodListener() {
+					 * public void caretPositionChanged(InputMethodEvent event)
+					 * { } public void inputMethodTextChanged(InputMethodEvent
+					 * event) {
+					 * 
+					 * integerSpinnerListener(event); } });
+					 */
+
+					graphicElements.add(elem);
+					spinners.add(elem);
+				}
+
+				/*
+				 * if (type.equals("float") || type.equals("double")) {
+				 * 
+				 * SpinnerNumberModel spinnerModel = new
+				 * SpinnerNumberModel(0.0000, -1000.0000, 1000.0000, 0.0001);
+				 * 
+				 * JSpinner elem = new JSpinner(spinnerModel);
+				 * //elem.setEditor(new JSpinner.NumberEditor(elem,"#00.00"));
+				 * elem.setBounds(70, ySmallPanel, 140, 50); this.add(elem,
+				 * ySmallPanel, 1); graphicElements.add(elem);
+				 * spinner.add(elem); }
+				 */
+
+				if (type.equals("string")) {
+
+					// ar trebui sa fac mai mare text box-ul, ca sa incapa orice
+					// sir
+
+					JTextField elem = new JTextField();
+					elem.setPreferredSize(new Dimension(120, 25));
+					elem.setMinimumSize(new Dimension(120, 25));
+					elem.setMaximumSize(new Dimension(120, 25));
+					param1Panel.add(elem);
+					elem.setColumns(10);
+
+					elem.addCaretListener(new CaretListener() {
+						public void caretUpdate(CaretEvent e) {
+
+							errorLabel.setText("");
+						}
+					});
+
+					graphicElements.add(elem);
+					textFields.add(elem);
+				}
+
+			}
+
+			horizontalStrut_3 = Box.createHorizontalStrut(20);
+			horizontalStrut_3.setPreferredSize(new Dimension(10, 0));
+			horizontalStrut_3.setMinimumSize(new Dimension(10, 0));
+			horizontalStrut_3.setMaximumSize(new Dimension(10, 32767));
+			param1Panel.add(horizontalStrut_3);
+		}
 	}
 
 	private void close() {
 
-		eroare1.setVisible(false);
-		eroare2.setVisible(false);
+		errorLabel.setText("");
 		dispose();
 	}
 
 	public void doubleSpinnerListener(ChangeEvent e) {
-		
-		
 
 		// identific parametrul coresp.
 		JSpinner source = (JSpinner) e.getSource();
@@ -606,9 +972,9 @@ public class ParametersWindow extends javax.swing.JDialog {
 
 		double minValue = -1000.000;
 		double maxValue = 1000.000;
-		
-		 JComponent comp = source.getEditor();
-		    JFormattedTextField field = (JFormattedTextField) comp.getComponent(0);
+
+		JComponent comp = source.getEditor();
+		JFormattedTextField field = (JFormattedTextField) comp.getComponent(0);
 
 		if (param.getRestrictions().minValue != null) {
 
@@ -620,29 +986,26 @@ public class ParametersWindow extends javax.swing.JDialog {
 			maxValue = Double.parseDouble(param.getRestrictions().maxValue);
 		}
 
-	
 		try {
 			field.commitEdit();
 		} catch (ParseException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
-		double input = (Double)field.getValue();
-		
-		
-		if (input > maxValue
-				|| input < minValue) {
+
+		double input = (Double) field.getValue();
+
+		if (input > maxValue || input < minValue) {
 
 			// afiseaza eroare
 			// revine la valoarea anterioara
 			// afiseaza eroare
-						errorLabel.setText("Ati depasit limitele valorilor!");
-						// revine la valoarea anterioara
-						source.setValue(source.getModel().getValue());
+			errorLabel.setText("Ati depasit limitele valorilor!");
+			// revine la valoarea anterioara
+			source.setValue(source.getModel().getValue());
 		} else {
-			
-			//totul e ok
+
+			// totul e ok
 		}
 	}
 
@@ -665,7 +1028,7 @@ public class ParametersWindow extends javax.swing.JDialog {
 
 			maxValue = Integer.valueOf(param.getRestrictions().maxValue);
 		}
-		
+
 		if ((Integer) source.getValue() > maxValue
 				|| (Integer) source.getValue() < minValue) {
 
@@ -674,7 +1037,7 @@ public class ParametersWindow extends javax.swing.JDialog {
 			// revine la valoarea anterioara
 			source.setValue(source.getModel().getValue());
 		} else {
-			//totul e ok
+			// totul e ok
 		}
 	}
 }

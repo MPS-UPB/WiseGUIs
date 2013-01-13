@@ -8,11 +8,14 @@ import mps.parser.Operation;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
@@ -127,7 +130,7 @@ public abstract class SecondaryWindow extends JFrame {
 	 * Creates new form SecondaryWindow.
 	 */
 	public SecondaryWindow(MainWindow window) {
-		
+
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowOpened(WindowEvent e) {
@@ -195,7 +198,62 @@ public abstract class SecondaryWindow extends JFrame {
 
 		// setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
+		jListingPanelList.addMouseMotionListener(new MouseMotionAdapter() {
+			public void mouseMoved(MouseEvent e) {
+
+				int index = jListingPanelList.locationToIndex(e.getPoint());
+				Rectangle rectangle = jListingPanelList.getCellBounds(index,
+						index);
+				if (rectangle != null && index >= 0
+						&& index < jListingPanelList.getModel().getSize()
+						&& rectangle.contains(e.getPoint())) {
+
+					String execName = ((DefaultListModel<String>) jListingPanelList
+							.getModel()).elementAt(index);
+					for (Operation op : operations)
+						if (op.getName().equals(execName)) {
+
+							if (!op.getDesc().isEmpty())
+								// setez Tool Tip cu descrierea executabilului
+								jListingPanelList.setToolTipText(op.getDesc());
+						}
+				} else {
+
+					jListingPanelList.setToolTipText(null);
+				}
+			}
+		});
+
 		jChoicesPanelList.setCellRenderer(new ListElement());
+
+		jChoicesPanelList.addMouseMotionListener(new MouseMotionAdapter() {
+
+			public void mouseMoved(MouseEvent e) {
+
+				int index = jChoicesPanelList.locationToIndex(e.getPoint());
+				ArrayList<Operation> allOps = new ArrayList<Operation>();
+				allOps.addAll(oldSelection);
+				allOps.addAll(newSelection);
+
+				Rectangle rectangle = jChoicesPanelList.getCellBounds(index,
+						index);
+
+				if (rectangle != null && index >= 0
+						&& index < jChoicesPanelList.getModel().getSize()
+						&& rectangle.contains(e.getPoint())) {
+
+					if (!allOps.get(index).toString().isEmpty()) {
+						jChoicesPanelList.setToolTipText(allOps.get(index)
+								.toString());
+					
+					//	System.out.println(allOps.get(index));
+					}
+				} else {
+
+					jChoicesPanelList.setToolTipText(null);
+				}
+			}
+		});
 
 		jScrollPane1.setViewportView(jListingPanelList);
 		jScrollPane2.setViewportView(jChoicesPanelList);
@@ -409,10 +467,10 @@ public abstract class SecondaryWindow extends JFrame {
 		this.setVisible(false);
 
 		oldSelection.addAll(newSelection);
-		
-		//inainte de a trimite in feerastra principala, calculez hash-ul UNIC!!
+
+		// inainte de a trimite in feerastra principala, calculez hash-ul UNIC!!
 		for (Operation op : newSelection) {
-			
+
 			op.hash();
 		}
 
@@ -425,34 +483,34 @@ public abstract class SecondaryWindow extends JFrame {
 	 * @param evt
 	 *            evenimentul mouse clicked
 	 */
-	protected void cancelClicked(MouseEvent evt) {    	
-    	
-    	boolean isEmpty = true;
-    	for (int i = 0 ; i < removedOps.length; i++)
-    		if (removedOps[i] != null) {
-    			
-    				isEmpty = false;
-    				break;
-    			}
-    	
-    	if (!isEmpty || !newSelection.isEmpty()) {
-    	
-	    	  //Se intreaba utilizatorul daca este sigur ca vrea sa iasa din fereastra, cu riscul de a pierde operatiile nou adaugate
-	        int result = JOptionPane.showConfirmDialog(
-	                this,
-	                "Are you sure you want to Cancel? All your operations will be lost!",
-	                "Canceling...",
-	                JOptionPane.YES_NO_OPTION);
-	        
-	        if (result == JOptionPane.YES_OPTION) {
-	
-	            //Se executa instructiunile legate de iesirea din fereastra
-	        	close();
-	        }   
-    	}
-    	else 
-    		close();
-    }
+	protected void cancelClicked(MouseEvent evt) {
+
+		boolean isEmpty = true;
+		for (int i = 0; i < removedOps.length; i++)
+			if (removedOps[i] != null) {
+
+				isEmpty = false;
+				break;
+			}
+
+		if (!isEmpty || !newSelection.isEmpty()) {
+
+			// Se intreaba utilizatorul daca este sigur ca vrea sa iasa din
+			// fereastra, cu riscul de a pierde operatiile nou adaugate
+			int result = JOptionPane
+					.showConfirmDialog(
+							this,
+							"Are you sure you want to Cancel? All your operations will be lost!",
+							"Canceling...", JOptionPane.YES_NO_OPTION);
+
+			if (result == JOptionPane.YES_OPTION) {
+
+				// Se executa instructiunile legate de iesirea din fereastra
+				close();
+			}
+		} else
+			close();
+	}
 
 	/**
 	 * Metoda care realizeaza transferul unui nume de executabil din lista din
@@ -471,11 +529,13 @@ public abstract class SecondaryWindow extends JFrame {
 
 		// oldSelection.addAll(new
 		// ArrayList<Operation>(Arrays.asList(removedOps)));
-		
-		//A fost nevoie de array simplu si nu de ArrayList pentru pastrarea ordinii executabilelor;
-		//daca se apasa pe cancel, executabilele sterse vor fi puse inapoi in lista oldSelection, pe pozitiile pe care fusesera
+
+		// A fost nevoie de array simplu si nu de ArrayList pentru pastrarea
+		// ordinii executabilelor;
+		// daca se apasa pe cancel, executabilele sterse vor fi puse inapoi in
+		// lista oldSelection, pe pozitiile pe care fusesera
 		for (int i = 0; i < removedOps.length; i++) {
-			
+
 			if (removedOps[i] != null) {
 
 				oldSelection.add(i, removedOps[i]);

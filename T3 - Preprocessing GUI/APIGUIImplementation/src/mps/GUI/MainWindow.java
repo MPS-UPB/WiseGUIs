@@ -28,6 +28,7 @@ import javax.imageio.ImageIO;
  * @version Last modified by Liliana 20/12/2012
  */
 public class MainWindow extends JFrame {
+	
 
 	private static final long serialVersionUID = 1L;
 	private JPanel basePanel;
@@ -176,6 +177,9 @@ public class MainWindow extends JFrame {
 
 		JScrollPane scrollPane = new JScrollPane();
 		rightPanel.add(scrollPane);
+		
+		final Component verticalStrut_7 = Box.createVerticalStrut(10);
+		rightPanel.add(verticalStrut_7);
 
 		JPanel buttonsPanel = new JPanel();
 		// buttonsPanel.setPreferredSize(new Dimension(250, 30));
@@ -430,9 +434,10 @@ public class MainWindow extends JFrame {
 								image = ImageViewer.resize(image, label.getWidth(), label.getHeight());
 								ImageIcon myPicture = new ImageIcon(image);
 
-							//	label.resize(myPicture.getIconWidth(), myPicture.getIconHeight());
-								
+							//	label.setSize(myPicture.getIconWidth(), myPicture.getIconHeight());
 								label.setIcon(myPicture);
+							//	label.setPreferredSize(new Dimension(myPicture.getIconWidth(), myPicture.getIconHeight()));
+							
 
 								// fac refresh la JScrollPane
 								imageScrollPane.revalidate();
@@ -450,7 +455,10 @@ public class MainWindow extends JFrame {
 		imagePanel
 				.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
 		imagePanel.setForeground(new Color(255, 255, 255));
+		
+		imagePanel.setLayout(new BoxLayout(imagePanel, BoxLayout.Y_AXIS));
 
+		/*
 		GroupLayout imagePanelLayout = new GroupLayout(imagePanel);
 		imagePanel.setLayout(imagePanelLayout);
 		imagePanelLayout.setHorizontalGroup(imagePanelLayout
@@ -458,7 +466,7 @@ public class MainWindow extends JFrame {
 						0, Short.MAX_VALUE));
 		imagePanelLayout.setVerticalGroup(imagePanelLayout.createParallelGroup(
 				GroupLayout.Alignment.LEADING).addGap(0, 0, Short.MAX_VALUE));
-
+	*/
 
 		binarizationButton.addActionListener(new ActionListener() {
 			@Override
@@ -488,10 +496,10 @@ public class MainWindow extends JFrame {
 
 		binarizationButton.getAccessibleContext().setAccessibleName("");
 
-		imageScrollPane.setBorder(null);
+		imageScrollPane.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		imageScrollPane.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
-		newImgPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+	//	newImgPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
 		/*
 		GroupLayout newImgPanelLayout = new GroupLayout(newImgPanel);
@@ -578,522 +586,7 @@ public class MainWindow extends JFrame {
 
 	}
 
-	
-	
-	private void initComponents2() {
 
-		basePanel = new JPanel();
-		leftPanel = new JPanel();
-		browseButton = new JButton("Browse");
-		pathTextField = new JTextField();
-		imagePanel = new JPanel();
-		binarizationButton = new JButton("Binarization");
-		preprocessingButton = new JButton("Preprocessing");
-		rightPanel = new JPanel();
-		imageScrollPane = new JScrollPane();
-		newImgPanel = new JPanel();
-		updateCheckBox = new JCheckBox();
-		updateButton = new JButton("Update");
-		compareButton = new JButton("Compare");
-		checkedImages = new ArrayList<JCheckBox>();
-
-		compareButton.setEnabled(false);
-		binarizationButton.setEnabled(false);
-		preprocessingButton.setEnabled(false);
-		updateButton.setEnabled(false);
-
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setPreferredSize(new Dimension(820, 550));
-		addComponentListener(new ComponentAdapter() {
-			public void componentResized(ComponentEvent evt) {
-				formComponentResized(evt);
-			}
-
-			private void formComponentResized(ComponentEvent evt) {
-			}
-		});
-
-		final JFileChooser fileChooser = new JFileChooser("poze de test");
-		pathTextField.setEditable(false);
-		browseButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						int returnVal = fileChooser.showOpenDialog(leftPanel);
-						if (returnVal == JFileChooser.APPROVE_OPTION) {
-							// facem enabled butoanele
-							compareButton.setEnabled(true);
-							binarizationButton.setEnabled(true);
-							preprocessingButton.setEnabled(true);
-							updateButton.setEnabled(true);
-
-							// Setam calea catre fisier in textBox
-							pathTextField.setText(fileChooser.getSelectedFile()
-									.getAbsolutePath());
-							// salvam calea catre imagine
-							pathImage = pathTextField.getText();
-							// Incarcam imaginea in panel
-							int width = imagePanel.getSize().width;
-							int height = imagePanel.getSize().height;
-
-							// construieste imagine din calea "pathImage" cu
-							// dimensiunile width si height
-							Image image = ImageViewer.buildImage(pathImage);
-
-							// facem imaginea greyscale in spate
-							BufferedImage image_new = null;
-							File outputBlack = null;
-							try {
-								image_new = ImageIO.read(new File(pathTextField
-										.getText()));
-								BufferedImage image2 = new BufferedImage(
-										image_new.getWidth(), image_new
-												.getHeight(),
-										BufferedImage.TYPE_BYTE_GRAY);
-								Graphics g = image2.getGraphics();
-								g.drawImage(image, 0, 0, null);
-								g.dispose();
-
-								// Scriem noua imagine greyscale pe disc
-								String delim = "\\.";
-								String[] tokens = pathTextField.getText()
-										.split(delim);
-								inputPath = tokens[0] + "_input.png";
-								outputBlack = new File(inputPath);
-								outputBlack.createNewFile();
-								ImageIO.write(image2, "png", outputBlack);
-							} catch (Exception e) {
-							}
-
-							// redimensionam imaginea
-							image = ImageViewer.resize(image, width, height);
-
-							// Setam imaginea originala in stanga (pana la o
-							// preprocesare)
-							ImageIcon myPicture = new ImageIcon(image);
-							JLabel picLabel = new JLabel(myPicture);
-							picLabel.setSize(new Dimension(width, height));
-							imagePanel.removeAll();
-							imagePanel.add(picLabel);
-							MainWindow.this.repaint();
-						}
-					}
-				});
-			}
-		});
-
-		// facem disable butonul de update daca checkboxul este true
-		updateCheckBox.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				if (updateCheckBox.isSelected()) {
-					updateButton.setEnabled(false);
-				} else {
-					updateButton.setEnabled(true);
-				}
-
-			}
-		});
-
-		/*
-		 * La apasarea butonului Update: - se verifica daca exista cel putin un
-		 * checkbox selectat in dreapta - se schimba imaginea de input al
-		 * operatiilor corespunzatoare - se executa din nou operatia de
-		 * binarizare cu noua imagine de input dar cu aceiasi parametri ca la
-		 * inceput. - se updateaza Label-ul cu noua imagine.
-		 */
-		updateButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-
-				/*
-				 * Daca exista cel putin un checkbox selectat caut numarul de
-				 * ordine al fiecarui checkbox selectat, astfel incat sa pot
-				 * modifica operatia corespunzatoare din vectorul "operations"
-				 */
-
-				if (checkedImages.size() > 0) {
-
-					for (int i = 0; i < checkedImages.size(); i++) {
-						JCheckBox checked = checkedImages.get(i);
-						for (int j = 0; j < allImages.size(); j++) {
-							JCheckBox item = allImages.get(j);
-							// numarul de ordine este j
-							if (checked == item) {
-								// modific operatia
-								((ComplexTypeParameter) operations.get(j)
-										.getParameter("inputFile"))
-										.setAttribute("name", inputPath);
-								// execut operatia pentru a obtine imaginea de
-								// output
-								operations.get(j).execute();
-
-								// construiesc noua imagine din calea obtinuta
-								String path = ((ComplexTypeParameter) operations
-										.get(j).getParameter("outputFile"))
-										.getAttribute("name").getValue();
-
-								int width = imageScrollPane.getSize().width - 70;
-								int height = 150;
-
-								Image image = ImageViewer.buildImage(path);
-								image = ImageViewer
-										.resize(image, width, height);
-								ImageIcon myPicture = new ImageIcon(image);
-
-								// Inlocuiesc Label-ul din dreapta
-								JLabel label = labelList.get(checked);
-								label.setIcon(myPicture);
-
-								// fac refresh la JScrollPane
-								imageScrollPane.revalidate();
-								imageScrollPane.repaint();
-
-								// inlocuiesc calea in imageList
-								imageList.put(checked, path);
-							}
-						}
-					}
-				}
-			}
-		});
-
-		imagePanel
-				.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
-		imagePanel.setForeground(new Color(255, 255, 255));
-
-		GroupLayout imagePanelLayout = new GroupLayout(imagePanel);
-		imagePanel.setLayout(imagePanelLayout);
-		imagePanelLayout.setHorizontalGroup(imagePanelLayout
-				.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0,
-						0, Short.MAX_VALUE));
-		imagePanelLayout.setVerticalGroup(imagePanelLayout.createParallelGroup(
-				GroupLayout.Alignment.LEADING).addGap(0, 0, Short.MAX_VALUE));
-
-		binarizationButton.setPreferredSize(new Dimension(99, 23));
-
-		binarizationButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent ae) {
-				EventQueue.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						binarizationWindow.setVisible(true);
-
-					}
-				});
-
-			}
-		});
-
-		preprocessingButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				java.awt.EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						preprocessingWindow.setVisible(true);
-					}
-				});
-
-			}
-		});
-
-		GroupLayout leftPanelLayout = new GroupLayout(leftPanel);
-		leftPanel.setLayout(leftPanelLayout);
-		leftPanelLayout
-				.setHorizontalGroup(leftPanelLayout
-						.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addGroup(
-								leftPanelLayout
-										.createSequentialGroup()
-										.addComponent(binarizationButton,
-												GroupLayout.PREFERRED_SIZE,
-												GroupLayout.DEFAULT_SIZE,
-												GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(
-												LayoutStyle.ComponentPlacement.RELATED,
-												GroupLayout.DEFAULT_SIZE,
-												Short.MAX_VALUE)
-										.addComponent(preprocessingButton)
-										.addContainerGap())
-						.addGroup(
-								leftPanelLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												leftPanelLayout
-														.createParallelGroup(
-																GroupLayout.Alignment.LEADING)
-														.addComponent(
-																imagePanel,
-																GroupLayout.DEFAULT_SIZE,
-																GroupLayout.DEFAULT_SIZE,
-																Short.MAX_VALUE)
-														.addGroup(
-																GroupLayout.Alignment.TRAILING,
-																leftPanelLayout
-																		.createSequentialGroup()
-																		.addGap(0,
-																				0,
-																				Short.MAX_VALUE)
-																		.addComponent(
-																				browseButton)
-																		.addPreferredGap(
-																				LayoutStyle.ComponentPlacement.UNRELATED)
-																		.addComponent(
-																				pathTextField,
-																				GroupLayout.PREFERRED_SIZE,
-																				185,
-																				GroupLayout.PREFERRED_SIZE)))));
-		leftPanelLayout.setVerticalGroup(leftPanelLayout.createParallelGroup(
-				GroupLayout.Alignment.LEADING).addGroup(
-				leftPanelLayout
-						.createSequentialGroup()
-						.addContainerGap()
-						.addGroup(
-								leftPanelLayout
-										.createParallelGroup(
-												GroupLayout.Alignment.BASELINE)
-										.addComponent(pathTextField,
-												GroupLayout.PREFERRED_SIZE,
-												GroupLayout.DEFAULT_SIZE,
-												GroupLayout.PREFERRED_SIZE)
-										.addComponent(browseButton))
-						.addPreferredGap(
-								LayoutStyle.ComponentPlacement.UNRELATED)
-						.addComponent(imagePanel, GroupLayout.DEFAULT_SIZE,
-								GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addPreferredGap(
-								LayoutStyle.ComponentPlacement.UNRELATED)
-						.addGroup(
-								leftPanelLayout
-										.createParallelGroup(
-												GroupLayout.Alignment.LEADING,
-												false)
-										.addComponent(binarizationButton,
-												GroupLayout.DEFAULT_SIZE,
-												GroupLayout.DEFAULT_SIZE,
-												Short.MAX_VALUE)
-										.addComponent(preprocessingButton,
-												GroupLayout.DEFAULT_SIZE,
-												GroupLayout.DEFAULT_SIZE,
-												Short.MAX_VALUE))));
-
-		binarizationButton.getAccessibleContext().setAccessibleName("");
-
-		imageScrollPane.setBorder(null);
-		imageScrollPane.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-
-		newImgPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-
-		GroupLayout newImgPanelLayout = new GroupLayout(newImgPanel);
-		newImgPanel.setLayout(newImgPanelLayout);
-		newImgPanelLayout
-				.setHorizontalGroup(newImgPanelLayout
-						.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addGroup(
-								newImgPanelLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												newImgPanelLayout
-														.createParallelGroup(
-																GroupLayout.Alignment.LEADING)
-														.addGroup(
-																newImgPanelLayout
-																		.createSequentialGroup()))
-										.addContainerGap(39, Short.MAX_VALUE)));
-
-		newImgPanelLayout
-				.setVerticalGroup(newImgPanelLayout
-						.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addGroup(
-								newImgPanelLayout
-										.createSequentialGroup()
-										.addGroup(
-												newImgPanelLayout
-														.createParallelGroup(
-																GroupLayout.Alignment.LEADING)
-														.addGroup(
-																newImgPanelLayout
-																		.createSequentialGroup()
-																		.addContainerGap()
-																		.addGroup(
-																				newImgPanelLayout
-																						.createSequentialGroup())))
-										.addContainerGap(74, Short.MAX_VALUE)));
-
-		imageScrollPane.setViewportView(newImgPanel);
-
-		updateCheckBox.setText("Immediate Update ");
-		updateCheckBox.setActionCommand("Immediate Update ");
-
-		compareButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-
-				// Decomentati ce e mai jos pentru verificare daca doua
-				// checkboxuri sunt selectate
-				if (checkedImages.size() == 2) {
-					try {
-						compareWindow = new CompareImagesWindow(imageList
-								.get(checkedImages.get(0)), imageList
-								.get(checkedImages.get(1)));
-						compareWindow.setVisible(true);
-					}
-					// Comentati bucata de mai jos pentru intreaga
-					// functionalitate(la sfarsit)
-					/*
-					 * try { compareWindow = new
-					 * CompareImagesWindow("image11.png", "image22.png");
-					 * //if(checkedImages.size() == 2) //compareWindow = new
-					 * CompareImagesWindow(imageList.get(checkedImages.get(0)),
-					 * imageList.get(checkedImages.get(1))); } catch (Exception
-					 * ex) {
-					 * Logger.getLogger(MainWindow.class.getName()).log(Level
-					 * .SEVERE, null, ex); } compareWindow.setVisible(true);
-					 */
-					catch (IOException ex) {
-						Logger.getLogger(MainWindow.class.getName()).log(
-								Level.SEVERE, null, ex);
-					}
-				}
-
-			}
-		});
-
-		compareButton.setPreferredSize(new Dimension(99, 23));
-
-		GroupLayout rightPanelLayout = new GroupLayout(rightPanel);
-		rightPanel.setLayout(rightPanelLayout);
-		rightPanelLayout
-				.setHorizontalGroup(rightPanelLayout
-						.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addGroup(
-								rightPanelLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												rightPanelLayout
-														.createParallelGroup(
-																GroupLayout.Alignment.LEADING)
-														.addGroup(
-																GroupLayout.Alignment.TRAILING,
-																rightPanelLayout
-																		.createSequentialGroup()
-																		.addComponent(
-																				imageScrollPane,
-																				GroupLayout.DEFAULT_SIZE,
-																				298,
-																				Short.MAX_VALUE)
-																		.addContainerGap())
-														.addGroup(
-																GroupLayout.Alignment.TRAILING,
-																rightPanelLayout
-																		.createSequentialGroup()
-																		.addGap(0,
-																				0,
-																				Short.MAX_VALUE)
-																		.addComponent(
-																				compareButton,
-																				GroupLayout.PREFERRED_SIZE,
-																				GroupLayout.DEFAULT_SIZE,
-																				GroupLayout.PREFERRED_SIZE)
-																		.addGap(103,
-																				103,
-																				103))
-														.addGroup(
-																rightPanelLayout
-																		.createSequentialGroup()
-																		.addComponent(
-																				updateCheckBox)
-																		.addPreferredGap(
-																				LayoutStyle.ComponentPlacement.RELATED,
-																				GroupLayout.DEFAULT_SIZE,
-																				Short.MAX_VALUE)
-																		.addComponent(
-																				updateButton,
-																				GroupLayout.PREFERRED_SIZE,
-																				93,
-																				GroupLayout.PREFERRED_SIZE)
-																		.addContainerGap()))));
-		rightPanelLayout
-				.setVerticalGroup(rightPanelLayout
-						.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addGroup(
-								GroupLayout.Alignment.TRAILING,
-								rightPanelLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												rightPanelLayout
-														.createParallelGroup(
-																GroupLayout.Alignment.BASELINE)
-														.addComponent(
-																updateCheckBox)
-														.addComponent(
-																updateButton))
-										.addPreferredGap(
-												LayoutStyle.ComponentPlacement.UNRELATED)
-										.addComponent(imageScrollPane,
-												GroupLayout.DEFAULT_SIZE, 385,
-												Short.MAX_VALUE)
-										.addPreferredGap(
-												LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(compareButton,
-												GroupLayout.PREFERRED_SIZE, 28,
-												GroupLayout.PREFERRED_SIZE)));
-
-		GroupLayout basePanelLayout = new GroupLayout(basePanel);
-		basePanel.setLayout(basePanelLayout);
-		basePanelLayout.setHorizontalGroup(basePanelLayout.createParallelGroup(
-				GroupLayout.Alignment.LEADING).addGroup(
-				basePanelLayout
-						.createSequentialGroup()
-						.addGap(2, 2, 2)
-						.addComponent(leftPanel, GroupLayout.PREFERRED_SIZE,
-								GroupLayout.DEFAULT_SIZE,
-								GroupLayout.PREFERRED_SIZE)
-						.addGap(14, 14, 14)
-						.addComponent(rightPanel, GroupLayout.PREFERRED_SIZE,
-								GroupLayout.DEFAULT_SIZE,
-								GroupLayout.PREFERRED_SIZE)
-						.addContainerGap(GroupLayout.DEFAULT_SIZE,
-								Short.MAX_VALUE)));
-		basePanelLayout.setVerticalGroup(basePanelLayout
-				.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addComponent(rightPanel, GroupLayout.DEFAULT_SIZE,
-						GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(leftPanel, GroupLayout.Alignment.TRAILING,
-						GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
-						Short.MAX_VALUE));
-
-		GroupLayout layout = new GroupLayout(getContentPane());
-		getContentPane().setLayout(layout);
-		layout.setHorizontalGroup(layout.createParallelGroup(
-				GroupLayout.Alignment.LEADING).addGroup(
-				layout.createSequentialGroup()
-						.addGap(0, 2, Short.MAX_VALUE)
-						.addComponent(basePanel, GroupLayout.PREFERRED_SIZE,
-								GroupLayout.DEFAULT_SIZE,
-								GroupLayout.PREFERRED_SIZE)
-						.addGap(0, 2, Short.MAX_VALUE)));
-		layout.setVerticalGroup(layout.createParallelGroup(
-				GroupLayout.Alignment.LEADING).addGroup(
-				layout.createSequentialGroup()
-						.addGap(0, 18, Short.MAX_VALUE)
-						.addComponent(basePanel, GroupLayout.PREFERRED_SIZE,
-								GroupLayout.DEFAULT_SIZE,
-								GroupLayout.PREFERRED_SIZE)
-						.addGap(0, 18, Short.MAX_VALUE)));
-
-		pack();
-	}
-
-	
-	
 	/**
 	 * Metoda in care se initializeaza alti parametri din fereastra principala
 	 * si care incepe desfasurarea proceselor
@@ -1239,9 +732,7 @@ public class MainWindow extends JFrame {
 					int height = 150;
 					ImageIcon myPicture = null;
 					Image image = ImageViewer.buildImage(path);
-					image = ImageViewer.resize(image, width, height);
-
-					myPicture = new ImageIcon(image);
+				
 
 					// Inlocuiesc Label-ul din dreapta
 					JLabel label = null;
@@ -1249,7 +740,10 @@ public class MainWindow extends JFrame {
 					// j din operations
 					JCheckBox item = allImages.get(j);
 
-					label = labelList.get(item);
+					label = labelList.get(item);					
+					image = ImageViewer.resize(image, label.getWidth(), label.getHeight());
+					myPicture = new ImageIcon(image);
+					
 					label.setIcon(myPicture);
 
 					// inlocuiesc calea in imageList
@@ -1321,7 +815,8 @@ public class MainWindow extends JFrame {
 				*/
 
 				// stergem din panelul mare din dreapta
-				newImgPanel.remove(i);
+				newImgPanel.remove(i * 2);
+				newImgPanel.remove(i * 2);
 
 				// Verific daca trebuie sters si in vectorul de checkedImages
 				for (int j = 0; j < checkedImages.size(); j++) {

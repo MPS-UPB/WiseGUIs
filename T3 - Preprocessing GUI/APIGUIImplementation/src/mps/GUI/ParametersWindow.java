@@ -117,6 +117,8 @@ public class ParametersWindow extends javax.swing.JDialog {
 		addWindowListener(new WindowListener() {
 			@Override
 			public void windowOpened(WindowEvent arg0) {
+				
+				motherWindow.setEnabled(false);
 			}
 
 			@Override
@@ -138,6 +140,7 @@ public class ParametersWindow extends javax.swing.JDialog {
 
 				// cand se inchide fereastra de la "X", nu se salveaza
 				// modificarile
+				
 				close();
 			}
 
@@ -151,9 +154,11 @@ public class ParametersWindow extends javax.swing.JDialog {
 			}
 		});
 
+		/*
 		addComponentListener(new ComponentAdapter() {
 			public void componentHidden(ComponentEvent e) {
 
+				motherWindow.setEnabled(true);
 				close();
 			}
 
@@ -161,6 +166,7 @@ public class ParametersWindow extends javax.swing.JDialog {
 				// mainWindow.setEnabled(false);
 			}
 		});
+		*/
 
 		setResizable(false);
 		setPreferredSize(new Dimension(300, 120));
@@ -397,8 +403,7 @@ public class ParametersWindow extends javax.swing.JDialog {
 			motherWindow.addExec(crtOp);
 			// pun erorile pe fals, deoarece daca se mai intra o data in aceasta
 			// fereastra, ele nu trebuie afisate
-			errorLabel.setText("");
-			dispose();
+			close();
 		}
 	}
 
@@ -959,6 +964,7 @@ public class ParametersWindow extends javax.swing.JDialog {
 
 	private void close() {
 
+		motherWindow.setEnabled(true);
 		errorLabel.setText("");
 		dispose();
 	}

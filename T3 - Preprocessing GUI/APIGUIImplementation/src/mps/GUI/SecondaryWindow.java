@@ -135,6 +135,7 @@ public abstract class SecondaryWindow extends JFrame {
 			@Override
 			public void windowOpened(WindowEvent e) {
 
+				mainWindow.setEnabled(false);
 				init();
 			}
 
@@ -150,6 +151,7 @@ public abstract class SecondaryWindow extends JFrame {
 				// dreapta
 				// si readauga in stanga
 
+				mainWindow.setEnabled(true);
 				close();
 			}
 
@@ -158,12 +160,13 @@ public abstract class SecondaryWindow extends JFrame {
 		addComponentListener(new ComponentAdapter() {
 			public void componentHidden(ComponentEvent e) {
 
+				mainWindow.setEnabled(true);
 				close();
-
 			}
 
 			public void componentShown(ComponentEvent e) {
-				// mainWindow.setEnabled(false);
+				
+				mainWindow.setEnabled(false);
 				init();
 			}
 		});

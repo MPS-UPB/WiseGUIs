@@ -627,6 +627,18 @@ public class MainWindow extends JFrame {
 			System.exit(1);
 		}
 
+                /*
+                 * Construire folder XMLs daca el nu exista
+                 */
+                File f = new File("XMLs");
+                
+                if(!f.exists())
+                {
+                    if(f.mkdir())
+                        System.out.println("Folderul XMLs a fost creat");
+                    
+                }
+                
 		/*
 		 * Rulare parser
 		 * 

@@ -12,13 +12,11 @@ import java.util.ArrayList;
  */
 public class ComplexTypeParameter extends SimpleTypeParameter {
 
-	
-
 	/**
 	 * Lista de atribute asociata tipului complex al parametrului.
 	 */
 	private ArrayList<Attribute> attributes;
-	
+
 	public ComplexTypeParameter() {
 		super();
 		attributes = new ArrayList<Attribute>();
@@ -113,9 +111,9 @@ public class ComplexTypeParameter extends SimpleTypeParameter {
 		copy.setValue(this.getValue());
 		copy.setBaseType(this.getBaseType());
 		copy.setRestrictions(this.getRestrictions());
-		
+
 		for (Attribute attr : attributes) {
-			
+
 			copy.addAttribute(attr.copy());
 		}
 

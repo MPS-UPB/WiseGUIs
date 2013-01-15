@@ -13,12 +13,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.sun.xml.xsom.*;
 
 import mps.GUI.MainWindow;
-import mps.parser.SimpleTypeParameter;
-import mps.parser.ComplexTypeParameter;
-import java.io.FileOutputStream;
 
 /**
  * 
@@ -270,7 +266,7 @@ public class Operation {
 			proc.waitFor();
 
 			// sterg fisierul XML generat anterior
-			 new File(localXMLPath).delete();
+			new File(localXMLPath).delete();
 			// pot sa fac clear la directorul cu XML-uri, cand ies din
 			// aplicatie; sau pot sa le pastrez ca un fel de log
 

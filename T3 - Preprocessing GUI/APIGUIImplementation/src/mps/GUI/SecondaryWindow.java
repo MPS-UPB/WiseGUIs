@@ -4,11 +4,8 @@
  */
 package mps.GUI;
 
-import mps.parser.Operation;
-
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,10 +13,9 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
@@ -31,9 +27,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
 import javax.swing.ListCellRenderer;
-
-import java.awt.event.WindowAdapter;
 import javax.swing.ListSelectionModel;
+
+import mps.parser.Operation;
 
 /**
  * Clasa care descrie partea comuna a ferestrelor de binarizare si de
@@ -165,7 +161,7 @@ public abstract class SecondaryWindow extends JFrame {
 			}
 
 			public void componentShown(ComponentEvent e) {
-				
+
 				mainWindow.setEnabled(false);
 				init();
 			}
@@ -248,8 +244,8 @@ public abstract class SecondaryWindow extends JFrame {
 					if (!allOps.get(index).toString().isEmpty()) {
 						jChoicesPanelList.setToolTipText(allOps.get(index)
 								.toString());
-					
-					//	System.out.println(allOps.get(index));
+
+						// System.out.println(allOps.get(index));
 					}
 				} else {
 

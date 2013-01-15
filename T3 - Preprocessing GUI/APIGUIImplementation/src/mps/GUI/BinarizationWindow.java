@@ -1,17 +1,9 @@
 package mps.GUI;
 
-import mps.parser.Operation;
 import java.awt.event.ActionEvent;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.util.ArrayList;
 
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+import mps.parser.Operation;
 
 /**
  * 
@@ -26,10 +18,7 @@ public class BinarizationWindow extends SecondaryWindow {
 
 		super(window);
 		this.setTitle("Binarization");
-		
-		
-		
-		
+
 	}
 
 	@Override
@@ -53,7 +42,7 @@ public class BinarizationWindow extends SecondaryWindow {
 
 				if (newOperation.getParameters().size() == 2) {
 
-				addExec(newOperation);
+					addExec(newOperation);
 
 				} else {
 
@@ -87,7 +76,8 @@ public class BinarizationWindow extends SecondaryWindow {
 				// altfel, elimin din oldSelection
 				else {
 
-					removedOps[selectedIndex] = oldSelection.remove(selectedIndex);
+					removedOps[selectedIndex] = oldSelection
+							.remove(selectedIndex);
 				}
 			}
 		}

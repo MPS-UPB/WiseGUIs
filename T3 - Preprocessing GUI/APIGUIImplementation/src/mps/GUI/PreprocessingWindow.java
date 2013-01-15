@@ -4,17 +4,9 @@
  */
 package mps.GUI;
 
-import mps.parser.Operation;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 
-import javax.swing.*;
-
-import java.util.*;
-import java.awt.event.*;
+import mps.parser.Operation;
 
 /**
  * 
@@ -29,8 +21,7 @@ public class PreprocessingWindow extends SecondaryWindow {
 
 		super(window);
 		this.setTitle("Preprocessing");
-		
-		
+
 	}
 
 	@Override
@@ -92,7 +83,7 @@ public class PreprocessingWindow extends SecondaryWindow {
 				// Elementul este eliminat din lista din dreapta si trecut
 				// inapoi in lista din stanga
 				String selectedElement = jChoicesModel.elementAt(selectedIndex);
-				jChoicesModel.removeElementAt(selectedIndex);		
+				jChoicesModel.removeElementAt(selectedIndex);
 
 				// elimin din oldSelection
 				if (selectedIndex > oldSelection.size() - 1) {
@@ -102,7 +93,7 @@ public class PreprocessingWindow extends SecondaryWindow {
 				// elimin din newSelection
 				else {
 
-					//se pot retine si aici operatiile sterse in removedOps
+					// se pot retine si aici operatiile sterse in removedOps
 					oldSelection.remove(selectedIndex);
 				}
 
@@ -110,7 +101,7 @@ public class PreprocessingWindow extends SecondaryWindow {
 				// stanga pe aceeasi pozitie pe care era inainte
 				// (relativ la celelalte elemente, sa se pastreze ordinea
 				// elementelor, ca sa nu ametim utilizatorul)
-				
+
 				Object[] ceva = jListingModel.toArray();
 
 				// daca elementul selectat este in jListingModel deja, atunci
@@ -158,9 +149,10 @@ public class PreprocessingWindow extends SecondaryWindow {
 		// si transmis inapoi ca raspuns in ferestra principala)
 
 		super.okClicked(evt);
-        //Se transfera in fereastra principala lista cu executabilele de preprocesare ce trebuie aplicate imaginii
-        mainWindow.launchPreprocOperations(newSelection);
-        newSelection.clear();
+		// Se transfera in fereastra principala lista cu executabilele de
+		// preprocesare ce trebuie aplicate imaginii
+		mainWindow.launchPreprocOperations(newSelection);
+		newSelection.clear();
 	}
 
 	@Override

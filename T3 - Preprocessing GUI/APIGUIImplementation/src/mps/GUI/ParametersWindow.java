@@ -8,39 +8,43 @@ package mps.GUI;
  *
  * @author Liz
  */
-import mps.parser.Operation;
-import javax.swing.*;
-
-import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
-import javax.swing.border.EmptyBorder;
 
-import mps.parser.Attribute;
-import mps.parser.SimpleTypeParameter;
-import mps.parser.ComplexTypeParameter;
-import mps.parser.SimpleTypeRestriction;
-import java.util.ListIterator;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.event.ChangeListener;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.text.DefaultFormatter;
 
-import java.awt.event.InputMethodListener;
-import java.awt.event.InputMethodEvent;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.CaretListener;
-import javax.swing.event.CaretEvent;
+import mps.parser.Attribute;
+import mps.parser.ComplexTypeParameter;
+import mps.parser.Operation;
+import mps.parser.SimpleTypeParameter;
 
 //creez de fiecare data o fereastra noua? cam da
 public class ParametersWindow extends javax.swing.JDialog {
@@ -117,7 +121,7 @@ public class ParametersWindow extends javax.swing.JDialog {
 		addWindowListener(new WindowListener() {
 			@Override
 			public void windowOpened(WindowEvent arg0) {
-				
+
 				motherWindow.setEnabled(false);
 			}
 
@@ -140,7 +144,7 @@ public class ParametersWindow extends javax.swing.JDialog {
 
 				// cand se inchide fereastra de la "X", nu se salveaza
 				// modificarile
-				
+
 				close();
 			}
 
@@ -155,18 +159,14 @@ public class ParametersWindow extends javax.swing.JDialog {
 		});
 
 		/*
-		addComponentListener(new ComponentAdapter() {
-			public void componentHidden(ComponentEvent e) {
-
-				motherWindow.setEnabled(true);
-				close();
-			}
-
-			public void componentShown(ComponentEvent e) {
-				// mainWindow.setEnabled(false);
-			}
-		});
-		*/
+		 * addComponentListener(new ComponentAdapter() { public void
+		 * componentHidden(ComponentEvent e) {
+		 * 
+		 * motherWindow.setEnabled(true); close(); }
+		 * 
+		 * public void componentShown(ComponentEvent e) { //
+		 * mainWindow.setEnabled(false); } });
+		 */
 
 		setResizable(false);
 		setPreferredSize(new Dimension(300, 120));

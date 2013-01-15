@@ -1,26 +1,55 @@
 package mps.GUI;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.*;
-
-import mps.parser.ComplexTypeParameter;
-import mps.parser.Parser;
-import mps.parser.Operation;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
+import mps.parser.ComplexTypeParameter;
+import mps.parser.Operation;
+import mps.parser.Parser;
 
 /**
  * 
@@ -28,7 +57,6 @@ import javax.imageio.ImageIO;
  * @version Last modified by Liliana 20/12/2012
  */
 public class MainWindow extends JFrame {
-	
 
 	private static final long serialVersionUID = 1L;
 	private JPanel basePanel;
@@ -121,14 +149,14 @@ public class MainWindow extends JFrame {
 		binarizationWindow = new BinarizationWindow(this);
 		preprocessingWindow = new PreprocessingWindow(this);
 		setLocationRelativeTo(null);
-		getContentPane().setLayout(new BorderLayout(0, 0));		
+		getContentPane().setLayout(new BorderLayout(0, 0));
 
 		initComponents();
 
 		setLocationRelativeTo(null);
-		 rightPanel.setMinimumSize(new Dimension(this.getWidth() / 2, 30));
-		 rightPanel.setPreferredSize(new Dimension(this.getWidth() / 2, 30));
-		
+		rightPanel.setMinimumSize(new Dimension(this.getWidth() / 2, 30));
+		rightPanel.setPreferredSize(new Dimension(this.getWidth() / 2, 30));
+
 		init();
 	}
 
@@ -138,8 +166,8 @@ public class MainWindow extends JFrame {
 		getContentPane().add(splitPane, BorderLayout.CENTER);
 
 		rightPanel = new JPanel();
-		 rightPanel.setMinimumSize(new Dimension(this.getWidth() / 2, 30));
-		 rightPanel.setPreferredSize(new Dimension(this.getWidth() / 2, 30));
+		rightPanel.setMinimumSize(new Dimension(this.getWidth() / 2, 30));
+		rightPanel.setPreferredSize(new Dimension(this.getWidth() / 2, 30));
 		splitPane.setLeftComponent(rightPanel);
 		rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
 
@@ -177,7 +205,7 @@ public class MainWindow extends JFrame {
 
 		JScrollPane scrollPane = new JScrollPane();
 		rightPanel.add(scrollPane);
-		
+
 		final Component verticalStrut_7 = Box.createVerticalStrut(10);
 		rightPanel.add(verticalStrut_7);
 
@@ -269,12 +297,7 @@ public class MainWindow extends JFrame {
 
 		Component verticalStrut_6 = Box.createVerticalStrut(10);
 		leftPanel.add(verticalStrut_6);
-		
-		
-		
-		
-		
-		
+
 		imagePanel = new JPanel();
 		scrollPane.setViewportView(imagePanel);
 		newImgPanel = new JPanel();
@@ -288,10 +311,10 @@ public class MainWindow extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setPreferredSize(new Dimension(820, 550));
 		setMinimumSize(new Dimension(820, 550));
-		
+
 		addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent evt) {
-				
+
 				formComponentResized(evt);
 			}
 
@@ -321,8 +344,8 @@ public class MainWindow extends JFrame {
 							// salvam calea catre imagine
 							pathImage = pathTextField.getText();
 							// Incarcam imaginea in panel
-					//		int width = imagePanel.getSize().width;
-					//		int height = imagePanel.getSize().height;
+							// int width = imagePanel.getSize().width;
+							// int height = imagePanel.getSize().height;
 
 							// construieste imagine din calea "pathImage" cu
 							// dimensiunile width si height
@@ -354,13 +377,14 @@ public class MainWindow extends JFrame {
 							}
 
 							// redimensionam imaginea
-					//		image = ImageViewer.resize(image, width, height);
+							// image = ImageViewer.resize(image, width, height);
 
 							// Setam imaginea originala in stanga (pana la o
 							// preprocesare)
 							ImageIcon myPicture = new ImageIcon(image);
 							JLabel picLabel = new JLabel(myPicture);
-							picLabel.setSize(new Dimension(myPicture.getIconWidth(), myPicture.getIconHeight()));
+							picLabel.setSize(new Dimension(myPicture
+									.getIconWidth(), myPicture.getIconHeight()));
 							imagePanel.removeAll();
 							imagePanel.add(picLabel);
 							MainWindow.this.repaint();
@@ -421,23 +445,25 @@ public class MainWindow extends JFrame {
 										.get(j).getParameter("outputFile"))
 										.getAttribute("name").getValue();
 
-							//	int width = imageScrollPane.getSize().width - 70;
+								// int width = imageScrollPane.getSize().width -
+								// 70;
 								int width = 450;
 								int height = 250;
 
-							
-
 								// Inlocuiesc Label-ul din dreapta
 								JLabel label = labelList.get(checked);
-								
+
 								Image image = ImageViewer.buildImage(path);
-								image = ImageViewer.resize(image, label.getWidth(), label.getHeight());
+								image = ImageViewer.resize(image,
+										label.getWidth(), label.getHeight());
 								ImageIcon myPicture = new ImageIcon(image);
 
-							//	label.setSize(myPicture.getIconWidth(), myPicture.getIconHeight());
+								// label.setSize(myPicture.getIconWidth(),
+								// myPicture.getIconHeight());
 								label.setIcon(myPicture);
-							//	label.setPreferredSize(new Dimension(myPicture.getIconWidth(), myPicture.getIconHeight()));
-							
+								// label.setPreferredSize(new
+								// Dimension(myPicture.getIconWidth(),
+								// myPicture.getIconHeight()));
 
 								// fac refresh la JScrollPane
 								imageScrollPane.revalidate();
@@ -455,18 +481,19 @@ public class MainWindow extends JFrame {
 		imagePanel
 				.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
 		imagePanel.setForeground(new Color(255, 255, 255));
-		
+
 		imagePanel.setLayout(new BoxLayout(imagePanel, BoxLayout.Y_AXIS));
 
 		/*
-		GroupLayout imagePanelLayout = new GroupLayout(imagePanel);
-		imagePanel.setLayout(imagePanelLayout);
-		imagePanelLayout.setHorizontalGroup(imagePanelLayout
-				.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0,
-						0, Short.MAX_VALUE));
-		imagePanelLayout.setVerticalGroup(imagePanelLayout.createParallelGroup(
-				GroupLayout.Alignment.LEADING).addGap(0, 0, Short.MAX_VALUE));
-	*/
+		 * GroupLayout imagePanelLayout = new GroupLayout(imagePanel);
+		 * imagePanel.setLayout(imagePanelLayout);
+		 * imagePanelLayout.setHorizontalGroup(imagePanelLayout
+		 * .createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 0,
+		 * Short.MAX_VALUE));
+		 * imagePanelLayout.setVerticalGroup(imagePanelLayout.
+		 * createParallelGroup( GroupLayout.Alignment.LEADING).addGap(0, 0,
+		 * Short.MAX_VALUE));
+		 */
 
 		binarizationButton.addActionListener(new ActionListener() {
 			@Override
@@ -499,49 +526,30 @@ public class MainWindow extends JFrame {
 		imageScrollPane.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		imageScrollPane.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
-	//	newImgPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		// newImgPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
 		/*
-		GroupLayout newImgPanelLayout = new GroupLayout(newImgPanel);
-		newImgPanel.setLayout(newImgPanelLayout);
-		newImgPanelLayout
-				.setHorizontalGroup(newImgPanelLayout
-						.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addGroup(
-								newImgPanelLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												newImgPanelLayout
-														.createParallelGroup(
-																GroupLayout.Alignment.LEADING)
-														.addGroup(
-																newImgPanelLayout
-																		.createSequentialGroup()))
-										.addContainerGap(39, Short.MAX_VALUE)));
+		 * GroupLayout newImgPanelLayout = new GroupLayout(newImgPanel);
+		 * newImgPanel.setLayout(newImgPanelLayout); newImgPanelLayout
+		 * .setHorizontalGroup(newImgPanelLayout
+		 * .createParallelGroup(GroupLayout.Alignment.LEADING) .addGroup(
+		 * newImgPanelLayout .createSequentialGroup() .addContainerGap()
+		 * .addGroup( newImgPanelLayout .createParallelGroup(
+		 * GroupLayout.Alignment.LEADING) .addGroup( newImgPanelLayout
+		 * .createSequentialGroup())) .addContainerGap(39, Short.MAX_VALUE)));
+		 * 
+		 * newImgPanelLayout .setVerticalGroup(newImgPanelLayout
+		 * .createParallelGroup(GroupLayout.Alignment.LEADING) .addGroup(
+		 * newImgPanelLayout .createSequentialGroup() .addGroup(
+		 * newImgPanelLayout .createParallelGroup(
+		 * GroupLayout.Alignment.LEADING) .addGroup( newImgPanelLayout
+		 * .createSequentialGroup() .addContainerGap() .addGroup(
+		 * newImgPanelLayout .createSequentialGroup()))) .addContainerGap(74,
+		 * Short.MAX_VALUE)));
+		 */
 
-		newImgPanelLayout
-				.setVerticalGroup(newImgPanelLayout
-						.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addGroup(
-								newImgPanelLayout
-										.createSequentialGroup()
-										.addGroup(
-												newImgPanelLayout
-														.createParallelGroup(
-																GroupLayout.Alignment.LEADING)
-														.addGroup(
-																newImgPanelLayout
-																		.createSequentialGroup()
-																		.addContainerGap()
-																		.addGroup(
-																				newImgPanelLayout
-																						.createSequentialGroup())))
-										.addContainerGap(74, Short.MAX_VALUE)));
-										*/
-		
 		newImgPanel.setLayout(new BoxLayout(newImgPanel, BoxLayout.Y_AXIS));
-	//	newImgPanel.setAlignmentX(LEFT_ALIGNMENT);
+		// newImgPanel.setAlignmentX(LEFT_ALIGNMENT);
 
 		imageScrollPane.setViewportView(newImgPanel);
 
@@ -581,11 +589,8 @@ public class MainWindow extends JFrame {
 
 			}
 		});
-		
-		
 
 	}
-
 
 	/**
 	 * Metoda in care se initializeaza alti parametri din fereastra principala
@@ -732,7 +737,6 @@ public class MainWindow extends JFrame {
 					int height = 150;
 					ImageIcon myPicture = null;
 					Image image = ImageViewer.buildImage(path);
-				
 
 					// Inlocuiesc Label-ul din dreapta
 					JLabel label = null;
@@ -740,10 +744,11 @@ public class MainWindow extends JFrame {
 					// j din operations
 					JCheckBox item = allImages.get(j);
 
-					label = labelList.get(item);					
-					image = ImageViewer.resize(image, label.getWidth(), label.getHeight());
+					label = labelList.get(item);
+					image = ImageViewer.resize(image, label.getWidth(),
+							label.getHeight());
 					myPicture = new ImageIcon(image);
-					
+
 					label.setIcon(myPicture);
 
 					// inlocuiesc calea in imageList
@@ -800,19 +805,15 @@ public class MainWindow extends JFrame {
 				imageList.remove(deleted);
 
 				/*
-				// le urcam pe cele de sub cel sters mai sus
-				int width = imageScrollPane.getSize().width - 10;
-				int height = 180;
-
-				for (int k = (i + 1); k < newImgPanel.getComponentCount(); k++) {
-					JPanel containerPanel = (JPanel) newImgPanel
-							.getComponent(k);
-					int posX = containerPanel.getLocation().x;
-					int posY = containerPanel.getLocation().y;
-					posY -= height;
-					containerPanel.setLocation(posX, posY);
-				}
-				*/
+				 * // le urcam pe cele de sub cel sters mai sus int width =
+				 * imageScrollPane.getSize().width - 10; int height = 180;
+				 * 
+				 * for (int k = (i + 1); k < newImgPanel.getComponentCount();
+				 * k++) { JPanel containerPanel = (JPanel) newImgPanel
+				 * .getComponent(k); int posX = containerPanel.getLocation().x;
+				 * int posY = containerPanel.getLocation().y; posY -= height;
+				 * containerPanel.setLocation(posX, posY); }
+				 */
 
 				// stergem din panelul mare din dreapta
 				newImgPanel.remove(i * 2);
@@ -866,13 +867,14 @@ public class MainWindow extends JFrame {
 		int height = imagePanel.getSize().height;
 
 		Image image = ImageViewer.buildImage(inputPath);
-//		image = ImageViewer.resize(image, width, height);
+		// image = ImageViewer.resize(image, width, height);
 		ImageIcon myPicture = new ImageIcon(image);
-	//	JLabel picLabel = new JLabel(myPicture);
-	//	picLabel.setSize(new Dimension(width, height));
+		// JLabel picLabel = new JLabel(myPicture);
+		// picLabel.setSize(new Dimension(width, height));
 
 		JLabel lab = (JLabel) imagePanel.getComponent(0);
-		lab.setSize(new Dimension(myPicture.getIconWidth(), myPicture.getIconHeight()));
+		lab.setSize(new Dimension(myPicture.getIconWidth(), myPicture
+				.getIconHeight()));
 		lab.setIcon(myPicture);
 
 		MainWindow.this.repaint();
@@ -902,18 +904,19 @@ public class MainWindow extends JFrame {
 		int height = 150;
 
 		Image image = ImageViewer.buildImage(path);
-	//	image = ImageViewer.resize(image, width, height);
+		// image = ImageViewer.resize(image, width, height);
 		ImageIcon myPicture = new ImageIcon(image);
 
 		JLabel label = new JLabel(myPicture);
 		int size = imageList.size();
-	//	label.setPreferredSize(new Dimension(
-	//			imageScrollPane.getSize().width - 70, 150));
-	//	label.setPreferredSize(new Dimension(
-	//						450, 350));
+		// label.setPreferredSize(new Dimension(
+		// imageScrollPane.getSize().width - 70, 150));
+		// label.setPreferredSize(new Dimension(
+		// 450, 350));
 		label.setAlignmentX(LEFT_ALIGNMENT);
 		label.setIcon(myPicture);
-		label.setPreferredSize(new Dimension(myPicture.getIconWidth(), myPicture.getIconHeight()));
+		label.setPreferredSize(new Dimension(myPicture.getIconWidth(),
+				myPicture.getIconHeight()));
 		label.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		box.setPreferredSize(new Dimension(20, 30));
 
@@ -950,13 +953,16 @@ public class MainWindow extends JFrame {
 		// Construiesc un panel care va cuprinde checkboxul si Label-ul cu
 		// imaginea
 		JPanel containerPanel = new JPanel();
-	//	containerPanel.setSize(imageScrollPane.getSize().width - 10, 180);
+		// containerPanel.setSize(imageScrollPane.getSize().width - 10, 180);
 		// containerPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		
+
 		containerPanel.setMaximumSize(new Dimension(32767, 32767));
-		containerPanel.setMinimumSize(new Dimension(100 + myPicture.getIconWidth(), myPicture.getIconHeight()));
-		containerPanel.setPreferredSize(new Dimension(100 + myPicture.getIconWidth(), myPicture.getIconHeight()));
-		containerPanel.setSize(100 + myPicture.getIconWidth(), myPicture.getIconHeight());
+		containerPanel.setMinimumSize(new Dimension(100 + myPicture
+				.getIconWidth(), myPicture.getIconHeight()));
+		containerPanel.setPreferredSize(new Dimension(100 + myPicture
+				.getIconWidth(), myPicture.getIconHeight()));
+		containerPanel.setSize(100 + myPicture.getIconWidth(),
+				myPicture.getIconHeight());
 		containerPanel.setLocation(1, size * 180 + 1);
 		containerPanel.add(box);
 		containerPanel.add(label);
@@ -1007,8 +1013,8 @@ public class MainWindow extends JFrame {
 		labelList.put(box, label);
 
 		// Se adauga panelul nou creat in lista din dreapta
-	//	newImgPanel.setPreferredSize(new Dimension(containerPanel.getX(),
-	//			newImgPanel.getHeight() + containerPanel.getY()));
+		// newImgPanel.setPreferredSize(new Dimension(containerPanel.getX(),
+		// newImgPanel.getHeight() + containerPanel.getY()));
 		newImgPanel.add(containerPanel);
 		newImgPanel.add(Box.createVerticalStrut(10));
 		imageScrollPane.revalidate();
@@ -1037,5 +1043,5 @@ public class MainWindow extends JFrame {
 			}
 		});
 	}
-	
+
 }

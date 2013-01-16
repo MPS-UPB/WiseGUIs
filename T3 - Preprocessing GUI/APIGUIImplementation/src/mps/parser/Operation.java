@@ -443,29 +443,6 @@ public class Operation {
 		return newOp;
 	}
 
-	public void hash() {
-
-		String concat = "";
-
-		for (SimpleTypeParameter param : parameters) {
-
-			if (param.getValue() != null) {
-				concat += param.getValue();
-			}
-
-			if (param instanceof ComplexTypeParameter) {
-
-				ComplexTypeParameter complexParam = (ComplexTypeParameter) param;
-				for (Attribute attribute : complexParam.getAttributes()) {
-
-					concat += attribute.getValue();
-				}
-			}
-		}
-
-		// hashString = String.valueOf(concat.hashCode());
-	}
-
 	@Override
 	public String toString() {
 

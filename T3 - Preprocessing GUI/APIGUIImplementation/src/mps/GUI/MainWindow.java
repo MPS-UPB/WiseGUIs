@@ -828,7 +828,9 @@ public class MainWindow extends JFrame {
 				 */
 
 				// stergem din panelul mare din dreapta
+				// stergem checkbox-ul
 				newImgPanel.remove(i * 2);
+				//stergem label-ul
 				newImgPanel.remove(i * 2);
 
 				// Verific daca trebuie sters si in vectorul de checkedImages
@@ -848,7 +850,8 @@ public class MainWindow extends JFrame {
 
 				// si din operations
 				operations.remove(i);
-
+				
+				break;
 			}
 		}
 	}

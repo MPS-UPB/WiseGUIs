@@ -16,6 +16,12 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
 
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
@@ -82,7 +88,7 @@ public abstract class SecondaryWindow extends JFrame {
 	/**
 	 * Lista cu executabilele sterse din lista veche (necesar la binarizare).
 	 */
-	Operation[] removedOps;
+	LinkedHashMap<Operation, Integer> removedOps;
 
 	protected class ListElement extends JLabel implements ListCellRenderer {
 
@@ -173,7 +179,7 @@ public abstract class SecondaryWindow extends JFrame {
 		jListingModel = new DefaultListModel<String>();
 		jChoicesModel = new DefaultListModel<String>();
 		oldSelection = new ArrayList<Operation>();
-		removedOps = new Operation[50];
+		removedOps = new LinkedHashMap<Operation, Integer>();
 		newSelection = new ArrayList<Operation>();
 		// initial nu este selectat nimic
 		selectedIndex = -1;
@@ -467,12 +473,6 @@ public abstract class SecondaryWindow extends JFrame {
 
 		oldSelection.addAll(newSelection);
 
-		// inainte de a trimite in feerastra principala, calculez hash-ul UNIC!!
-		for (Operation op : newSelection) {
-
-			op.hash();
-		}
-
 		// trimit in fereastra principala
 	}
 
@@ -484,15 +484,7 @@ public abstract class SecondaryWindow extends JFrame {
 	 */
 	protected void cancelClicked(MouseEvent evt) {
 
-		boolean isEmpty = true;
-		for (int i = 0; i < removedOps.length; i++)
-			if (removedOps[i] != null) {
-
-				isEmpty = false;
-				break;
-			}
-
-		if (!isEmpty || !newSelection.isEmpty()) {
+		if (!removedOps.isEmpty() || !newSelection.isEmpty()) {
 
 			// Se intreaba utilizatorul daca este sigur ca vrea sa iasa din
 			// fereastra, cu riscul de a pierde operatiile nou adaugate
@@ -533,14 +525,17 @@ public abstract class SecondaryWindow extends JFrame {
 		// ordinii executabilelor;
 		// daca se apasa pe cancel, executabilele sterse vor fi puse inapoi in
 		// lista oldSelection, pe pozitiile pe care fusesera
-		for (int i = 0; i < removedOps.length; i++) {
+	
+		ListIterator<Operation> iter =
+			    new ArrayList<Operation>(removedOps.keySet()).listIterator(removedOps.size());
 
-			if (removedOps[i] != null) {
-
-				oldSelection.add(i, removedOps[i]);
-				removedOps[i] = null;
-			}
+		while (iter.hasPrevious()) {
+			
+		   Operation op = iter.previous();
+		   oldSelection.add(removedOps.get(op), op);			    
 		}
+		
+		removedOps.clear();
 
 		mainWindow.setEnabled(true);
 		this.setVisible(false);

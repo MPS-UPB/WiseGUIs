@@ -2,6 +2,7 @@ package mps.GUI;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import java.util.Map;
 
 import mps.parser.Operation;
 
@@ -76,8 +77,7 @@ public class BinarizationWindow extends SecondaryWindow {
 				// altfel, elimin din oldSelection
 				else {
 
-					removedOps[selectedIndex] = oldSelection
-							.remove(selectedIndex);
+					removedOps.put(oldSelection.remove(selectedIndex), selectedIndex);
 				}
 			}
 		}
@@ -99,14 +99,11 @@ public class BinarizationWindow extends SecondaryWindow {
 		mainWindow.launchBinarizOperations(newSelection);
 		newSelection.clear();
 
-		for (int i = 0; i < removedOps.length; i++) {
+		for (Map.Entry<Operation, Integer> entry : removedOps.entrySet()) {
 
-			if (removedOps[i] != null) {
-
-				mainWindow.removeBinarization(removedOps[i]);
-				removedOps[i] = null;
-			}
-		}
+				mainWindow.removeBinarization(entry.getKey());
+		}		
+		removedOps.clear();
 	}
 
 	@Override

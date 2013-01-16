@@ -46,23 +46,51 @@ import mps.parser.ComplexTypeParameter;
 import mps.parser.Operation;
 import mps.parser.SimpleTypeParameter;
 
-//creez de fiecare data o fereastra noua? cam da
+/**
+ * Fereastra de parametri
+ * @author Luiza
+ */
+
 public class ParametersWindow extends javax.swing.JDialog {
 
-	Operation crtOp;
-	SecondaryWindow motherWindow;
-	ArrayList<SimpleTypeParameter> params;// aici am declarat
-	ArrayList<JTextField> textFields;
-	ArrayList<JComboBox<String>> combos;
-	ArrayList<JSpinner> spinners;
-	ArrayList<JCheckBox> checkboxes;
-	String eroare1, eroare2;
-	/*
-	 * aici se vor adauga toate elementele grafice; indexul va corespunde
-	 * indexului din params in functie de tipul elementului se va extrage
-	 * informatia din elementul grafic - in OK si se va trece ca valoare in
-	 * lista de parametri ai operatiei
+	/**
+	 * Operatia ale carei campuri pentru parametri vor fi generate
 	 */
+	Operation crtOp;
+	/**
+	 * Fereastra de binarizare sau de preprocesare care a deschis fereastra de parametri
+	 */
+	SecondaryWindow motherWindow;
+	/**
+	 * Lista de parametri ai operatiei
+	 */
+	ArrayList<SimpleTypeParameter> params;
+	/**
+	 * Lista de elemente JTextField
+	 */
+	ArrayList<JTextField> textFields;
+	/**
+	 * Lista de elemente JComboBox
+	 */
+	ArrayList<JComboBox<String>> combos;
+	/**
+	 * Lista de elemente JSpinner
+	 */
+	ArrayList<JSpinner> spinners;
+	/**
+	 * Lista de elemente JCheckBox (pentru atribute)
+	 */
+	ArrayList<JCheckBox> checkboxes;
+	/**
+	 * Eroarea de necompletare camp.
+	 */
+	String eroare1;
+	/**
+	 * Eroarea de completare gresita camp.
+	 */
+	String eroare2;
+
+	
 	ArrayList<Component> graphicElements;
 	protected JPanel buttonsPanel;
 	protected JButton okButton;
@@ -107,16 +135,17 @@ public class ParametersWindow extends javax.swing.JDialog {
 		graphicElements = new ArrayList<Component>();
 
 		initializareErori();
-		generateFields(op); // in functie de numarul de parametrii din op se
-							// genereaza dinamic fereastra
+		//Generarea dinamica a campurilor pentru introducerea parametrilor
+		generateFields(op); 
 	}
 
 	/**
-	 * metoda generata automat de java swing pentru initializare
+	 * Metoda pentru initializarea componentelor grafice ale ferestrei
 	 */
 	private void initComponents() {
-		setLocationRelativeTo(null); // pozitionarea ferestrei in centrul
-										// ecranului
+		
+		//Pozitionarea ferestrei in centrul ecranului
+		setLocationRelativeTo(null); 
 
 		addWindowListener(new WindowListener() {
 			@Override
@@ -126,47 +155,36 @@ public class ParametersWindow extends javax.swing.JDialog {
 			}
 
 			@Override
-			public void windowIconified(WindowEvent arg0) {
-				// TODO Auto-generated method stub
-			}
-
-			@Override
-			public void windowDeiconified(WindowEvent arg0) {
-				// TODO Auto-generated method stub
-			}
-
-			@Override
-			public void windowDeactivated(WindowEvent arg0) {
-			}
-
-			@Override
 			public void windowClosing(WindowEvent arg0) {
-
-				// cand se inchide fereastra de la "X", nu se salveaza
-				// modificarile
 
 				close();
 			}
 
 			@Override
-			public void windowClosed(WindowEvent arg0) {
+			public void windowClosed(WindowEvent e) {
+				
 			}
 
 			@Override
-			public void windowActivated(WindowEvent arg0) {
-				// mainWindow.setEnabled(false);
+			public void windowIconified(WindowEvent e) {
+				
 			}
-		});
 
-		/*
-		 * addComponentListener(new ComponentAdapter() { public void
-		 * componentHidden(ComponentEvent e) {
-		 * 
-		 * motherWindow.setEnabled(true); close(); }
-		 * 
-		 * public void componentShown(ComponentEvent e) { //
-		 * mainWindow.setEnabled(false); } });
-		 */
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+				
+			}
+
+			@Override
+			public void windowActivated(WindowEvent e) {
+				
+			}
+
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+				
+			}
+		});	
 
 		setResizable(false);
 		setPreferredSize(new Dimension(300, 120));
@@ -225,11 +243,10 @@ public class ParametersWindow extends javax.swing.JDialog {
 		});
 
 		pack();
-	}// </editor-fold>//GEN-END:initComponents
+	}
 
 	/**
-	 * Aceasta functie seteaza mesajele erorilor, culoarea si fontul lor si le
-	 * seteaza sa nu fie afisate
+	 * Initializarea string-urilor de eroare
 	 */
 	private void initializareErori() {
 		eroare1 = "Trebuie sa completati toate campurile goale";
@@ -237,7 +254,7 @@ public class ParametersWindow extends javax.swing.JDialog {
 	}
 
 	/**
-	 * aceasta metoda specifica ce se intampla la apasarea butonului OK. Se
+	 * Aceasta metoda specifica ce se intampla la apasarea butonului OK. Se
 	 * preiau datele introduse in TextField, ComboBox si Spinner (doar daca au
 	 * fost introduse corect, altfel se afisaza un mesaj de eroare) si se
 	 * transmit catre fereastra secundara(anterioara)
@@ -247,168 +264,144 @@ public class ParametersWindow extends javax.swing.JDialog {
 	 */
 	private void okClicked(java.awt.event.MouseEvent evt) {
 
-		int k, okay1 = 1, okay2 = 1;
+		//Pattern pentru verificarea corectitudinii datelor introduse in TextFields
 		Pattern p = Pattern.compile("[0-9]");
-		// analizez fiecare "casuta" in care se pot introduce parametri
-		for (k = 0; k < textFields.size(); k++) {
-			// daca am gasit un camp necompletat marchez eroarea
-			// if (textFields.get(k).getText().equals("")) {
-			// okay1 = 0;
-			// }
-			// daca utilizatorul a introdus caractere nepermise, marchez si a
-			// doua eroare
-			// if (p.matcher(textFields.get(k).getText()).find()) {
-			// okay2 = 0;
-			// }
-		}
-		if (okay1 == 0) {
-			errorLabel.setText(eroare1);
-		} else if (okay2 == 0) {
-			errorLabel.setText(eroare2);
-		} // daca nu sunt erori(datele au fost introduse corect)
-		else {
-			// intorc referinta crtOp
+	
+		// numar elementele in total; e indice pt graphicElements
+		int ii = -1;
+		// numar doar atributele; e indice pt checkboxes
+		int jj = -1;
 
-			// numar elementele in total ; e indice pt graphicElements
-			int ii = -1;
-			// numar doar atributele; e indice pt checkboxes
-			int jj = -1;
+		// completez parametrii
+		for (int i = 2; i < params.size(); i++) {
 
-			// completez parametrii
-			for (int i = 2; i < params.size(); i++) {
+			SimpleTypeParameter param = params.get(i);
+			ii++;
 
-				SimpleTypeParameter param = params.get(i);
-				ii++;
+			// caz special - cand parametrul are restrictie de tip enumeration
+			if (param.getRestrictions().enumeration != null) {
 
-				// caz special - cand parametrul are restrictie de tip
-				// enumeration
-				if (param.getRestrictions().enumeration != null) {
+				param.setValue(((JComboBox<String>) graphicElements.get(ii))
+						.getSelectedItem().toString());
+			} else {
 
-					param.setValue(((JComboBox<String>) graphicElements.get(ii))
-							.getSelectedItem().toString());
-				} else {
+				String type = param.getBaseType();
 
-					String type = param.getBaseType();
+				if (type.equals("decimal") || type.equals("integer")
+						|| type.equals("int")
+						|| type.equals("negativeInteger")
+						|| type.equals("nonNegativeInteger")
+						|| type.equals("nonPositiveInteger")
+						|| type.equals("positiveInteger")
+						|| type.equals("float") || type.equals("double")) {
 
-					if (type.equals("decimal") || type.equals("integer")
-							|| type.equals("int")
-							|| type.equals("negativeInteger")
-							|| type.equals("nonNegativeInteger")
-							|| type.equals("nonPositiveInteger")
-							|| type.equals("positiveInteger")
-							|| type.equals("float") || type.equals("double")) {
-
-						param.setValue(((JSpinner) graphicElements.get(ii))
-								.getValue().toString());
-					}
-
-					if (type.equals("string")) {
-
-						if (((JTextField) graphicElements.get(ii)).getText()
-								.isEmpty()) {
-							errorLabel.setText(eroare1);
-							graphicElements.get(ii).requestFocus();
-							return;
-						}
-
-						if ((p.matcher(((JTextField) graphicElements.get(ii))
-								.getText()).find())) {
-
-							errorLabel.setText(eroare2);
-							graphicElements.get(ii).requestFocus();
-							return;
-						}
-
-						param.setValue(((JTextField) graphicElements.get(ii))
-								.getText());
-					}
+					param.setValue(((JSpinner) graphicElements.get(ii))
+							.getValue().toString());
 				}
-				// daca e de tip complex, atunci se ia panelul corespunzator si
-				// se parcurg toate componentele din el
 
-				if (param instanceof ComplexTypeParameter) {
+				if (type.equals("string")) {
 
-					ArrayList<Attribute> attributes = ((ComplexTypeParameter) param)
-							.getAttributes();
+					if (((JTextField) graphicElements.get(ii)).getText()
+							.isEmpty()) {
+						errorLabel.setText(eroare1);
+						graphicElements.get(ii).requestFocus();
+						return;
+					}
 
-					for (int j = 0; j < attributes.size(); j++) {
+					if ((p.matcher(((JTextField) graphicElements.get(ii))
+							.getText()).find())) {
 
-						int coord = ii + j;
-						jj++;
+						errorLabel.setText(eroare2);
+						graphicElements.get(ii).requestFocus();
+						return;
+					}
 
-						Attribute attr = attributes.get(j);
+					param.setValue(((JTextField) graphicElements.get(ii))
+							.getText());
+				}
+			}
+			// daca e de tip complex, atunci se ia panelul corespunzator si
+			// se parcurg toate componentele din el
 
-						JCheckBox elemName = checkboxes.get(jj);
+			if (param instanceof ComplexTypeParameter) {
 
-						// daca utilizatorul vrea acel atribut, atunci i se
-						// completeaza valoarea
-						if (elemName.isSelected()) {
+				ArrayList<Attribute> attributes = ((ComplexTypeParameter) param)
+						.getAttributes();
 
-							// caz special - cand parametrul are restrictie de
-							// tip
-							// enumeration
-							if (attr.getRestrictions().enumeration != null) {
+				for (int j = 0; j < attributes.size(); j++) {
 
-								attr.setValue(((JComboBox<String>) graphicElements
-										.get(coord)).getSelectedItem()
-										.toString());
-							} else {
+					int coord = ii + j;
+					jj++;
 
-								String type = attr.getBaseType();
+					Attribute attr = attributes.get(j);
 
-								if (type.equals("decimal")
-										|| type.equals("integer")
-										|| type.equals("int")
-										|| type.equals("negativeInteger")
-										|| type.equals("nonNegativeInteger")
-										|| type.equals("nonPositiveInteger")
-										|| type.equals("positiveInteger")
-										|| type.equals("float")
-										|| type.equals("double")) {
+					JCheckBox elemName = checkboxes.get(jj);
 
-									attr.setValue(((JSpinner) graphicElements
-											.get(coord)).getValue().toString());
+					// daca utilizatorul vrea acel atribut, atunci i se
+					// completeaza valoarea
+					if (elemName.isSelected()) {
+
+						// caz special - cand parametrul are restrictie de tip enumeration
+						if (attr.getRestrictions().enumeration != null) {
+
+							attr.setValue(((JComboBox<String>) graphicElements
+									.get(coord)).getSelectedItem()
+									.toString());
+						} else {
+
+							String type = attr.getBaseType();
+
+							if (type.equals("decimal")
+									|| type.equals("integer")
+									|| type.equals("int")
+									|| type.equals("negativeInteger")
+									|| type.equals("nonNegativeInteger")
+									|| type.equals("nonPositiveInteger")
+									|| type.equals("positiveInteger")
+									|| type.equals("float")
+									|| type.equals("double")) {
+
+								attr.setValue(((JSpinner) graphicElements
+										.get(coord)).getValue().toString());
+							}
+
+							if (type.equals("string")) {
+
+								if (((JTextField) graphicElements
+										.get(coord)).getText().isEmpty()) {
+									errorLabel.setText(eroare1);
+									graphicElements.get(coord)
+											.requestFocus();
+									return;
 								}
 
-								if (type.equals("string")) {
+								if ((p.matcher(((JTextField) graphicElements
+										.get(coord)).getText()).find())) {
 
-									if (((JTextField) graphicElements
-											.get(coord)).getText().isEmpty()) {
-										errorLabel.setText(eroare1);
-										graphicElements.get(coord)
-												.requestFocus();
-										return;
-									}
-
-									if ((p.matcher(((JTextField) graphicElements
-											.get(coord)).getText()).find())) {
-
-										errorLabel.setText(eroare2);
-										graphicElements.get(coord)
-												.requestFocus();
-										return;
-									}
-
-									attr.setValue(((JTextField) graphicElements
-											.get(coord)).getText());
+									errorLabel.setText(eroare2);
+									graphicElements.get(coord)
+											.requestFocus();
+									return;
 								}
+
+								attr.setValue(((JTextField) graphicElements
+										.get(coord)).getText());
 							}
 						}
 					}
-
-					ii += attributes.size() - 1;
 				}
-			}
 
-			motherWindow.addExec(crtOp);
-			// pun erorile pe fals, deoarece daca se mai intra o data in aceasta
-			// fereastra, ele nu trebuie afisate
-			close();
+				ii += attributes.size() - 1;
+			}
 		}
+
+		//Se trimite operatia finala in fereastra de binarizare / preprocesare
+		motherWindow.addExec(crtOp);
+		close();
 	}
 
 	/**
-	 * ne intoarce la fereastra precedenta fara niciun efect(se ignora orice
+	 * Ne intoarce la fereastra precedenta fara niciun efect(se ignora orice
 	 * date introduse de utilizatori)
 	 * 
 	 * @param evt
@@ -416,14 +409,7 @@ public class ParametersWindow extends javax.swing.JDialog {
 	 *            butonului 'cancel'
 	 */
 	private void cancelClicked(MouseEvent evt) {
-
-		/*
-		 * int result = JOptionPane.showConfirmDialog( this,
-		 * "Are you sure you want to Cancel? All your operations will be lost!",
-		 * "Canceling...", JOptionPane.YES_NO_OPTION); if (result ==
-		 * JOptionPane.YES_OPTION){ dispose(); }
-		 */
-
+	
 		close();
 	}
 
@@ -441,15 +427,21 @@ public class ParametersWindow extends javax.swing.JDialog {
 
 		int totalSize = params.size();
 
+		/*
+		 * Pentru fiecare parametru se creeaza un panel continand un label cu
+		 * numele parametrului si un element grafic pentru introducerea datelor,
+		 * generat in functie de tipul parametrului:
+		 * JTextField -> pentru parametri de tip String
+		 * JComboBox -> pentru parametri tip enumeratie
+		 * JSpinner -> pentru parametri numerici
+		 */
+		
 		for (int ii = 2; ii < op.getParameters().size(); ii++) {
 
 			SimpleTypeParameter param = op.getParameters().get(ii);
 
 			paramsPanel.add(Box.createVerticalStrut(10));
-			// genereaza un label cu numele parametrului (atributul name din
-			// element corespunzator parametrului)
 			param1Panel = new JPanel();
-			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			param1Panel.setPreferredSize(new Dimension(320, 30));
 			param1Panel.setMinimumSize(new Dimension(320, 30));
 			param1Panel.setMaximumSize(new Dimension(320, 30));
@@ -475,12 +467,7 @@ public class ParametersWindow extends javax.swing.JDialog {
 			horizontalStrut_2.setPreferredSize(new Dimension(10, 0));
 			param1Panel.add(horizontalStrut_2);
 
-			// in functie de tipul parametrului, genereaza elementul grafic
-			// asociat
-			// (am putea direct sa stabilim o corespondenta intre
-			// elementele grafice si sa stabilim de la inceput ce generam,
-			// nu de fiecare data cand avem fereastra de parametri sa stam sa
-			// analizam)
+			// in functie de tipul parametrului, genereaza elementul grafic asociat
 
 			// caz special - cand parametrul are restrictie de tip enumeration
 
@@ -504,9 +491,10 @@ public class ParametersWindow extends javax.swing.JDialog {
 				if (type.equals("decimal") || type.equals("float")
 						|| type.equals("double")) {
 
-					// daca exista restrictii de tipul minVal / maxVal, atunci
-					// spinner-ul sa nu permita introducerea acestor valori
-
+					/*
+					 *  daca exista restrictii de tipul minVal / maxVal, atunci
+					 *  spinner-ul sa nu permita introducerea acestor valori
+					 */
 					double minValue = -1000.000;
 					double maxValue = 1000.000;
 
@@ -536,22 +524,6 @@ public class ParametersWindow extends javax.swing.JDialog {
 							.getFormatter();
 					formatter.setCommitsOnValidEdit(true);
 					param1Panel.add(elem);
-
-					elem.addChangeListener(new ChangeListener() {
-						public void stateChanged(ChangeEvent e) {
-
-							doubleSpinnerListener(e);
-						}
-					});
-
-					/*
-					 * elem.addInputMethodListener(new InputMethodListener() {
-					 * public void caretPositionChanged(InputMethodEvent event)
-					 * { } public void inputMethodTextChanged(InputMethodEvent
-					 * event) {
-					 * 
-					 * doubleSpinnerListener(event); } });
-					 */
 
 					graphicElements.add(elem);
 					spinners.add(elem);
@@ -612,46 +584,13 @@ public class ParametersWindow extends javax.swing.JDialog {
 							.getComponent(0);
 					DefaultFormatter formatter = (DefaultFormatter) field
 							.getFormatter();
-					// formatter.setCommitsOnValidEdit(true);
 					param1Panel.add(elem);
-
-					elem.addChangeListener(new ChangeListener() {
-						public void stateChanged(ChangeEvent e) {
-
-							integerSpinnerListener(e);
-						}
-					});
-
-					/*
-					 * elem.addInputMethodListener(new InputMethodListener() {
-					 * public void caretPositionChanged(InputMethodEvent event)
-					 * { } public void inputMethodTextChanged(InputMethodEvent
-					 * event) {
-					 * 
-					 * integerSpinnerListener(event); } });
-					 */
 
 					graphicElements.add(elem);
 					spinners.add(elem);
 				}
 
-				/*
-				 * if (type.equals("float") || type.equals("double")) {
-				 * 
-				 * SpinnerNumberModel spinnerModel = new
-				 * SpinnerNumberModel(0.0000, -1000.0000, 1000.0000, 0.0001);
-				 * 
-				 * JSpinner elem = new JSpinner(spinnerModel);
-				 * //elem.setEditor(new JSpinner.NumberEditor(elem,"#00.00"));
-				 * elem.setBounds(70, ySmallPanel, 140, 50); this.add(elem,
-				 * ySmallPanel, 1); graphicElements.add(elem);
-				 * spinner.add(elem); }
-				 */
-
 				if (type.equals("string")) {
-
-					// ar trebui sa fac mai mare text box-ul, ca sa incapa orice
-					// sir
 
 					JTextField elem = new JTextField();
 					elem.setPreferredSize(new Dimension(150, 25));
@@ -698,6 +637,10 @@ public class ParametersWindow extends javax.swing.JDialog {
 		pack();
 	}
 
+	/**
+	 * Metoda care creeaza un panel pentru atributele parametrului
+	 * @param complexParam parametrul ale carui atribute trebuie afisate in panel
+	 */
 	public void createAttributesFields(ComplexTypeParameter complexParam) {
 
 		System.out.println("a intrat");
@@ -713,16 +656,23 @@ public class ParametersWindow extends javax.swing.JDialog {
 
 		paramsPanel.add(attrPanel);
 
+		/*
+		 * Asemanator cu generarea elementelor pentru lista de parametri ai unei operatii;
+		 * diferenta este ca aici se parcurge lista de atribute a unui parametru
+		 */
+		
 		for (int ii = 0; ii < complexParam.getAttributes().size(); ii++) {
 
 			Attribute attr = complexParam.getAttributes().get(ii);
 
 			attrPanel.add(Box.createVerticalStrut(10));
 
-			// genereaza un label cu numele parametrului (atributul name din
-			// element corespunzator parametrului)
+			/*
+			 *  genereaza un checkbox cu numele atributului (atributul name din
+			 *  element corespunzator parametrului)
+			 *  CHeckbox-ul va fi initial setat, daca atributul este required
+			 */
 			param1Panel = new JPanel();
-			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			param1Panel.setPreferredSize(new Dimension(320, 30));
 			param1Panel.setMinimumSize(new Dimension(320, 30));
 			param1Panel.setMaximumSize(new Dimension(320, 30));
@@ -755,15 +705,6 @@ public class ParametersWindow extends javax.swing.JDialog {
 
 			horizontalStrut_2 = Box.createHorizontalStrut(10);
 			param1Panel.add(horizontalStrut_2);
-
-			// in functie de tipul parametrului, genereaza elementul grafic
-			// asociat
-			// (am putea direct sa stabilim o corespondenta intre
-			// elementele grafice si sa stabilim de la inceput ce generam,
-			// nu de fiecare data cand avem fereastra de parametri sa stam sa
-			// analizam)
-
-			// caz special - cand parametrul are restrictie de tip enumeration
 
 			if (attr.getRestrictions().enumeration != null) {
 
@@ -816,23 +757,7 @@ public class ParametersWindow extends javax.swing.JDialog {
 					DefaultFormatter formatter = (DefaultFormatter) field
 							.getFormatter();
 					formatter.setCommitsOnValidEdit(true);
-					param1Panel.add(elem);
-
-					elem.addChangeListener(new ChangeListener() {
-						public void stateChanged(ChangeEvent e) {
-
-							doubleSpinnerListener(e);
-						}
-					});
-
-					/*
-					 * elem.addInputMethodListener(new InputMethodListener() {
-					 * public void caretPositionChanged(InputMethodEvent event)
-					 * { } public void inputMethodTextChanged(InputMethodEvent
-					 * event) {
-					 * 
-					 * doubleSpinnerListener(event); } });
-					 */
+					param1Panel.add(elem);				
 
 					graphicElements.add(elem);
 					spinners.add(elem);
@@ -893,46 +818,13 @@ public class ParametersWindow extends javax.swing.JDialog {
 							.getComponent(0);
 					DefaultFormatter formatter = (DefaultFormatter) field
 							.getFormatter();
-					// formatter.setCommitsOnValidEdit(true);
 					param1Panel.add(elem);
-
-					elem.addChangeListener(new ChangeListener() {
-						public void stateChanged(ChangeEvent e) {
-
-							integerSpinnerListener(e);
-						}
-					});
-
-					/*
-					 * elem.addInputMethodListener(new InputMethodListener() {
-					 * public void caretPositionChanged(InputMethodEvent event)
-					 * { } public void inputMethodTextChanged(InputMethodEvent
-					 * event) {
-					 * 
-					 * integerSpinnerListener(event); } });
-					 */
 
 					graphicElements.add(elem);
 					spinners.add(elem);
 				}
 
-				/*
-				 * if (type.equals("float") || type.equals("double")) {
-				 * 
-				 * SpinnerNumberModel spinnerModel = new
-				 * SpinnerNumberModel(0.0000, -1000.0000, 1000.0000, 0.0001);
-				 * 
-				 * JSpinner elem = new JSpinner(spinnerModel);
-				 * //elem.setEditor(new JSpinner.NumberEditor(elem,"#00.00"));
-				 * elem.setBounds(70, ySmallPanel, 140, 50); this.add(elem,
-				 * ySmallPanel, 1); graphicElements.add(elem);
-				 * spinner.add(elem); }
-				 */
-
 				if (type.equals("string")) {
-
-					// ar trebui sa fac mai mare text box-ul, ca sa incapa orice
-					// sir
 
 					JTextField elem = new JTextField();
 					elem.setPreferredSize(new Dimension(120, 25));
@@ -962,88 +854,13 @@ public class ParametersWindow extends javax.swing.JDialog {
 		}
 	}
 
+	/**
+	 * Instructiuni efectuate la inchiderea ferestrei.
+	 */
 	private void close() {
 
 		motherWindow.setEnabled(true);
 		errorLabel.setText("");
 		dispose();
-	}
-
-	public void doubleSpinnerListener(ChangeEvent e) {
-
-		// identific parametrul coresp.
-		JSpinner source = (JSpinner) e.getSource();
-		int index = graphicElements.indexOf(source);
-		SimpleTypeParameter param = params.get(index);
-
-		double minValue = -1000.000;
-		double maxValue = 1000.000;
-
-		JComponent comp = source.getEditor();
-		JFormattedTextField field = (JFormattedTextField) comp.getComponent(0);
-
-		if (param.getRestrictions().minValue != null) {
-
-			minValue = Double.parseDouble(param.getRestrictions().minValue);
-		}
-
-		if (param.getRestrictions().maxValue != null) {
-
-			maxValue = Double.parseDouble(param.getRestrictions().maxValue);
-		}
-
-		try {
-			field.commitEdit();
-		} catch (ParseException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		double input = (Double) field.getValue();
-
-		if (input > maxValue || input < minValue) {
-
-			// afiseaza eroare
-			// revine la valoarea anterioara
-			// afiseaza eroare
-			errorLabel.setText("Ati depasit limitele valorilor!");
-			// revine la valoarea anterioara
-			source.setValue(source.getModel().getValue());
-		} else {
-
-			// totul e ok
-		}
-	}
-
-	public void integerSpinnerListener(ChangeEvent e) {
-
-		// identific parametrul coresp.
-		JSpinner source = (JSpinner) e.getSource();
-		int index = graphicElements.indexOf(source);
-		SimpleTypeParameter param = params.get(index);
-
-		Integer minValue = -1000;
-		Integer maxValue = 1000;
-
-		if (param.getRestrictions().minValue != null) {
-
-			minValue = Integer.valueOf(param.getRestrictions().minValue);
-		}
-
-		if (param.getRestrictions().maxValue != null) {
-
-			maxValue = Integer.valueOf(param.getRestrictions().maxValue);
-		}
-
-		if ((Integer) source.getValue() > maxValue
-				|| (Integer) source.getValue() < minValue) {
-
-			// afiseaza eroare
-			errorLabel.setText("Ati depasit limitele valorilor!");
-			// revine la valoarea anterioara
-			source.setValue(source.getModel().getValue());
-		} else {
-			// totul e ok
-		}
 	}
 }

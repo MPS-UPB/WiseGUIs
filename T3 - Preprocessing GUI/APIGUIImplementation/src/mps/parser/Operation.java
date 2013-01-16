@@ -22,8 +22,14 @@ import mps.GUI.MainWindow;
  */
 public class Operation {
 
+	/**
+	 * Camp static care da id-urile opratiilor, in mod unic.
+	 */
 	public static int opGlobalId = 0;
 
+	/**
+	 * Id-ul operatiei, dupa care aceasta poate fi identificata unic.
+	 */
 	private int id;
 
 	/**
@@ -39,12 +45,6 @@ public class Operation {
 	 * Descrierea executabilului.
 	 */
 	private String desc;
-	// !!!!!!!!!!!!!!!!!!!!!!!!!s
-	// nu e foarte eficient sa tinem toate informatiile despre un xsd in fiecare
-	// operatie
-	// mai bine am avea un tip abstract de operatie
-	// si mai multe tipuri mici, care vor face referire la tipul abstract
-	// desi s-ar putea sa fie tot aia pana la urma...
 	/**
 	 * Lista de parametri asociata operatiei.
 	 */
@@ -86,6 +86,15 @@ public class Operation {
 		name = nume;
 	}
 
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+	
 	public int getType() {
 		return type;
 	}
@@ -115,7 +124,7 @@ public class Operation {
 
 	/**
 	 * @param toolTip
-	 *            the toolTip to set
+	 *            setarea textului pentru descriere
 	 */
 	public void setDesc(String desc) {
 		this.desc = desc;
@@ -188,11 +197,6 @@ public class Operation {
 		this.description.putAll(description);
 	}
 
-	public void addParameter(SimpleTypeParameter param) {
-
-		parameters.add(param);
-	}
-
 	/**
 	 * @return the XMLFolder
 	 */
@@ -207,20 +211,58 @@ public class Operation {
 	public void setXMLFolder(String XMLFolder) {
 		this.XMLFolder = XMLFolder;
 	}
+	
+	/**
+	 * Metoda care adauga un parametru in lista de parametri ai operatiei.
+	 * @param param parametrul de adaugat
+	 */
+	public void addParameter(SimpleTypeParameter param) {
+
+		parameters.add(param);
+	}
+	
+	/**
+	 * Metoda care intoarce valoare unui parametru al operatiei
+	 * @param paramName numele parametrului 
+	 * @return valoarea parametrului
+	 */
+	public SimpleTypeParameter getParameter(String paramName) {
+
+		for (SimpleTypeParameter param : parameters) {
+
+			if (param.getName().equals(paramName))
+				return param;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Seteaza valoarea unui parametru al operatiei
+	 * @param paramName numele parametrului
+	 * @param value valoarea noua
+	 */
+	public void setParameter(String paramName, String value) {
+
+		//Se cauta parametrul dupa nume, in lista de parametri
+		for (SimpleTypeParameter param : parameters) {
+
+			if (param.getName().equals(paramName))
+				param.setValue(value);
+		}
+	}
 
 	/**
 	 * Metoda care executa programul, pe imaginea originara, cu un anumit set de
 	 * parametri.
 	 * 
-	 * @return intoarce fisierul rezultat (TODO)
+	 * @return intoarce calea catre fisierul rezultat 
 	 */
 	public String execute() {
 
 		String delims = "\\.";
 		String[] tokens = ((ComplexTypeParameter) getParameter("inputFile"))
 				.getAttribute("name").getValue().split(delims);
-		// System.out.println(getParameter("inputFile").getValue() + " " +
-		// tokens.length);
 
 		String outputPath;
 
@@ -230,7 +272,7 @@ public class Operation {
 			outputPath = ((ComplexTypeParameter) getParameter("inputFile"))
 					.getAttribute("name").getValue();
 
-		} // output in fisere disctincte, pentru executabilele de binarizare
+		} // output in fisere distincte, pentru executabilele de binarizare
 		else {
 
 			outputPath = tokens[0] + "_binariz_output" + id + ".tiff"; // "." +
@@ -242,34 +284,21 @@ public class Operation {
 
 		try {
 
-			// mai bine ar fi fost sa se citeasca executabilele din folder si
-			// apoi sa se dea calea absoluta ca param
 			String thisExecPath = MainWindow.execPath + "\\" + getName()
 					+ ".exe";
 
-			// lansare in executie
-			// defineste proces
+			// Lansare in executie
+			
+			// Definire proces
 			ProcessBuilder exec = new ProcessBuilder(thisExecPath, localXMLPath);
-			// lanseaza proces
+			// Lansare proces
 			Process proc = exec.start();
-			// asteapta sa se termine executia programului
-			// nu e prea eficient; poate fi optimizat ulterior, din main window:
-			// se apeleaza execute() pe fiecare operatie, care doar lanseaza in
-			// executie programele
-			// apoi, inainte de a afisa imeginile rezultat in partea dreapta, se
-			// verifica daca procesul s-a terminat (tot cu waitFor() apelat pe
-			// undeva)
-			// se tine o referinta la proces in clasa Operatie
-			// inainte de a afisa imaginile rezultat se parcurge vectorul de
-			// operatii lansate in executie si se verifica daca procesul
-			// respectiv s-a incheiat, apelandu-se waitFor()
+			// Asteapta sa se termine executia programului
 			proc.waitFor();
 
-			// sterg fisierul XML generat anterior
+			// Stergere a fisierului XML generat (nu mai este necesar)
 			new File(localXMLPath).delete();
-			// pot sa fac clear la directorul cu XML-uri, cand ies din
-			// aplicatie; sau pot sa le pastrez ca un fel de log
-
+			
 		} catch (IOException ex) {
 			Logger.getLogger(Operation.class.getName()).log(Level.SEVERE, null,
 					ex);
@@ -283,24 +312,14 @@ public class Operation {
 	 * Metoda care genereaza un fisier XML cu toti parametrii specifici unui
 	 * executabil.
 	 * 
-	 * @return fisierul XML generat (TODO)
+	 * @return calea catre fisierul XML generat 
 	 */
 	public String generateXML() {
 
-		String inputFileAux = ((ComplexTypeParameter) getParameter("inputFile"))
-				.getAttribute("name").getValue();
-		String outputFileAux = ((ComplexTypeParameter) getParameter("outputFile"))
-				.getAttribute("name").getValue();
-
-		// fisierul XML se va genera intr-un folder separat de cel cu
-		// executabilele
+		// Fisierul XML se va genera intr-un folder separat de cel cu executabilele
 		String thisXMLPath = getXMLFolder() + "\\" + getName() + id + ".xml";
 
-		// System.out.println("-----------GENERARE XML---------");
-		// System.out.println(thisXMLPath);
-		// System.out.println(this);
-
-		// iau fiecare parametru si trec in tag-uri
+		// Se ia fiecare parametru si se trece in tag-uri
 		File file = new File(thisXMLPath);
 
 		try {
@@ -315,16 +334,16 @@ public class Operation {
 
 			writer = new BufferedWriter(new FileWriter(file));
 
-			// urmez structura documentului
+			// Se urmareste structura documentului
 
-			// tag-ul task
+			// Tag-ul task
 			writer.write("<" + getRootElement() + ">");
 
 			writer.newLine();
 			writer.write('\t');
 			writer.write("<" + getRootDescription() + ">");
 
-			// descrierea executabilului
+			// Descrierea executabilului
 			for (Map.Entry<String, String> entry : getDescription().entrySet()) {
 
 				writer.newLine();
@@ -337,11 +356,11 @@ public class Operation {
 			writer.newLine();
 			writer.write("</" + getRootDescription() + ">");
 
-			// lista de parametri
+			// Lista de parametri
 
 			for (SimpleTypeParameter param : getParameters()) {
 
-				// daca elementul e de tip simplu
+				// Daca elementul e de tip simplu
 				if (!(param instanceof ComplexTypeParameter)) {
 
 					writer.newLine();
@@ -349,31 +368,31 @@ public class Operation {
 					writer.write("<" + param.getName() + ">");
 					writer.write(param.getValue());
 					writer.write("</" + param.getName() + ">");
-				} // daca este element de tip complex
+				} 
+				// Daca este element de tip complex
 				else {
 
-					// System.out.println("ALELUIA");
 					writer.newLine();
 					writer.write('\t');
 
 					ComplexTypeParameter complexParam = (ComplexTypeParameter) param;
 
-					// tag-ul
+					// Tag-ul
 
 					writer.write("<" + complexParam.getName());
 
-					// atribute
+					// Atributele
 
 					ArrayList<Attribute> attributes = complexParam
 							.getAttributes();
 
 					for (Attribute attribute : attributes) {
 
-						// System.out.println("ceva");
-						// daca valoarea atributului nu este nula, inseamna ca:
-						// 1. este required
-						// 2. nu este required, dar valoarea lui a fost
-						// completata in fereastra de parametri
+						/* 
+						 * Daca valoarea atributului nu este nula, inseamna ca:
+						 * 1. este required
+						 * 2. nu este required, dar valoarea lui a fost completata in fereastra de parametri
+						 */
 						if (attribute.getValue() != null) {
 							writer.write(" " + attribute.getName() + "=" + "\""
 									+ attribute.getValue() + "\"");
@@ -382,16 +401,10 @@ public class Operation {
 
 					writer.write(">");
 
-					// se scrie valoarea efectiva a parametrului
-					// daca tag-ul e de tip empty, atunci valoarea ramane null
-					// elementele de tip simplu nu pot fi empty (cred)
-					// !!!!!!!!!!!!!!!!!
-
-					// !!!!!!!!!!!!!!!
-					// specificare inputFile si outputFile:
-					// acesti parametri sunt tratati la fel ca toti ceilalti
-					// ei reprezinta tag-uri vide, deci valorile lor vor ramane
-					// null
+					/*
+					 *  Se scrie valoarea efectiva a parametrului;
+					 * daca tag-ul e de tip empty, atunci inseamna ca valoarea e null si nu se afiseaza nimic
+					 */
 
 					if (complexParam.getValue() != null) {
 
@@ -412,11 +425,6 @@ public class Operation {
 					ex);
 		}
 
-		((ComplexTypeParameter) getParameter("inputFile")).getAttribute("name")
-				.setValue(inputFileAux);
-		((ComplexTypeParameter) getParameter("outputFile"))
-				.getAttribute("name").setValue(outputFileAux);
-
 		return thisXMLPath;
 	}
 
@@ -430,7 +438,7 @@ public class Operation {
 
 		Operation newOp = new Operation();
 
-		// copiere valori campuri
+		// Copiere valori campuri
 		newOp.setType(this.getType());
 		newOp.setName(this.getName());
 		newOp.setDesc(this.getDesc());
@@ -448,9 +456,6 @@ public class Operation {
 
 		String concat = new String();
 
-		// concat += getName();
-		// concat += "\n";
-
 		concat += "<html>";
 
 		for (int i = 2; i < parameters.size(); i++) {
@@ -462,26 +467,28 @@ public class Operation {
 
 		return concat;
 	}
+	
 
-	public SimpleTypeParameter getParameter(String paramName) {
+	/**
+	 * Metoda folosita pentru afisarea tool tip-urilor in Main Window.
+	 * Deosebirea fata de metoda toString() este ca se afiseaza si numele executabilului.
+	 * @return
+	 */
+	public String toString2() {
 
-		for (SimpleTypeParameter param : parameters) {
+		String concat = new String();
 
-			if (param.getName().equals(paramName))
-				return param;
+		concat += "<html>" + getName() + "<br>";
+
+		for (int i = 2; i < parameters.size(); i++) {
+
+			concat += parameters.get(i).toString();
 		}
 
-		return null;
-	}
+		concat += "</html>";
 
-	public void setParameter(String paramName, String value) {
-
-		for (SimpleTypeParameter param : parameters) {
-
-			if (param.getName().equals(paramName))
-				param.setValue(value);
-		}
-	}
+		return concat;
+	}	
 
 	@Override
 	public boolean equals(Object obj) {
@@ -498,29 +505,5 @@ public class Operation {
 		}
 
 		return true;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String toString2() {
-
-		String concat = new String();
-
-		concat += "<html>" + getName() + "<br>";
-
-		for (int i = 2; i < parameters.size(); i++) {
-
-			concat += parameters.get(i).toString();
-		}
-
-		concat += "</html>";
-
-		return concat;
 	}
 }

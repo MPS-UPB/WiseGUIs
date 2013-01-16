@@ -52,7 +52,7 @@ import mps.parser.Operation;
 import mps.parser.Parser;
 
 /**
- * 
+ * Clasa care descrie fereastra principala si modulul de control al aplicatiei.
  * @author Liliana
  * @version Last modified by Liliana 20/12/2012
  */
@@ -344,8 +344,6 @@ public class MainWindow extends JFrame {
 							// salvam calea catre imagine
 							pathImage = pathTextField.getText();
 							// Incarcam imaginea in panel
-							// int width = imagePanel.getSize().width;
-							// int height = imagePanel.getSize().height;
 
 							// construieste imagine din calea "pathImage" cu
 							// dimensiunile width si height
@@ -375,9 +373,6 @@ public class MainWindow extends JFrame {
 								ImageIO.write(image2, "png", outputBlack);
 							} catch (Exception e) {
 							}
-
-							// redimensionam imaginea
-							// image = ImageViewer.resize(image, width, height);
 
 							// Setam imaginea originala in stanga (pana la o
 							// preprocesare)
@@ -445,8 +440,6 @@ public class MainWindow extends JFrame {
 										.get(j).getParameter("outputFile"))
 										.getAttribute("name").getValue();
 
-								// int width = imageScrollPane.getSize().width -
-								// 70;
 								int width = 450;
 								int height = 250;
 
@@ -458,13 +451,8 @@ public class MainWindow extends JFrame {
 										label.getWidth(), label.getHeight());
 								ImageIcon myPicture = new ImageIcon(image);
 
-								// label.setSize(myPicture.getIconWidth(),
-								// myPicture.getIconHeight());
 								label.setIcon(myPicture);
-								// label.setPreferredSize(new
-								// Dimension(myPicture.getIconWidth(),
-								// myPicture.getIconHeight()));
-
+							
 								// fac refresh la JScrollPane
 								imageScrollPane.revalidate();
 								imageScrollPane.repaint();
@@ -483,18 +471,7 @@ public class MainWindow extends JFrame {
 		imagePanel.setForeground(new Color(255, 255, 255));
 
 		imagePanel.setLayout(new BoxLayout(imagePanel, BoxLayout.Y_AXIS));
-
-		/*
-		 * GroupLayout imagePanelLayout = new GroupLayout(imagePanel);
-		 * imagePanel.setLayout(imagePanelLayout);
-		 * imagePanelLayout.setHorizontalGroup(imagePanelLayout
-		 * .createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 0,
-		 * Short.MAX_VALUE));
-		 * imagePanelLayout.setVerticalGroup(imagePanelLayout.
-		 * createParallelGroup( GroupLayout.Alignment.LEADING).addGap(0, 0,
-		 * Short.MAX_VALUE));
-		 */
-
+	
 		binarizationButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ae) {
@@ -525,31 +502,8 @@ public class MainWindow extends JFrame {
 
 		imageScrollPane.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		imageScrollPane.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-
-		// newImgPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-
-		/*
-		 * GroupLayout newImgPanelLayout = new GroupLayout(newImgPanel);
-		 * newImgPanel.setLayout(newImgPanelLayout); newImgPanelLayout
-		 * .setHorizontalGroup(newImgPanelLayout
-		 * .createParallelGroup(GroupLayout.Alignment.LEADING) .addGroup(
-		 * newImgPanelLayout .createSequentialGroup() .addContainerGap()
-		 * .addGroup( newImgPanelLayout .createParallelGroup(
-		 * GroupLayout.Alignment.LEADING) .addGroup( newImgPanelLayout
-		 * .createSequentialGroup())) .addContainerGap(39, Short.MAX_VALUE)));
-		 * 
-		 * newImgPanelLayout .setVerticalGroup(newImgPanelLayout
-		 * .createParallelGroup(GroupLayout.Alignment.LEADING) .addGroup(
-		 * newImgPanelLayout .createSequentialGroup() .addGroup(
-		 * newImgPanelLayout .createParallelGroup(
-		 * GroupLayout.Alignment.LEADING) .addGroup( newImgPanelLayout
-		 * .createSequentialGroup() .addContainerGap() .addGroup(
-		 * newImgPanelLayout .createSequentialGroup()))) .addContainerGap(74,
-		 * Short.MAX_VALUE)));
-		 */
-
+	
 		newImgPanel.setLayout(new BoxLayout(newImgPanel, BoxLayout.Y_AXIS));
-		// newImgPanel.setAlignmentX(LEFT_ALIGNMENT);
 
 		imageScrollPane.setViewportView(newImgPanel);
 
@@ -560,8 +514,7 @@ public class MainWindow extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				// Decomentati ce e mai jos pentru verificare daca doua
-				// checkboxuri sunt selectate
+				
 				if (checkedImages.size() == 2) {
 					try {
 						compareWindow = new CompareImagesWindow(imageList
@@ -569,18 +522,7 @@ public class MainWindow extends JFrame {
 								.get(checkedImages.get(1)));
 						compareWindow.setVisible(true);
 					}
-					// Comentati bucata de mai jos pentru intreaga
-					// functionalitate(la sfarsit)
-					/*
-					 * try { compareWindow = new
-					 * CompareImagesWindow("image11.png", "image22.png");
-					 * //if(checkedImages.size() == 2) //compareWindow = new
-					 * CompareImagesWindow(imageList.get(checkedImages.get(0)),
-					 * imageList.get(checkedImages.get(1))); } catch (Exception
-					 * ex) {
-					 * Logger.getLogger(MainWindow.class.getName()).log(Level
-					 * .SEVERE, null, ex); } compareWindow.setVisible(true);
-					 */
+				
 					catch (IOException ex) {
 						Logger.getLogger(MainWindow.class.getName()).log(
 								Level.SEVERE, null, ex);
@@ -634,9 +576,7 @@ public class MainWindow extends JFrame {
                 
                 if(!f.exists())
                 {
-                    if(f.mkdir())
-                        System.out.println("Folderul XMLs a fost creat");
-                    
+                    if(f.mkdir());                    
                 }
                 
 		/*
@@ -718,7 +658,7 @@ public class MainWindow extends JFrame {
 	 *            operatiile de preprocesare de executat
 	 */
 	public void launchPreprocOperations(List<Operation> preprocOperations) {
-		System.out.println("Dimensiune vector = " + preprocOperations.size());
+		
 		for (int i = 0; i < preprocOperations.size(); i++) {
 			execTypes.add(preprocOperations.get(i));
 
@@ -793,9 +733,6 @@ public class MainWindow extends JFrame {
 		for (int i = 0; i < binarizOperations.size(); i++) {
 			execTypes.add(binarizOperations.get(i));
 
-			System.out.println("-----------------------");
-			System.out.println(binarizOperations.get(i));
-
 			((ComplexTypeParameter) binarizOperations.get(i).getParameter(
 					"inputFile")).setAttribute("name", inputPath);
 			executeBinarization(binarizOperations.get(i));
@@ -814,18 +751,7 @@ public class MainWindow extends JFrame {
 
 				// stergem din hashtable-uri
 				labelList.remove(deleted);
-				imageList.remove(deleted);
-
-				/*
-				 * // le urcam pe cele de sub cel sters mai sus int width =
-				 * imageScrollPane.getSize().width - 10; int height = 180;
-				 * 
-				 * for (int k = (i + 1); k < newImgPanel.getComponentCount();
-				 * k++) { JPanel containerPanel = (JPanel) newImgPanel
-				 * .getComponent(k); int posX = containerPanel.getLocation().x;
-				 * int posY = containerPanel.getLocation().y; posY -= height;
-				 * containerPanel.setLocation(posX, posY); }
-				 */
+				imageList.remove(deleted);			
 
 				// stergem din panelul mare din dreapta
 				// stergem checkbox-ul
@@ -865,13 +791,10 @@ public class MainWindow extends JFrame {
 	 */
 	private void executePreprocesing(Operation oper) {
 		// Setam calea catre fisier in textBox
-		System.out.println("Execut operatia");
 		oper.execute();
-		System.out.println("S-a executat operatia");
 
 		String path = ((ComplexTypeParameter) oper.getParameter("outputFile"))
 				.getAttribute("name").getValue();
-		// pathTextField.setText(path);
 		inputPath = path;
 
 		// salvam calea catre imagine
@@ -882,10 +805,7 @@ public class MainWindow extends JFrame {
 		int height = imagePanel.getSize().height;
 
 		Image image = ImageViewer.buildImage(inputPath);
-		// image = ImageViewer.resize(image, width, height);
 		ImageIcon myPicture = new ImageIcon(image);
-		// JLabel picLabel = new JLabel(myPicture);
-		// picLabel.setSize(new Dimension(width, height));
 
 		JLabel lab = (JLabel) imagePanel.getComponent(0);
 		lab.setSize(new Dimension(myPicture.getIconWidth(), myPicture
@@ -914,20 +834,14 @@ public class MainWindow extends JFrame {
 		final JCheckBox box = new JCheckBox();
 		String path = ((ComplexTypeParameter) oper.getParameter("outputFile"))
 				.getAttribute("name").getValue();
-		System.out.println(path);
 		int width = imageScrollPane.getSize().width - 70;
 		int height = 150;
 
 		Image image = ImageViewer.buildImage(path);
-		// image = ImageViewer.resize(image, width, height);
 		ImageIcon myPicture = new ImageIcon(image);
 
 		JLabel label = new JLabel(myPicture);
 		int size = imageList.size();
-		// label.setPreferredSize(new Dimension(
-		// imageScrollPane.getSize().width - 70, 150));
-		// label.setPreferredSize(new Dimension(
-		// 450, 350));
 		label.setAlignmentX(LEFT_ALIGNMENT);
 		label.setIcon(myPicture);
 		label.setPreferredSize(new Dimension(myPicture.getIconWidth(),
@@ -968,8 +882,6 @@ public class MainWindow extends JFrame {
 		// Construiesc un panel care va cuprinde checkboxul si Label-ul cu
 		// imaginea
 		JPanel containerPanel = new JPanel();
-		// containerPanel.setSize(imageScrollPane.getSize().width - 10, 180);
-		// containerPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
 		containerPanel.setMaximumSize(new Dimension(32767, 32767));
 		containerPanel.setMinimumSize(new Dimension(100 + myPicture
@@ -983,42 +895,7 @@ public class MainWindow extends JFrame {
 		containerPanel.add(label);
 
 		label.setToolTipText(oper.toString2());
-		label.addMouseListener(new MouseAdapter() {
-
-			public void mouseClicked(MouseEvent e) {
-
-				JLabel source = (JLabel) e.getSource();
-				JCheckBox checkbox = new JCheckBox();
-
-				// trebuie sa fie un linked hash map, ca ordinea imaginilor sa
-				// reflecte ordinea operatiilor
-				int index = 0;
-				for (Map.Entry<JCheckBox, JLabel> entry : labelList.entrySet()) {
-
-					if (source == entry.getValue()) {
-
-						// checkbox-ul aferent
-						checkbox = entry.getKey();
-						break;
-					}
-					index++;
-				}
-
-				// operatia la care se refera
-				Operation op = operations.get(index);
-				// calea imaginii aferente
-				String image = imageList.get(checkbox);
-
-				if (e.getButton() == MouseEvent.BUTTON1) {
-
-				}
-
-				if (e.getButton() == MouseEvent.BUTTON3) {
-
-				}
-			}
-		});
-
+	
 		// Se salveaza containerul
 		containerList.add(containerPanel);
 
@@ -1028,8 +905,6 @@ public class MainWindow extends JFrame {
 		labelList.put(box, label);
 
 		// Se adauga panelul nou creat in lista din dreapta
-		// newImgPanel.setPreferredSize(new Dimension(containerPanel.getX(),
-		// newImgPanel.getHeight() + containerPanel.getY()));
 		newImgPanel.add(containerPanel);
 		newImgPanel.add(Box.createVerticalStrut(10));
 		imageScrollPane.revalidate();

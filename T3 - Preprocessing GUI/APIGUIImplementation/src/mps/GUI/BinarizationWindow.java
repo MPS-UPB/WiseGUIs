@@ -7,9 +7,9 @@ import java.util.Map;
 import mps.parser.Operation;
 
 /**
- * 
+ * Fereastra de binarizare
  * @author John
- * @version Last modified by Roxana 11/15/2012
+ * @version Last modified by Luiza 16/01/2013
  */
 public class BinarizationWindow extends SecondaryWindow {
 
@@ -32,14 +32,19 @@ public class BinarizationWindow extends SecondaryWindow {
 			// Daca s-a selectat ceva din lista din dreapta
 			if (selectedIndex != -1) {
 
-				// Se creeaza o copie a tipului de operatie (rotate, otsu etc.),
-				// pentru a avea lista de parametri cu tipul lor
-				// Indexul elementului selectat din lista din stanga este
-				// acelasi cu al aceluiasi element in lista operations
+				/*
+				 *  Se creeaza o copie a tipului de operatie (rotate, otsu etc.),
+				 *  pentru a avea lista de parametri cu tipul lor;
+				 *  Indexul elementului selectat din lista din stanga este
+				 *  acelasi cu al aceluiasi element in lista operations
+				 */				
 				Operation newOperation = operations.get(selectedIndex).copy();
-				// Se creeaza o fereastra de parametri careia i se transfera
-				// lista de parametri asociata operatiei, incapsulata in
-				// newOperation
+				
+				/*
+				 *  Se creeaza o fereastra de parametri careia i se transfera
+				 *   lista de parametri asociata operatiei, incapsulata in newOperation;
+				 *   daca operatia are exact 2 parametri (inputFile si outputFile), atunci se trece direct in lista din dreapta
+				 */
 
 				if (newOperation.getParameters().size() == 2) {
 
@@ -86,19 +91,17 @@ public class BinarizationWindow extends SecondaryWindow {
 	@Override
 	protected void okClicked(MouseEvent evt) {
 
-		// Se transmite in Main Window lista de operatii, cu lista de parametri
-		// completata 90% (adica fara fisierul de intrare)
-		// In Main Window se vor lansa in executie programele, dupa ce se vor
-		// adauga 2 parametri: fisierul de intrare si cel de iesire
-		// (sau doar fisierul de intrare, cel de iesire poate fi generat automat
-		// si transmis inapoi ca raspuns in ferestra principala)
+		/*
+		 *  Se transmite in Main Window lista de operatii, cu lista de parametri
+		 *  completata 90% (adica fara fisierul de intrare)
+		 */
 
 		super.okClicked(evt);
-		// Se transfera in fereastra principala lista cu executabilele de
-		// binarizare ce trebuie aplicate imaginii
+		//Se trimit doar operatiile nou adaugate
 		mainWindow.launchBinarizOperations(newSelection);
 		newSelection.clear();
 
+		//Daca este cazul, se sterg operatii si se semnaleaza acest lucru catre main window
 		for (Map.Entry<Operation, Integer> entry : removedOps.entrySet()) {
 
 				mainWindow.removeBinarization(entry.getKey());

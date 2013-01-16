@@ -5,8 +5,7 @@
 package mps.parser;
 
 /**
- * 
- * @author Liz
+ * Clasa care descrie un atribut pentru un parametru complex.
  */
 public class Attribute extends SimpleTypeParameter {
 

@@ -41,7 +41,7 @@ import mps.parser.Operation;
  * Clasa care descrie partea comuna a ferestrelor de binarizare si de
  * preprocesare.
  * 
- * @author Liz
+ * @author Luiza
  */
 public abstract class SecondaryWindow extends JFrame {
 
@@ -80,16 +80,18 @@ public abstract class SecondaryWindow extends JFrame {
 	 */
 	ArrayList<Operation> oldSelection;
 	/**
-	 * Lista curenta cu executabilele selectate (pana sa se dea iar OK).
+	 * Lista curenta cu executabilele nou selectate.
 	 */
-	// ArrayList<Operation> currentSelection;
 	ArrayList<Operation> newSelection;
 
 	/**
-	 * Lista cu executabilele sterse din lista veche (necesar la binarizare).
+	 * Lista cu executabilele sterse din lista veche (necesar la binarizare) si pozitia de pe care au fost sterse.
 	 */
 	LinkedHashMap<Operation, Integer> removedOps;
 
+	/**
+	 * Clasa ce descrie un CellRenderer, necesar la afisarea cu o culoare diferita a executabilelor selectate anterior
+	 */
 	protected class ListElement extends JLabel implements ListCellRenderer {
 
 		public ListElement() {
@@ -103,16 +105,17 @@ public abstract class SecondaryWindow extends JFrame {
 
 		public Component getListCellRendererComponent(JList list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus) {
-			// Assumes the stuff in the list has a pretty toString
 
 			setText(value.toString());
 
+			//Daca este executabil selectat anterior, atunci il afiseaza cu gri
 			if (index < oldSelection.size()) {
 
 				setForeground(Color.LIGHT_GRAY);
 				setBackground(Color.WHITE);
 			} else {
 
+				//Altfel il afiseaza normal, cu negru
 				setForeground(Color.BLACK);
 			}
 
@@ -129,7 +132,8 @@ public abstract class SecondaryWindow extends JFrame {
 	}
 
 	/**
-	 * Creates new form SecondaryWindow.
+	 * Constructor pentru o fereastra secundara.
+	 * @param window fereastra principala, cu care trebuie sa comunice
 	 */
 	public SecondaryWindow(MainWindow window) {
 
@@ -144,15 +148,11 @@ public abstract class SecondaryWindow extends JFrame {
 			@Override
 			public void windowActivated(WindowEvent e) {
 
-				// init();
 			}
 
 			@Override
 			public void windowClosing(WindowEvent arg0) {
-				// daca se inchide direct fereastra, se face clear la lista din
-				// dreapta
-				// si readauga in stanga
-
+			
 				mainWindow.setEnabled(true);
 				close();
 			}
@@ -201,8 +201,7 @@ public abstract class SecondaryWindow extends JFrame {
 		jCancelButton = new JButton();
 		jLabel3 = new JLabel("Select ops from left:");
 
-		// setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-
+		//Afisare tool tips cand mouse-ul est ein dreptul unui element din lista
 		jListingPanelList.addMouseMotionListener(new MouseMotionAdapter() {
 			public void mouseMoved(MouseEvent e) {
 
@@ -231,6 +230,7 @@ public abstract class SecondaryWindow extends JFrame {
 
 		jChoicesPanelList.setCellRenderer(new ListElement());
 
+		//Afisare tool tips cand mouse-ul este in dreptul unui element din lista
 		jChoicesPanelList.addMouseMotionListener(new MouseMotionAdapter() {
 
 			public void mouseMoved(MouseEvent e) {
@@ -250,8 +250,6 @@ public abstract class SecondaryWindow extends JFrame {
 					if (!allOps.get(index).toString().isEmpty()) {
 						jChoicesPanelList.setToolTipText(allOps.get(index)
 								.toString());
-
-						// System.out.println(allOps.get(index));
 					}
 				} else {
 
@@ -396,6 +394,9 @@ public abstract class SecondaryWindow extends JFrame {
 		pack();
 	}
 
+	/**
+	 * Operatii care se executa la deschiderea ferestrei.
+	 */
 	public void init() {
 
 		jListingModel.clear();
@@ -419,11 +420,9 @@ public abstract class SecondaryWindow extends JFrame {
 	 */
 	public void addListElement(Operation elem) {
 
-		// Metoda va fi apelata in metoda init() din MainWindow;
-		// Adaugarea acestor elemente se va face astfel la pornirea aplicatiei
-		// jListingModel.addElement(elem.getName());
-		// Se adauga operatia si in lista de operatii de preprocesare / de
-		// binarizare
+		/*
+		 *  Metoda va fi apelata in metoda init() din MainWindow;
+		 */
 		operations.add(elem);
 	}
 
@@ -434,12 +433,13 @@ public abstract class SecondaryWindow extends JFrame {
 	 */
 	public void addExec(Operation op) {
 
-		// Operatia se va adauga listei curente de executabile;
-		// doar la apasarea butonului "OK" va fi transmisa mai departe in
-		// fereastra principala, spre a fi lansata in executie
+		/*
+		 *  Operatia se va adauga listei curente de executabile;
+		 *  doar la apasarea butonului "OK" va fi transmisa mai departe in
+		 *  fereastra principala, spre a fi lansata in executie
+		 */
 
 		op.setId(Operation.opGlobalId++);
-		System.out.println(op);
 		newSelection.add(op);
 
 		// Executabilul ales din stanga trece in lista din dreapta
@@ -472,8 +472,6 @@ public abstract class SecondaryWindow extends JFrame {
 		this.setVisible(false);
 
 		oldSelection.addAll(newSelection);
-
-		// trimit in fereastra principala
 	}
 
 	/**
@@ -518,17 +516,13 @@ public abstract class SecondaryWindow extends JFrame {
 
 		newSelection.clear();
 
-		// oldSelection.addAll(new
-		// ArrayList<Operation>(Arrays.asList(removedOps)));
-
-		// A fost nevoie de array simplu si nu de ArrayList pentru pastrarea
-		// ordinii executabilelor;
-		// daca se apasa pe cancel, executabilele sterse vor fi puse inapoi in
-		// lista oldSelection, pe pozitiile pe care fusesera
-	
 		ListIterator<Operation> iter =
 			    new ArrayList<Operation>(removedOps.keySet()).listIterator(removedOps.size());
 
+		/*
+		 * Daca se vrea iesirea directa din fereastra, fara apasarea OK,
+		 * atunci eventualele operatii eliminate din lista se trec inapoi, pe aceleasi pozitii
+		 */
 		while (iter.hasPrevious()) {
 			
 		   Operation op = iter.previous();

@@ -5,8 +5,7 @@
 package mps.parser;
 
 /**
- * 
- * @author Liz
+ * Clasa care retine toate restrictiile asociate unui parametru.
  */
 public class SimpleTypeRestriction {
 

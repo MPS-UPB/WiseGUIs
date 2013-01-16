@@ -5,8 +5,7 @@
 package mps.parser;
 
 /**
- * 
- * @author Liz
+ * Clasa care descrie un parametru de tip simplu, care este si tipul cel mai general.
  */
 public class SimpleTypeParameter {
 
@@ -108,11 +107,6 @@ public class SimpleTypeParameter {
 
 	@Override
 	public boolean equals(Object obj) {
-
-		// verific sa fie toate chestiile egale (nume, tip de baza,
-		// restrictii...)
-		// s-ar putea sa arunce NullPointerException, daca n-are completate
-		// valorile...
 
 		SimpleTypeParameter newParam = (SimpleTypeParameter) obj;
 

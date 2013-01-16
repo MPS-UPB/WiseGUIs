@@ -9,9 +9,9 @@ import java.awt.event.ActionEvent;
 import mps.parser.Operation;
 
 /**
- * 
+ * Fereastra de preprocesare
  * @author John
- * @version Last Modified Roxana 11/15/2012
+ * @version Last Modified Luiza 16/01/2013
  */
 public class PreprocessingWindow extends SecondaryWindow {
 
@@ -37,22 +37,19 @@ public class PreprocessingWindow extends SecondaryWindow {
 				String selectedElement = (String) jListingModel
 						.elementAt(selectedIndex);
 
-				// Procedeul de aici nu mai este acelasi ca in fereastra de
-				// binarizare, pentru ca executabilele se muta dintr-o lista in
-				// alta
-				// Este necesara cautarea "manuala" a executabilului in
-				// operations, dupa nume
+				/*
+				 *  Procedeul de aici nu mai este acelasi ca in fereastra de
+				 *  binarizare, pentru ca executabilele se muta dintr-o lista in alta;
+				 *  Este necesara cautarea "manuala" a executabilului in
+				 *  operations, dupa nume
+				 */
 
 				for (Operation op : operations) {
 
 					if (selectedElement.equals(op.getName())) {
 
 						Operation newOperation = op.copy();
-						// transfer ferestrei de parametri lista de parametri
-						// asociata operatiei
-
-						// daca are si alti parametri, in afara de fisierul de
-						// input si cel de output
+					
 						if (newOperation.getParameters().size() == 2) {
 
 							addExec(newOperation);
@@ -97,15 +94,19 @@ public class PreprocessingWindow extends SecondaryWindow {
 					oldSelection.remove(selectedIndex);
 				}
 
-				// Daca elimin un executabil, sa fie pus inapoi in lista din
-				// stanga pe aceeasi pozitie pe care era inainte
-				// (relativ la celelalte elemente, sa se pastreze ordinea
-				// elementelor, ca sa nu ametim utilizatorul)
+				/*
+				 *  Daca elimin un executabil, sa fie pus inapoi in lista din
+				 *   stanga pe aceeasi pozitie pe care era inainte
+				 * (relativ la celelalte elemente, sa se pastreze ordinea
+				 * elementelor, ca sa nu ametim utilizatorul)
+				 */
 
 				Object[] ceva = jListingModel.toArray();
 
-				// daca elementul selectat este in jListingModel deja, atunci
-				// cand il sterg nu-l mai trec dincolo
+				/* 
+				 * Daca elementul selectat este in jListingModel deja, atunci
+				 * cand il sterg nu-l mai trec dincolo
+				 */
 				boolean yesRemove = true;
 				for (int i = 0; i < ceva.length; i++) {
 
@@ -141,16 +142,12 @@ public class PreprocessingWindow extends SecondaryWindow {
 	@Override
 	protected void okClicked(java.awt.event.MouseEvent evt) {
 
-		// Se transmite in Main Window lista de operatii, cu lista de parametri
-		// completata 90% (adica fara fisierul de intrare)
-		// In Main Window se vor lansa in executie programele, dupa ce se vor
-		// adauga 2 parametri: fisierul de intrare si cel de iesire
-		// (sau doar fisierul de intrare, cel de iesire poate fi generat automat
-		// si transmis inapoi ca raspuns in ferestra principala)
-
 		super.okClicked(evt);
-		// Se transfera in fereastra principala lista cu executabilele de
-		// preprocesare ce trebuie aplicate imaginii
+		
+		/*
+		 *  Se transfera in fereastra principala lista cu executabilele de
+		 *  preprocesare ce trebuie aplicate imaginii
+		 */
 		mainWindow.launchPreprocOperations(newSelection);
 		newSelection.clear();
 	}
@@ -158,8 +155,7 @@ public class PreprocessingWindow extends SecondaryWindow {
 	@Override
 	public void changeLists() {
 
-		// La adaugarea unui executabil, acesta este trecut din stanga in
-		// dreapta
+		// La adaugarea unui executabil, acesta este trecut din stanga in dreapta
 		String selectedElement = jListingModel.elementAt(selectedIndex);
 		jListingModel.removeElementAt(selectedIndex);
 		jChoicesModel.addElement(selectedElement);
